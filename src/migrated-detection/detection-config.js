@@ -46,7 +46,7 @@ export const detectionConfig = [
       results: [{
         result: "Problematic references found",
         detailsType: 'html',
-        htmlContent: `<div><div class="retraction-references"><span class="retraction-title">Retraction</span><div class="retraction-info"><span class="retraction-content">Lightweight MDSCA-Net: an end-to-end CAN bus fault diagnosis framework</span><span class="retraction-index">[17]</span></div><div class="retraction-info"><span class="retraction-content">Functional analysis of ceRNA network of lncRNA TSIX/miR-34a-5p/RBP2 in acute myocardial infarction based on GEO database</span><span class="retraction-index">[18]</span></div></div><div class="retraction-references"><span class="retraction-title">Correction</span><div class="retraction-info"><span class="retraction-content">Direct and efficient in situ rubidium extraction from potassium chloride salts</span><span class="retraction-index">[19]</span></div><div class="retraction-info"><span class="retraction-content">New latex agglutination assay for the determination of lactoferrin in human milk</span><span class="retraction-index">[20]</span></div></div><div class="retraction-references"><span class="retraction-title">Withdrawn</span><div class="retraction-info"><span class="retraction-content">WITHDRAWN: Rare plexiform neurofibroma of the scrotum — A case report</span><span class="retraction-index">[7]</span></div><div class="retraction-info"><span class="retraction-content">WITHDRAWN: The Ill-Thought-Through Aim to Eliminate the Education Gap Across the Socio-Economic Spectrum</span><span class="retraction-index">[10]</span></div></div></div>`
+        htmlContent: `<div><div class="retraction-references"><span class="retraction-title">Retraction</span><div class="retraction-info"><span class="retraction-index">[17]</span><span class="retraction-content">Lightweight MDSCA-Net: an end-to-end CAN bus fault diagnosis framework</span><a class="retraction-doi" href="https://doi.org/10.1016/j.ress.2023.109512" target="_blank">DOI: 10.1016/j.ress.2023.109512</a></div><div class="retraction-info"><span class="retraction-index">[18]</span><span class="retraction-content">Functional analysis of ceRNA network of lncRNA TSIX/miR-34a-5p/RBP2 in acute myocardial infarction based on GEO database</span><a class="retraction-doi" href="https://doi.org/10.3389/fgene.2022.887722" target="_blank">DOI: 10.3389/fgene.2022.887722</a></div></div><div class="retraction-references"><span class="retraction-title">Correction</span><div class="retraction-info"><span class="retraction-index">[19]</span><span class="retraction-content">Direct and efficient in situ rubidium extraction from potassium chloride salts</span><a class="retraction-doi" href="https://doi.org/10.1039/D2GC03451A" target="_blank">DOI: 10.1039/D2GC03451A</a></div><div class="retraction-info"><span class="retraction-index">[20]</span><span class="retraction-content">New latex agglutination assay for the determination of lactoferrin in human milk</span><a class="retraction-doi" href="https://doi.org/10.1016/j.foodchem.2021.130856" target="_blank">DOI: 10.1016/j.foodchem.2021.130856</a></div></div><div class="retraction-references"><span class="retraction-title">Withdrawn</span><div class="retraction-info"><span class="retraction-index">[7]</span><span class="retraction-content">WITHDRAWN: Rare plexiform neurofibroma of the scrotum — A case report</span><a class="retraction-doi" href="https://doi.org/10.1016/j.urology.2020.08.042" target="_blank">DOI: 10.1016/j.urology.2020.08.042</a></div><div class="retraction-info"><span class="retraction-index">[10]</span><span class="retraction-content">WITHDRAWN: The Ill-Thought-Through Aim to Eliminate the Education Gap Across the Socio-Economic Spectrum</span><a class="retraction-doi" href="https://doi.org/10.1080/00131857.2021.1873516" target="_blank">DOI: 10.1080/00131857.2021.1873516</a></div></div></div>`
       }]
     },
     {
@@ -300,6 +300,7 @@ export const detectionConfig = [
           {
             index: "[1]",
             title: "Studies of the mechanism by which hepatic citrate synthase activity increases in vitamin B12 deprivation.",
+            doi: "10.1042/bj0870078",
             problems: [
               { text: "Out of scope", level: "warning" },
               { text: "Out-of-context reference", level: "warning" },
@@ -308,6 +309,7 @@ export const detectionConfig = [
           {
             index: "[12]",
             title: "Reduced expression of citrate synthase leads to excessive superoxide formation and cell apoptosis",
+            doi: "10.1038/s41419-020-2638-4",
             problems: [
               { text: "Out-of-context reference", level: "warning" },
               { text: "Retracted", level: "severe" },
@@ -316,6 +318,7 @@ export const detectionConfig = [
           {
             index: "[17]",
             title: "Lightweight MDSCA-Net: an end-to-end CAN bus fault diagnosis framework",
+            doi: "10.1016/j.ress.2023.109512",
             problems: [
               { text: "Retracted", level: "severe" },
             ]

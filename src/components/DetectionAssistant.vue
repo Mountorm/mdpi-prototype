@@ -271,6 +271,7 @@
                               <div class="da-ethb__ref-title">
                                 <span class="da-ethb__ref-index">{{ ref.index }}</span>
                                 <span class="da-ethb__ref-text">{{ ref.title }}</span>
+                                <a v-if="ref.doi" :href="'https://doi.org/' + ref.doi" target="_blank" class="da-ethb__doi-link">DOI: {{ ref.doi }}</a>
                               </div>
                               <div class="da-ethb__ref-tags">
                                 <span v-for="(p, pi) in ref.problems" :key="pi" :class="['da-eth__tag', p.level === 'severe' ? 'da-eth__tag--error' : 'da-eth__tag--warning']">{{ p.text }}</span>

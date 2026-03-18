@@ -17,7 +17,7 @@ const routes = [
   { path: '/submitted', component: SubmittedManuscripts, meta: { breadcrumb: 'Submitted Manuscripts' } },
   { path: '/detection-assistant', component: DetectionAssistant, meta: { breadcrumb: 'Detection Assistant' } },
   { path: '/detection-management', component: DetectionManagement, meta: { breadcrumb: 'Keywords' } },
-  { path: '/item-visibility', component: ItemVisibility, meta: { breadcrumb: 'Visibility Rules' } },
+  { path: '/item-visibility', component: ItemVisibility, meta: { breadcrumb: 'Configuration' } },
 ]
 
 const router = createRouter({

@@ -370,19 +370,18 @@
 }
 
 .da-html .retraction-info {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 2px 8px;
+  display: block;
+  padding: 3px 8px;
   border-radius: 5px;
   background: #f8fafc;
   margin-bottom: 2px;
+  line-height: 1.6;
 }
 
-
-
-.da-html .retraction-content { flex: 1; font-size: 13px; color: #1e293b; line-height: 1.5; }
-.da-html .retraction-index { flex-shrink: 0; font-size: 12px; font-weight: 600; color: #94a3b8; white-space: nowrap; }
+.da-html .retraction-content { font-size: 13px; color: #1e293b; }
+.da-html .retraction-index { font-size: 12px; font-weight: 600; color: #94a3b8; margin-right: 4px; }
+.da-html .retraction-doi { font-size: 11px; color: #0156ce; text-decoration: none; margin-left: 6px; }
+.da-html .retraction-doi:hover { text-decoration: underline; }
 
 /* Ethicality item — 可折叠文件行 */
 .da-item--eth {
@@ -458,7 +457,9 @@
 
 /* Plan B — Reference block */
 .da-ethb__ref-block { display: flex; flex-direction: column; gap: 4px; }
-.da-ethb__ref-title { display: flex; align-items: baseline; gap: 5px; }
-.da-ethb__ref-index { font-size: 13px; font-weight: 600; color: #475569; flex-shrink: 0; }
-.da-ethb__ref-text { font-size: 13px; color: #334155; line-height: 1.4; }
+.da-ethb__ref-title { display: block; line-height: 1.6; }
+.da-ethb__ref-index { font-size: 12px; font-weight: 600; color: #94a3b8; margin-right: 4px; }
+.da-ethb__ref-text { font-size: 13px; color: #334155; }
+.da-ethb__doi-link { font-size: 11px; color: #0156ce; text-decoration: none; margin-left: 6px; }
+.da-ethb__doi-link:hover { text-decoration: underline; }
 .da-ethb__ref-tags { display: flex; gap: 4px; flex-wrap: wrap; }

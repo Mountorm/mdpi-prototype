@@ -55,7 +55,7 @@
             <RouterLink to="/detection-management" class="menu-item">Keywords</RouterLink>
           </li>
           <li :class="{ 'active': route.path === '/item-visibility' }">
-            <RouterLink to="/item-visibility" class="menu-item">Visibility Rules</RouterLink>
+            <RouterLink to="/item-visibility" class="menu-item">Configuration</RouterLink>
           </li>
         </ul>
       </div>
