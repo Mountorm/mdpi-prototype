@@ -47,7 +47,6 @@ defineEmits(['toggle-sidebar'])
   padding: 0 1.5rem;
   gap: 1rem;
   z-index: 90;
-  transition: left 0.3s ease-in-out;
 }
 
 .nav-link {

@@ -6,7 +6,7 @@
         v-if="!isCollapsed"
         src="https://susy.mdpi.com/build/img/icon/SUSY_logo.svg?56d587c"
         alt="SuSy Logo"
-        style="width: 90px; height: 36px;"
+        style="width: 120px; height: 48px; padding-left: 20px;"
       >
       <img
         v-else
@@ -62,16 +62,11 @@
 
     <!-- 底部操作栏 -->
     <div class="sidebar-footer">
-      <!-- 展开状态：feedback + privacy 图标按钮（左对齐） -->
+      <!-- 展开状态：feedback 图标按钮（左对齐） -->
       <template v-if="!isCollapsed">
-        <div class="footer-actions">
-          <button class="footer-icon-btn" title="Feedback">
-            <span class="material-symbols-outlined" style="font-size: 20px;">feedback</span>
-          </button>
-          <button class="footer-icon-btn" title="Privacy Settings">
-            <span class="material-symbols-outlined" style="font-size: 20px;">privacy_tip</span>
-          </button>
-        </div>
+        <button class="footer-icon-btn" title="Feedback">
+          <span class="material-symbols-outlined" style="font-size: 20px;">feedback</span>
+        </button>
       </template>
 
       <!-- 折叠/展开按钮（右对齐） -->
@@ -144,7 +139,6 @@ const toggleGroup = (group) => {
   width: var(--sidebar-width);
   background-color: white;
   border-right: 1px solid #e5e7eb;
-  transition: width 0.3s ease-in-out;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -170,9 +164,9 @@ const toggleGroup = (group) => {
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  /* justify-content: center; */
   padding: 0 12px;
-  border-bottom: 1px solid #e5e7eb;
+  /* border-bottom: 1px solid #e5e7eb; */
   flex-shrink: 0;
 }
 
