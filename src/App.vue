@@ -1,8 +1,10 @@
 <template>
   <div class="flex flex-col h-full w-full">
-    <Sidebar :is-collapsed="sidebarCollapsed" @toggle="sidebarCollapsed = !sidebarCollapsed" />
+    <Sidebar
+      :is-collapsed="sidebarCollapsed"
+      @toggle="sidebarCollapsed = !sidebarCollapsed"
+    />
 
-    <!-- Header 和主内容区随 sidebar 宽度偏移 -->
     <div
       class="flex flex-col h-full overflow-hidden"
       :style="{ marginLeft: sidebarCollapsed ? '48px' : 'var(--sidebar-width)', transition: 'margin-left 0.3s ease-in-out' }"

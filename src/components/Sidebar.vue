@@ -1,27 +1,13 @@
 <template>
-  <aside :class="['sidebar', { 'collapsed': isCollapsed }]">
-    <!-- Logo 区域 -->
-    <div class="sidebar-logo">
-      <img
-        v-if="!isCollapsed"
-        src="https://susy.mdpi.com/build/img/icon/SUSY_logo.svg?56d587c"
-        alt="SuSy Logo"
-        style="width: 120px; height: 48px; padding-left: 20px;"
-      >
-      <img
-        v-else
-        src="/logo.png"
-        alt="SuSy"
-        style="width: 28px; height: 28px; object-fit: contain;"
-      >
-    </div>
-
+  <aside
+    :class="['sidebar', { 'collapsed': isCollapsed }]"
+  >
     <!-- 导航菜单 -->
-    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4">
+    <nav class="flex-1 overflow-y-auto overflow-x-hidden py-4 px-1">
 
       <!-- 展开状态：正常菜单 -->
       <template v-if="!isCollapsed">
-        <div class="mb-6" v-for="group in groups" :key="group.key">
+        <div class="mb-6" style="width: auto;" v-for="group in groups" :key="group.key">
           <div class="menu-group-title" @click="toggleGroup(group.key)">
             <span>{{ group.label }}</span>
             <svg :class="['w-4 h-4 transition-transform', { 'rotate-180': expandedGroups[group.key] }]" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="margin-right: 0.6rem; flex-shrink: 0;">
@@ -36,40 +22,28 @@
         </div>
       </template>
 
-      <!-- 折叠状态：首字母 + hover 展开浮层 -->
+      <!-- 折叠状态：首字母，hover 触发浮层 -->
       <template v-else>
         <div
           v-for="group in groups"
           :key="group.key"
           class="collapsed-group"
-          @mouseenter="hoveredGroup = group.key"
-          @mouseleave="hoveredGroup = null"
+          @mouseenter="onGroupEnter(group.key, $event)"
+          @mouseleave="scheduleClose"
         >
           <div class="collapsed-group-label">{{ group.abbr }}</div>
-
-          <!-- 右侧浮层菜单 -->
-          <div v-if="hoveredGroup === group.key" class="flyout-menu">
-            <div class="flyout-title">{{ group.label }}</div>
-            <ul class="flyout-list">
-              <li v-for="item in group.items" :key="item.to" :class="{ 'active': route.path === item.to }">
-                <RouterLink :to="item.to" class="flyout-item">{{ item.label }}</RouterLink>
-              </li>
-            </ul>
-          </div>
         </div>
       </template>
     </nav>
 
     <!-- 底部操作栏 -->
     <div class="sidebar-footer">
-      <!-- 展开状态：feedback 图标按钮（左对齐） -->
       <template v-if="!isCollapsed">
         <button class="footer-icon-btn" title="Feedback">
           <span class="material-symbols-outlined" style="font-size: 20px;">feedback</span>
         </button>
       </template>
 
-      <!-- 折叠/展开按钮（右对齐） -->
       <button class="toggle-btn" @click="$emit('toggle')" :title="isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'">
         <span class="material-icons" style="font-size: 20px;">
           {{ isCollapsed ? 'menu_open' : 'menu' }}
@@ -77,13 +51,31 @@
       </button>
     </div>
   </aside>
+
+  <!-- flyout 挂到 body，脱离 sidebar 层叠上下文，z-index 不受限制 -->
+  <Teleport to="body">
+    <div
+      v-if="hoveredGroup"
+      class="sidebar-flyout-menu"
+      :style="{ top: flyoutTop + 'px' }"
+      @mouseenter="cancelClose"
+      @mouseleave="scheduleClose"
+    >
+      <div class="sidebar-flyout-title">{{ activeGroup?.label }}</div>
+      <ul class="sidebar-flyout-list">
+        <li v-for="item in activeGroup?.items" :key="item.to" :class="{ 'active': route.path === item.to }">
+          <RouterLink :to="item.to" class="sidebar-flyout-item" @click="hoveredGroup = null">{{ item.label }}</RouterLink>
+        </li>
+      </ul>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
-defineProps({
+const props = defineProps({
   isCollapsed: { type: Boolean, default: false }
 })
 
@@ -91,7 +83,14 @@ defineEmits(['toggle'])
 
 const route = useRoute()
 const hoveredGroup = ref(null)
-const expandedGroups = reactive({ account: true, editorial: true, management: true })
+const flyoutTop = ref(0)
+let closeTimer = null
+
+const expandedGroups = reactive({
+  account: true, editorial: true, management: true,
+  group4: true, group5: true, group6: true, group7: true,
+  group8: true, group9: true, group10: true
+})
 
 const groups = [
   {
@@ -122,8 +121,93 @@ const groups = [
       { to: '/detection-management', label: 'Keywords' },
       { to: '/item-visibility', label: 'Configuration' },
     ]
-  }
+  },
+  {
+    key: 'group4',
+    label: 'Group Title 4',
+    abbr: 'G4',
+    items: [
+      { to: '#', label: 'Menu 4-1' },
+      { to: '#', label: 'Menu 4-2' },
+      { to: '#', label: 'Menu 4-3' },
+    ]
+  },
+  {
+    key: 'group5',
+    label: 'Group Title 5',
+    abbr: 'G5',
+    items: [
+      { to: '#', label: 'Menu 5-1' },
+      { to: '#', label: 'Menu 5-2' },
+    ]
+  },
+  {
+    key: 'group6',
+    label: 'Group Title 6',
+    abbr: 'G6',
+    items: [
+      { to: '#', label: 'Menu 6-1' },
+      { to: '#', label: 'Menu 6-2' },
+      { to: '#', label: 'Menu 6-3' },
+      { to: '#', label: 'Menu 6-4' },
+    ]
+  },
+  {
+    key: 'group7',
+    label: 'Group Title 7',
+    abbr: 'G7',
+    items: [
+      { to: '#', label: 'Menu 7-1' },
+      { to: '#', label: 'Menu 7-2' },
+    ]
+  },
+  {
+    key: 'group8',
+    label: 'Group Title 8',
+    abbr: 'G8',
+    items: [
+      { to: '#', label: 'Menu 8-1' },
+      { to: '#', label: 'Menu 8-2' },
+      { to: '#', label: 'Menu 8-3' },
+    ]
+  },
+  {
+    key: 'group9',
+    label: 'Group Title 9',
+    abbr: 'G9',
+    items: [
+      { to: '#', label: 'Menu 9-1' },
+      { to: '#', label: 'Menu 9-2' },
+    ]
+  },
+  {
+    key: 'group10',
+    label: 'Group Title 10',
+    abbr: 'G10',
+    items: [
+      { to: '#', label: 'Menu 10-1' },
+      { to: '#', label: 'Menu 10-2' },
+      { to: '#', label: 'Menu 10-3' },
+    ]
+  },
 ]
+
+const activeGroup = computed(() => groups.find(g => g.key === hoveredGroup.value))
+
+const onGroupEnter = (key, event) => {
+  cancelClose()
+  hoveredGroup.value = key
+  const rect = event.currentTarget.getBoundingClientRect()
+  flyoutTop.value = rect.top
+}
+
+const scheduleClose = () => {
+  closeTimer = setTimeout(() => { hoveredGroup.value = null }, 80)
+}
+
+const cancelClose = () => {
+  if (closeTimer) { clearTimeout(closeTimer); closeTimer = null }
+}
 
 const toggleGroup = (group) => {
   expandedGroups[group] = !expandedGroups[group]
@@ -133,9 +217,9 @@ const toggleGroup = (group) => {
 <style scoped>
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 64px;
   left: 0;
-  height: 100vh;
+  height: calc(100vh - 64px);
   width: var(--sidebar-width);
   background-color: white;
   border-right: 1px solid #e5e7eb;
@@ -146,31 +230,25 @@ const toggleGroup = (group) => {
   flex-shrink: 0;
 }
 
-.sidebar.collapsed {
-  width: 48px;
-}
+.sidebar.collapsed { width: 48px; }
 
-.sidebar:not(.collapsed) nav > * {
-  width: var(--sidebar-width);
-  overflow: hidden;
-}
+.sidebar:not(.collapsed) nav > * { width: var(--sidebar-width); overflow: hidden; }
+.sidebar.collapsed nav { width: 48px; }
 
-.sidebar.collapsed nav {
-  width: 48px;
-}
+/* 细滚动条 */
+.sidebar nav::-webkit-scrollbar { width: 4px; }
+.sidebar nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar nav::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+.sidebar nav::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
 
-/* Logo */
 .sidebar-logo {
   height: 64px;
   display: flex;
   align-items: center;
-  /* justify-content: center; */
   padding: 0 12px;
-  /* border-bottom: 1px solid #e5e7eb; */
   flex-shrink: 0;
 }
 
-/* 展开状态菜单 */
 .menu-group-title {
   color: #172b4d;
   display: flex;
@@ -184,11 +262,7 @@ const toggleGroup = (group) => {
   cursor: pointer;
 }
 
-.menu {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
+.menu { list-style: none; padding: 0; margin: 0; }
 
 .menu li {
   font-size: 14px;
@@ -214,7 +288,6 @@ const toggleGroup = (group) => {
   white-space: nowrap;
 }
 
-/* 折叠状态 group */
 .collapsed-group {
   position: relative;
   width: 100%;
@@ -226,9 +299,7 @@ const toggleGroup = (group) => {
   margin-bottom: 4px;
 }
 
-.collapsed-group:hover {
-  background: #f8f9fd;
-}
+.collapsed-group:hover { background: #f8f9fd; }
 
 .collapsed-group-label {
   font-size: 13px;
@@ -237,60 +308,6 @@ const toggleGroup = (group) => {
   user-select: none;
 }
 
-/* 浮层菜单 */
-.flyout-menu {
-  position: fixed;
-  left: 48px;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  min-width: 180px;
-  z-index: 200;
-  padding: 6px 0;
-}
-
-.flyout-title {
-  font-size: 12px;
-  font-weight: 600;
-  color: #94a3b8;
-  padding: 4px 12px 6px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #f1f5f9;
-  margin-bottom: 4px;
-}
-
-.flyout-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.flyout-list li {
-  display: flex;
-}
-
-.flyout-item {
-  display: block;
-  width: 100%;
-  padding: 7px 12px;
-  font-size: 13px;
-  color: #626f86;
-  text-decoration: none;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-
-.flyout-item:hover { background: #f8f9fd; color: #0156ce; }
-
-.flyout-list li.active .flyout-item {
-  background: #e6eefa;
-  color: #0156ce;
-  font-weight: 500;
-}
-
-/* 底部操作栏 */
 .sidebar-footer {
   height: 48px;
   display: flex;
@@ -298,13 +315,6 @@ const toggleGroup = (group) => {
   border-top: 1px solid #e5e7eb;
   flex-shrink: 0;
   padding: 0 4px;
-}
-
-.footer-actions {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  flex: 1;
 }
 
 .footer-icon-btn {
@@ -321,10 +331,7 @@ const toggleGroup = (group) => {
   transition: all 0.15s;
 }
 
-.footer-icon-btn:hover {
-  background: #f1f5f9;
-  color: #475569;
-}
+.footer-icon-btn:hover { background: #f1f5f9; color: #475569; }
 
 .toggle-btn {
   display: inline-flex;
@@ -341,7 +348,58 @@ const toggleGroup = (group) => {
   margin-left: auto;
 }
 
-.toggle-btn:hover {
-  background: #f8f9fd;
+.toggle-btn:hover { background: #f8f9fd; }
+</style>
+
+<style>
+/* flyout 通过 Teleport 渲染到 body，必须全局样式 */
+.sidebar-flyout-menu {
+  position: fixed;
+  left: 48px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  min-width: 180px;
+  z-index: 9999;
+  padding: 6px 0;
+}
+
+.sidebar-flyout-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  padding: 4px 12px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #f1f5f9;
+  margin-bottom: 4px;
+}
+
+.sidebar-flyout-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-flyout-list li { display: flex; }
+
+.sidebar-flyout-item {
+  display: block;
+  width: 100%;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #626f86;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+
+.sidebar-flyout-item:hover { background: #f8f9fd; color: #0156ce; }
+
+.sidebar-flyout-list li.active .sidebar-flyout-item {
+  background: #e6eefa;
+  color: #0156ce;
+  font-weight: 500;
 }
 </style>

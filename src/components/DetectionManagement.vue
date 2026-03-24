@@ -40,7 +40,7 @@
     <div class="dm-main">
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-title">Keywords</span>
+          <span class="panel-title">Keywords 这里可以加上批量操作</span>
           <el-button size="small" type="primary" class="dm-btn-primary" @click="openKeywordDialog()">
             Add Keyword
           </el-button>

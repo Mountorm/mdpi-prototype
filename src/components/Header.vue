@@ -1,10 +1,14 @@
 <template>
-  <header
-    class="app-header"
-    :style="{ left: sidebarWidth, color: '#172b4d' }"
-  >
+  <header class="app-header" style="color: #172b4d;">
+    <!-- Logo -->
+    <img
+      src="https://susy.mdpi.com/build/img/icon/SUSY_logo.svg?56d587c"
+      alt="SuSy Logo"
+      style="width: 90px; height: 36px; flex-shrink: 0;"
+    >
+
     <!-- Navigation Links -->
-    <nav class="flex items-center gap-6 h-full">
+    <nav class="flex items-center gap-6 h-full ml-4">
       <a href="#" class="nav-link">Journals</a>
       <a href="#" class="nav-link">Topics</a>
       <a href="#" class="nav-link">Information</a>
@@ -30,14 +34,13 @@ defineProps({
   sidebarCollapsed: { type: Boolean, default: false },
   sidebarWidth: { type: String, default: 'var(--sidebar-width)' }
 })
-
-defineEmits(['toggle-sidebar'])
 </script>
 
 <style scoped>
 .app-header {
   position: fixed;
   top: 0;
+  left: 0;
   right: 0;
   height: 64px;
   background: white;
@@ -46,7 +49,7 @@ defineEmits(['toggle-sidebar'])
   align-items: center;
   padding: 0 1.5rem;
   gap: 1rem;
-  z-index: 90;
+  z-index: 110;
 }
 
 .nav-link {
