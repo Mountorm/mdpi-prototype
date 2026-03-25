@@ -291,7 +291,7 @@ const groups = [
   {
     key: 'management', label: 'Detection Management', abbr: 'D',
     items: [
-      { to: '/detection-management', label: 'Keywords' },
+      { to: '/keywords', label: 'Keywords' },
       { to: '/item-visibility', label: 'Configuration' },
     ]
   },

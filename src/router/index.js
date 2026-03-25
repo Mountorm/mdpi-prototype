@@ -16,7 +16,7 @@ const routes = [
   { path: '/process', component: ProcessManuscript, meta: { breadcrumb: 'Process Manuscript' } },
   { path: '/submitted', component: SubmittedManuscripts, meta: { breadcrumb: 'Submitted Manuscripts' } },
   { path: '/detection-assistant', component: DetectionAssistant, meta: { breadcrumb: 'Detection Assistant' } },
-  { path: '/detection-management', component: DetectionManagement, meta: { breadcrumb: 'Keywords' } },
+  { path: '/keywords', component: DetectionManagement, meta: { breadcrumb: 'Keywords' } },
   { path: '/item-visibility', component: ItemVisibility, meta: { breadcrumb: 'Configuration' } },
 ]
 

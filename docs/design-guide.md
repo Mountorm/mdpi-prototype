@@ -9,7 +9,7 @@
 | 层级 | 技术 |
 |------|------|
 | 框架 | Vue 3 (Composition API, `<script setup>`) |
-| 路由 | Vue Router 4（Hash 模式） |
+| 路由 | Vue Router 4（History 模式） |
 | UI 组件库 | Element Plus 2.x |
 | 图标库 | lucide-vue-next（功能图标）、Material Icons / Material Symbols Outlined（操作图标） |
 | 样式方案 | Tailwind CSS 3 + 全局 CSS 变量 + scoped CSS |
@@ -34,7 +34,7 @@
 --color-muted: #f1f5f9;
 --color-muted-foreground: #64748b;
 --color-input: #e2e8f0;
---sidebar-width: 220px;
+--sidebar-width: 260px;
 ```
 
 ### 2.2 品牌主色
@@ -105,24 +105,44 @@ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 ### 4.1 整体框架
 
 ```
-Header（h-16 = 64px，固定顶部）
-├── Sidebar（220px，可折叠）
-└── main（flex-1 overflow-auto）
+Header（h-16 = 64px，position: fixed，left: 0，right: 0，z-index: 110）
+Sidebar（260px，position: fixed，top: 64px，height: calc(100vh - 64px)，z-index: 100，可折叠至 48px）
+main（margin-left 随 sidebar 宽度动态变化，margin-top: 64px，overflow-auto）
     ├── breadcrumb（px-4 py-2）
-    └── RouterView（pb-4 px-4）
+    ├── RouterView（pb-4 px-4）
+    └── footer（黑色背景 #363638）
 ```
 
-- 整体使用 `flex flex-col h-full`，内容区 `flex-1 overflow-auto`
-- 侧边栏折叠时 `width: 0`，CSS transition 动画 0.3s ease-in-out
+布局要点：
+- Header `z-index: 110`，覆盖 Sidebar（`z-index: 100`），logo 在 Header 左侧
+- Sidebar `position: fixed; top: 64px`，不再位于 Header 层级下
+- `html, body` 设置 `overflow: hidden`，滚动只发生在 `<main>` 内
+- main 容器用 `h-full overflow-hidden` 确保高度链完整，`<main>` 用 `flex-1 overflow-auto`
+- sidebar 折叠时宽度 48px（保留，不完全隐藏），展开 260px，transition 0.3s
 - 面包屑格式：`SuSy / 页面名称`
 
-### 4.2 内容区间距
+### 4.2 右侧浮动按钮组（`.common-right-button`）
+
+固定在页面右下角，包含三个圆形按钮，从上到下：
+- 滚动到顶部（`keyboard_arrow_up`）
+- 微信二维码（`qr_code`，仅展示，无交互）
+- 滚动到底部（`keyboard_arrow_down`）
+
+```
+position: fixed; right: 16px; bottom: 80px; z-index: 500
+按钮：36×36px 圆形，白底，border: 1px solid #e5e7eb，box-shadow
+hover：background #f0f4ff，color #0156ce，border-color #c7d7f5
+```
+
+滚动目标是 `<main>` 元素（`document.querySelector('main.flex-1')`），使用 `scrollTo({ behavior: 'smooth' })`。
+
+### 4.3 内容区间距
 
 - 页面内容外边距：`px-4 pb-4`
 - 面板之间间距：`mb-4`（16px）
 - 面板内部 padding：`panel-body` 为 `1rem`
 
-### 4.3 两列布局（ProcessManuscript 详情页）
+### 4.4 两列布局（ProcessManuscript 详情页）
 
 - 左列（`.left-column`）：静态元数据（What it is）
 - 右列（`.right-column`）：动态操作内容（What to do）
@@ -196,7 +216,41 @@ Header（h-16 = 64px，固定顶部）
 - 表头：`bg-gray-50`，`text-xs font-semibold`，`py-2 px-2`
 - 行：斑马纹（`table-striped`），悬停 `bg-gray-50`
 - 单元格：`py-2 px-2 text-xs`
-- 分页器：右对齐，`layout="total, sizes, prev, pager, next, jumper"`
+- 分页器：见 5.3.1
+
+### 5.3.1 分页器规范（统一标准）
+
+**所有列表页面的分页器必须使用以下统一写法，不得简化 layout。**
+
+```html
+<div class="data-table-pagination">
+  <el-pagination
+    v-model:current-page="currentPage"
+    v-model:page-size="pageSize"
+    :page-sizes="pageSizes"
+    :total="total"
+    layout="total, sizes, prev, pager, next, jumper"
+  />
+</div>
+```
+
+对应 script 初始化：
+
+```js
+const currentPage = ref(1)
+const pageSize    = ref(20)
+const pageSizes   = [20, 50, 100]
+```
+
+**重置规则**：任何会改变列表内容的筛选条件变化（分类切换、搜索词、状态筛选等），必须通过 `watch` 将 `currentPage` 重置为 1，禁止在事件回调里零散重置：
+
+```js
+watch([selectedCategory, searchQuery, filterStatus], () => {
+  currentPage.value = 1
+})
+```
+
+全局样式已在 `DataTable.vue` 的 scoped CSS 中通过 `:deep(.el-pagination)` 定义，其他页面直接使用 `.data-table-pagination` 容器类即可，无需重复覆盖。
 
 ### 5.4 Status Tabs（状态标签页）
 
@@ -220,15 +274,21 @@ Header（h-16 = 64px，固定顶部）
 
 ### 5.5 Sidebar（侧边栏）
 
-- 宽度：`var(--sidebar-width)` = 220px，背景白色
-- 分组标题：`color: #172b4d; font-size: 14px; font-weight: 600`，可点击折叠
-- 菜单项：`color: #626f86; font-size: 14px; padding: 0.5rem 0 0.5rem 0.6rem`
-- 激活项：`background: #e6eefa; color: #0156ce; font-weight: 500; border-radius: 4px`
-- 悬停：`background: #f8f9fd; border-radius: 4px`
+- 宽度：`var(--sidebar-width)` = 260px，折叠后 48px（保留宽度，不完全隐藏）
+- `position: fixed; top: 64px; height: calc(100vh - 64px); z-index: 100`
+- 背景色、文字色、hover/active 色均由主题对象通过 CSS 变量动态注入，支持 18 套主题切换
+- 主题切换入口：footer 左侧 `palette` 图标按钮，点击弹出选择面板（展开状态下可见）
+- 折叠状态：每个 group 显示首字母缩写，hover 时在右侧弹出 flyout 菜单（`<Teleport to="body">` + `z-index: 9999`，避免被 header 遮挡）
+- footer 高度 48px，左侧 feedback 图标 + palette 图标，右侧折叠/展开按钮
+- 滚动条：4px 细滚动条，`overflow-x: hidden` 防止展开动画期间出现横向滚动条
+- 主题对象结构：`{ name, bg, border, groupTitle, itemText, iconColor, activeBg, activeText, hoverBg }`
+- hover/active 样式通过 CSS 变量 `--sidebar-hover-bg` / `--sidebar-active-bg` 驱动，在 scoped CSS 的 `:hover` 伪类中使用
 
 ### 5.6 Header（顶部导航）
 
-- 高度：`h-16`（64px），背景白色，`border-bottom: 1px solid #e5e7eb`
+- 高度：`h-16`（64px），`position: fixed; top: 0; left: 0; right: 0; z-index: 110`
+- 背景白色，`border-bottom: 1px solid #e5e7eb`
+- 左侧显示 SuSy logo（`https://susy.mdpi.com/build/img/icon/SUSY_logo.svg?56d587c`，90×36px）
 - 导航链接悬停：底部 `border-b-2 border-[#1f6ad4]`，文字变 `#1f6ad4`
 - 主操作按钮：`background: #0156ce`，悬停 `#014bb5`，白色文字
 
@@ -305,12 +365,23 @@ background: #fee2e2; color: #dc2626;
 
 ## 八、图标使用规范
 
-### 8.1 Material Icons / Material Symbols Outlined
+**项目中所有图标必须且只能使用 Google Material Icons / Material Symbols，禁止使用 FontAwesome、Ant Design Icons 或任何其他图标库。**
 
-用于**操作类图标**（按钮内、行内操作）：
+### 8.1 Material Icons（`material-icons`）
+
+用于**操作类图标**（按钮内、行内操作、导航）：
 
 ```html
 <span class="material-icons" style="font-size: 20px;">menu</span>
+<span class="material-icons" style="font-size: 20px;">keyboard_arrow_up</span>
+<span class="material-icons" style="font-size: 20px;">qr_code</span>
+```
+
+### 8.2 Material Symbols Outlined（`material-symbols-outlined`）
+
+用于**功能性/状态类图标**，支持可变字体参数：
+
+```html
 <span class="material-symbols-outlined" style="font-size: 18px;">edit</span>
 <!-- 填充变体 -->
 <span class="material-symbols-outlined"
@@ -319,18 +390,18 @@ background: #fee2e2; color: #dc2626;
 </span>
 ```
 
-常用：`edit`、`save`、`delete`、`add_notes`、`bookmark`、`description`、`upload`、`menu`、`menu_open`、`chevron_right`
-
-### 8.2 lucide-vue-next
-
-用于**功能性/状态类图标**（检测结果、状态指示、导航辅助）：
-
-```vue
-import { XCircle, AlertTriangle, CheckCircle, UserCheck, RefreshCcw,
-         PencilLine, Trash2, ChevronDown, ChevronUp, Download, FileText } from 'lucide-vue-next'
+全局默认变体（已在 `index.html` 中设置）：
+```css
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
 ```
 
-常用：`XCircle`（错误）、`AlertTriangle`（警告）、`CheckCircle`（通过）、`UserCheck`（已确认）、`RefreshCcw`（重新检测）、`PencilLine`（编辑）、`Trash2`（删除）
+常用图标速查：
+- 操作：`edit` `save` `delete` `add` `upload` `download` `search`
+- 导航：`menu` `menu_open` `chevron_right` `keyboard_arrow_up` `keyboard_arrow_down`
+- 状态：`check_circle` `error` `warning` `info`
+- 其他：`feedback` `palette` `qr_code` `fingerprint` `privacy_tip` `flip_to_front` `flip_to_back`
 
 ---
 
@@ -458,7 +529,8 @@ const props = defineProps({
 
 ## 十三、路由规范
 
-- Hash 模式（`createWebHashHistory`）
+- History 模式（`createWebHistory`），URL 无 `#` 前缀
+- 生产部署需配置服务器 fallback（所有路径返回 `index.html`）
 - 每个路由必须配置 `meta.breadcrumb`
 - 路由路径使用 kebab-case
 
@@ -492,3 +564,6 @@ const props = defineProps({
 4. 禁止在行内 `style` 中写静态颜色值（应使用 CSS 变量或 Tailwind 类）
 5. 禁止混用两套图标库于同一语义场景（操作图标用 Material，状态图标用 lucide）
 6. 禁止在 Dialog 外的页面级表单使用 `label-position="top"`
+7. 禁止在 `html/body/#app` 上设置 `overflow: hidden`（会截断 main 的滚动），只在 `body` 上设置以阻止 body 级滚动条
+8. Sidebar flyout 菜单必须使用 `<Teleport to="body">` 渲染，避免被父级层叠上下文（`z-index: 100`）限制而被 Header 遮挡
+9. 禁止使用 FontAwesome、lucide-vue-next、Ant Design Icons 或任何非 Google Material 的图标库
