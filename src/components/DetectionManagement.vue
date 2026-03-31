@@ -34,11 +34,11 @@
         <div class="panel-header">
           <span class="panel-title">Keywords</span>
           <div class="dm-header-actions">
-            <el-button size="small" @click="triggerImport">
+            <el-button size="small" @click="openImportDialog">
               <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:2px;">upload</span>
               Import
             </el-button>
-            <input ref="importInputRef" type="file" accept=".txt,.csv" style="display:none" @change="handleImportFile" />
+            <input ref="importInputRef" type="file" accept=".csv,.xlsx,.xls" style="display:none" @change="handleImportFile" />
             <el-button size="small" type="primary" @click="openKeywordDialog()">Add Keyword</el-button>
           </div>
         </div>
@@ -136,12 +136,12 @@
       <el-form-item label="Name" required>
         <el-input v-model="catForm.display_name" placeholder="e.g. AI Generated Phrases" />
       </el-form-item>
-      <el-form-item v-if="editingCategory">
+      <!-- <el-form-item v-if="editingCategory">
         <template #label>
           <span>ID</span><span class="dm-label-hint">System-generated, cannot be changed</span>
         </template>
         <el-input v-model="catForm.id" disabled />
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item required>
         <template #label>
           <span>Match Type</span><span class="dm-label-hint">How keywords are matched against text</span>
@@ -194,28 +194,110 @@
     </template>
   </el-dialog>
 
-  <!-- Import Preview Dialog -->
-  <el-dialog v-model="importDialogVisible" title="Import Keywords" width="480px" :close-on-click-modal="false">
-    <div style="margin-bottom:12px;">
-      <p class="text-xs text-secondary" style="margin-bottom:8px;">
-        Importing <strong>{{ importPreview.length }}</strong> keyword(s) into category:
+  <!-- Import Dialog (step 1: instructions + upload / step 2: preview) -->
+  <el-dialog
+    v-model="importDialogVisible"
+    :title="importStep === 1 ? 'Import Keywords' : 'Import Keywords — Review'"
+    width="580px"
+    :close-on-click-modal="false"
+    @closed="resetImport"
+  >
+    <!-- Step 1: instructions + template + upload -->
+    <template v-if="importStep === 1">
+      <div class="import-step1">
+        <p class="text-xs text-secondary" style="margin-bottom:14px;">
+          Prepare your file using the template below. Each row should contain a keyword and its category.
+          Supported formats: <strong>.csv</strong>, <strong>.xlsx</strong>
+        </p>
+
+        <!-- Template preview
+        <div class="table-shell" style="margin-bottom:12px;">
+          <table class="w-full table-compact">
+            <thead class="bg-gray-50 border-b border-border-color">
+              <tr>
+                <th class="py-2 px-3 text-left text-xs font-semibold text-foreground">keyword</th>
+                <th class="py-2 px-3 text-left text-xs font-semibold text-foreground">category</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="row in templateSample" :key="row.keyword" class="border-b border-border-color">
+                <td class="py-1 px-3 text-xs text-foreground">{{ row.keyword }}</td>
+                <td class="py-1 px-3 text-xs text-secondary">{{ row.category }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div> -->
+
+        <div style="margin-bottom:16px;">
+          <el-button size="small" @click="downloadTemplate">
+            <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:2px;">download</span>
+            Download CSV Template
+          </el-button>
+        </div>
+
+        <!-- Upload area -->
+        <div
+          class="import-dropzone"
+          :class="{ 'import-dropzone--error': importFileError }"
+          @click="importInputRef?.click()"
+          @dragover.prevent
+          @drop.prevent="handleDropFile"
+        >
+          <span class="material-symbols-outlined" style="font-size:32px;color:#94a3b8;margin-bottom:8px;">upload_file</span>
+          <p class="text-xs" style="color:#374151;margin-bottom:4px;">Click to select or drag &amp; drop your file here</p>
+          <p class="text-xs text-secondary">Accepted: .csv, .xlsx, .xls</p>
+        </div>
+
+        <!-- Error message -->
+        <div v-if="importFileError" class="import-error-msg">
+          <span class="material-symbols-outlined" style="font-size:14px;vertical-align:middle;margin-right:4px;">error</span>
+          {{ importFileError }}
+        </div>
+      </div>
+    </template>
+
+    <!-- Step 2: preview table -->
+    <template v-else>
+      <p class="text-xs text-secondary" style="margin-bottom:12px;">
+        Found <strong>{{ importPreview.length }}</strong> keyword(s) in <strong>{{ importFileName }}</strong>.
+        Review the list below, then click Import to save.
       </p>
-      <el-select v-model="importCategoryId" placeholder="Select target category" size="small" class="w-full">
-        <el-option v-for="cat in categories" :key="cat.id" :label="cat.display_name" :value="cat.id" />
-      </el-select>
-    </div>
-    <div class="table-shell" style="max-height:240px;overflow-y:auto;">
-      <table class="w-full table-compact">
-        <tbody>
-          <tr v-for="(kw, i) in importPreview" :key="i" class="border-b border-border-color">
-            <td class="py-1 px-3 text-xs text-foreground">{{ kw }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+      <div class="table-shell" style="max-height:320px;overflow-y:auto;">
+        <table class="w-full table-compact">
+          <thead class="bg-gray-50 border-b border-border-color" style="position:sticky;top:0;z-index:1;">
+            <tr>
+              <th class="py-2 px-3 text-left text-xs font-semibold text-foreground" style="width:36px;">#</th>
+              <th class="py-2 px-3 text-left text-xs font-semibold text-foreground">Keyword</th>
+              <th class="py-2 px-3 text-left text-xs font-semibold text-foreground" style="width:260px;">Category</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, i) in importPreview" :key="i" class="border-b border-border-color hover:bg-gray-50">
+              <td class="py-1 px-3 text-xs text-secondary">{{ i + 1 }}</td>
+              <td class="py-1 px-3 text-xs text-foreground">{{ row.keyword }}</td>
+              <td class="py-1 px-3 text-xs">
+                <span v-if="row.category" class="py-1  text-xs text-foreground" style="font-size:11px;">{{ row.category }}</span>
+                <el-select v-else v-model="row.category_id" placeholder="Assign category" size="small" style="width:260px">
+                  <el-option v-for="cat in categories" :key="cat.id" :label="cat.display_name" :value="cat.id" />
+                </el-select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </template>
+
     <template #footer>
-      <el-button size="small" @click="importDialogVisible = false">Cancel</el-button>
-      <el-button type="primary" size="small" :disabled="!importCategoryId" @click="handleConfirmImport">Import</el-button>
+      <template v-if="importStep === 1">
+        <el-button size="small" @click="importDialogVisible = false">Cancel</el-button>
+      </template>
+      <template v-else>
+        <el-button size="small" @click="importStep = 1">Back</el-button>
+        <el-button size="small" @click="importDialogVisible = false">Discard</el-button>
+        <el-button type="primary" size="small" :disabled="importPreview.length === 0" @click="handleConfirmImport">
+          Import {{ importPreview.length }} Keywords
+        </el-button>
+      </template>
     </template>
   </el-dialog>
 
@@ -344,41 +426,114 @@ function getCountByCategory(id) { return keywords.value.filter(k => k.category_i
 function getCategoryName(id)    { return categories.value.find(c => c.id === id)?.display_name || id }
 
 // ── Import ──
-const importInputRef       = ref(null)
-const importDialogVisible  = ref(false)
-const importPreview        = ref([])
-const importCategoryId     = ref('')
+const importInputRef      = ref(null)
+const importDialogVisible = ref(false)
+const importStep          = ref(1)   // 1 = instructions, 2 = preview
+const importPreview       = ref([])
+const importFileName      = ref('')
+const importFileError     = ref('')
 
-function triggerImport() {
-  importCategoryId.value = selectedCategory.value || ''
-  importInputRef.value?.click()
+const templateSample = [
+  { keyword: 'pharmaceutical sponsor', category: 'Potential Commercial Interests' },
+  { keyword: 'delve into',             category: 'AI Generated Phrases' },
+  { keyword: 'paper mill',             category: 'Controversial Topics' },
+  { keyword: 'hidden text',            category: 'Harmful Topics' },
+  { keyword: 'insert title here',      category: 'Template Phrase' },
+]
+
+function openImportDialog() {
+  importStep.value = 1
+  importDialogVisible.value = true
+}
+
+function resetImport() {
+  importStep.value = 1
+  importPreview.value = []
+  importFileName.value = ''
+  importFileError.value = ''
+}
+
+function downloadTemplate() {
+  const header = 'keyword,category'
+  const rows = templateSample.map(r => `${r.keyword},${r.category}`)
+  const csv = [header, ...rows].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url; a.download = 'keywords-template.csv'; a.click()
+  URL.revokeObjectURL(url)
+}
+
+function handleDropFile(e) {
+  const file = e.dataTransfer?.files?.[0]
+  if (file) processImportFile(file)
 }
 
 function handleImportFile(e) {
   const file = e.target.files?.[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = (ev) => {
-    const lines = (ev.target.result || '')
-      .split(/\r?\n/)
-      .map(l => l.trim())
-      .filter(Boolean)
-    importPreview.value = lines
-    importDialogVisible.value = true
-  }
-  reader.readAsText(file)
-  // reset so same file can be re-selected
+  if (file) processImportFile(file)
   e.target.value = ''
 }
 
+function processImportFile(file) {
+  importFileError.value = ''
+  const allowed = /\.(csv|xlsx|xls)$/i
+  if (!allowed.test(file.name)) {
+    importFileError.value = `"${file.name}" is not a supported file type. Please upload a .csv or .xlsx file.`
+    return
+  }
+
+  importFileName.value = file.name
+
+  // Demo: xlsx/xls → mock parsed rows
+  if (/\.(xlsx|xls)$/i.test(file.name)) {
+    importPreview.value = [
+      { keyword: 'pharmaceutical sponsor', category: 'Potential Commercial Interests', category_id: '1' },
+      { keyword: 'delve into',             category: 'AI Generated Phrases',           category_id: '6' },
+      { keyword: 'paper mill',             category: 'Controversial Topics',           category_id: '2' },
+      { keyword: 'hidden text',            category: 'Harmful Topics',                 category_id: '3' },
+      { keyword: 'insert title here',      category: 'Template Phrase',                category_id: '4' },
+    ]
+    importStep.value = 2
+    return
+  }
+
+  // CSV → real parse
+  const reader = new FileReader()
+  reader.onload = (ev) => {
+    const lines = (ev.target.result || '').split(/\r?\n/).map(l => l.trim()).filter(Boolean)
+    const firstLine = lines[0]?.toLowerCase() || ''
+    const hasHeader = firstLine.includes('keyword') && firstLine.includes('category')
+    const dataLines = hasHeader ? lines.slice(1) : lines
+
+    importPreview.value = dataLines.map(line => {
+      const parts = line.split(',')
+      const keyword = parts[0]?.trim() || ''
+      const categoryName = parts[1]?.trim() || ''
+      const matchedCat = categories.value.find(c =>
+        c.display_name.toLowerCase() === categoryName.toLowerCase()
+      )
+      return {
+        keyword,
+        category: matchedCat?.display_name || categoryName || '',
+        category_id: matchedCat?.id || '',
+      }
+    }).filter(r => r.keyword)
+
+    importStep.value = 2
+  }
+  reader.readAsText(file)
+}
+
 function handleConfirmImport() {
-  importPreview.value.forEach(kw => {
-    if (!keywords.value.find(k => k.keyword.toLowerCase() === kw.toLowerCase() && k.category_id === importCategoryId.value)) {
-      keywords.value.push({ id: nextId++, keyword: kw, category_id: importCategoryId.value, is_active: true })
+  importPreview.value.forEach(row => {
+    const catId = row.category_id
+    if (!catId || !row.keyword) return
+    if (!keywords.value.find(k => k.keyword.toLowerCase() === row.keyword.toLowerCase() && k.category_id === catId)) {
+      keywords.value.push({ id: nextId++, keyword: row.keyword, category_id: catId, is_active: true })
     }
   })
   importDialogVisible.value = false
-  importPreview.value = []
 }
 
 // ── Category dialog ──
@@ -436,4 +591,30 @@ function handleDeleteKeyword() {
 
 <style scoped>
 :deep(.el-cascader) { width: 100%; }
+
+.import-dropzone {
+  border: 2px dashed var(--color-border);
+  border-radius: 6px;
+  padding: 28px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+.import-dropzone:hover {
+  border-color: #0156ce;
+  background: #eef4ff;
+}
+.import-dropzone--error {
+  border-color: #dc2626;
+  background: #fff5f5;
+}
+.import-error-msg {
+  margin-top: 10px;
+  font-size: 12px;
+  color: #dc2626;
+  display: flex;
+  align-items: center;
+}
 </style>

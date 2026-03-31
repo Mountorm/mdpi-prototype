@@ -227,7 +227,7 @@ export const detectionConfig = [
 {
   id: "section-4",
   title: "Ethicality",
-  description: "Per-file ethical analysis including authors, references, AI writing, and peer review reports.",
+  description: "",
   items: [
     {
       id: "item-4-1",
@@ -270,7 +270,7 @@ export const detectionConfig = [
 {
   id: "section-5",
   title: "Ethicality Plan B",
-  description: "Alternative ethicality design — expandable author/reference details, AI score-based assessment.",
+  description: "",
   items: [
     {
       id: "item-5-1",
@@ -284,15 +284,15 @@ export const detectionConfig = [
             name: "Dr. John Smith",
             email: "john.smith@example.com",
             issues: [
-              { level: "severe", text: "Issue description" },
-              { level: "warning", text: "Issue description" },
+              { level: "severe", text: "Card" },
+              { level: "warning", text: "Poor Topic Similarity" },
             ]
           },
           {
             name: "Prof. Li Wei",
             email: "li.wei@example.com",
             issues: [
-              { level: "warning", text: "Issue description" },
+              { level: "warning", text: "Poor Topic Similarity" },
             ]
           },
         ],
@@ -303,7 +303,7 @@ export const detectionConfig = [
             doi: "10.1042/bj0870078",
             problems: [
               { text: "Out of scope", level: "warning" },
-              { text: "Out-of-context reference", level: "warning" },
+              { text: "Out of context", level: "warning" },
             ]
           },
           {
@@ -311,22 +311,18 @@ export const detectionConfig = [
             title: "Reduced expression of citrate synthase leads to excessive superoxide formation and cell apoptosis",
             doi: "10.1038/s41419-020-2638-4",
             problems: [
-              { text: "Out-of-context reference", level: "warning" },
-              { text: "Retracted", level: "severe" },
-            ]
-          },
-          {
-            index: "[17]",
-            title: "Lightweight MDSCA-Net: an end-to-end CAN bus fault diagnosis framework",
-            doi: "10.1016/j.ress.2023.109512",
-            problems: [
-              { text: "Retracted", level: "severe" },
+              { text: "Outdated", level: "warning" },
+              { text: "Corrected", level: "severe" },
             ]
           },
         ],
         ai_writing: {
-          manuscript_score: 45,
-          peer_review_reports: [{ score: 18 }, { score: 22 }]
+          maybe_ai_proportion: 0.28,
+          likely_ai_proportion: 0.20,
+          peer_review_reports: [
+            { maybe_ai_proportion: 0.12, likely_ai_proportion: 0.08 },
+            { maybe_ai_proportion: 0.18, likely_ai_proportion: 0.22 }
+          ]
         }
       }
     },
@@ -340,8 +336,11 @@ export const detectionConfig = [
         authors: [],
         references: [],
         ai_writing: {
-          manuscript_score: 8,
-          peer_review_reports: [{ score: 5 }]
+          maybe_ai_proportion: 0.03,
+          likely_ai_proportion: 0.02,
+          peer_review_reports: [
+            { maybe_ai_proportion: 0.04, likely_ai_proportion: 0.01 }
+          ]
         }
       }
     }

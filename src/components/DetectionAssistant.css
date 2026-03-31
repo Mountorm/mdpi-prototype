@@ -454,6 +454,7 @@
 .da-ethb__issue-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 3px; }
 .da-ethb__issue-item { display: flex; align-items: flex-start; gap: 6px; }
 .da-ethb__issue-text { font-size: 13px; color: #334155; line-height: 1.4; }
+.da-ethb__issue-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
 
 /* Plan B — Reference block */
 .da-ethb__ref-block { display: flex; flex-direction: column; gap: 4px; }
@@ -463,3 +464,21 @@
 .da-ethb__doi-link { font-size: 11px; color: #0156ce; text-decoration: none; margin-left: 6px; }
 .da-ethb__doi-link:hover { text-decoration: underline; }
 .da-ethb__ref-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+
+/* ============================================================
+   AI Writing — Donut row container (AiWritingDonut cells)
+   ============================================================ */
+
+.da-eth__row--donuts {
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.da-donut-row {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  flex: 1;
+  padding-top: 4px;
+}

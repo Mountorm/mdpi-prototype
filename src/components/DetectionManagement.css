@@ -82,7 +82,7 @@
   cursor: pointer; color: #94a3b8; transition: all 0.15s; padding: 0;
 }
 .dm-icon-btn:hover { background: #f1f5f9; color: #475569; }
-.dm-icon-btn--danger:hover { background: #fee2e2; color: #dc2626; }
+.dm-icon-btn--danger:hover { color: #dc2626; }
 
 .dm-row--selected { background: #f0f6ff !important; }
 

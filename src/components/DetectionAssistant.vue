@@ -168,45 +168,21 @@
                         <template v-else>
                           <span v-if="item.ethicality.issues_summary.references.severe_warning_count" class="da-eth__tag da-eth__tag--error">{{ item.ethicality.issues_summary.references.severe_warning_count }} </span>
                           <span v-if="item.ethicality.issues_summary.references.warning_count" class="da-eth__tag da-eth__tag--warning">{{ item.ethicality.issues_summary.references.warning_count }} </span>
-                          <span class="da-eth__label">这里可以展开具体的有问题的reference（待确定）</span>
+                          <!-- <span class="da-eth__label">这里可以展开具体的有问题的reference（待确定）</span> -->
                         </template>
                       </div>
                       <div v-if="isDetailsOpen(item.id + '-refs') && item.ethicality.references_html" class="da-html da-eth__html" v-html="item.ethicality.references_html" />
                       <!-- AI Writing + Peer Review Reports -->
-                      <div class="da-eth__row da-eth__row--ai">
+                      <div class="da-eth__row da-eth__row--donuts">
                         <span class="da-eth__label">AI Writing</span>
-                        <div class="da-eth__ai-table">
-                          <div class="da-eth__ai-row">
-                            <span class="da-eth__ai-row-label">Manuscript</span>
-                            <div class="da-eth__ai-bar">
-                              <div class="da-eth__ai-seg da-eth__ai-seg--human" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.human_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--maybe" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.maybe_ai_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--likely" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.likely_ai_proportion) }" />
-                            </div>
-                            <div class="da-eth__ai-nums">
-                              <span class="da-eth__ai-num da-eth__ai-num--human">{{ pct100(item.ethicality.issues_summary.ai_writing.human_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--maybe">{{ pct100(item.ethicality.issues_summary.ai_writing.maybe_ai_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--likely">{{ pct100(item.ethicality.issues_summary.ai_writing.likely_ai_proportion) }}</span>
-                            </div>
-                          </div>
-                          <div v-for="(rpt, ri) in item.ethicality.issues_summary.peer_review_reports" :key="ri" class="da-eth__ai-row">
-                            <span class="da-eth__ai-row-label">Report {{ ri + 1 }}</span>
-                            <div class="da-eth__ai-bar">
-                              <div class="da-eth__ai-seg da-eth__ai-seg--human" :style="{ width: pct100(rpt.human_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--maybe" :style="{ width: pct100(rpt.maybe_ai_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--likely" :style="{ width: pct100(rpt.likely_ai_proportion) }" />
-                            </div>
-                            <div class="da-eth__ai-nums">
-                              <span class="da-eth__ai-num da-eth__ai-num--human">{{ pct100(rpt.human_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--maybe">{{ pct100(rpt.maybe_ai_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--likely">{{ pct100(rpt.likely_ai_proportion) }}</span>
-                            </div>
-                          </div>
-                          <div class="da-eth__ai-legend-row">
-                            <span class="da-eth__ai-dot da-eth__ai-dot--human" />Low
-                            <span class="da-eth__ai-dot da-eth__ai-dot--maybe" />Medium
-                            <span class="da-eth__ai-dot da-eth__ai-dot--likely" />High
-                          </div>
+                        <div class="da-donut-row">
+                          <AiWritingDonut :ai-writing="item.ethicality.issues_summary.ai_writing" label="Manuscript" />
+                          <AiWritingDonut
+                            v-for="(rpt, ri) in item.ethicality.issues_summary.peer_review_reports"
+                            :key="ri"
+                            :ai-writing="rpt"
+                            :label="`Report ${ri + 1}`"
+                          />
                         </div>
                       </div>
                     </div>
@@ -237,12 +213,12 @@
                                 {{ author.name }}
                                 <span v-if="author.email" class="da-ethb__author-email">&lt;{{ author.email }}&gt;</span>
                               </div>
-                              <ul class="da-ethb__issue-list">
-                                <li v-for="(issue, ii) in author.issues" :key="ii" class="da-ethb__issue-item">
-                                  <span :class="['da-eth__tag', issue.level === 'severe' ? 'da-eth__tag--error' : 'da-eth__tag--warning']">Issue Name</span>
-                                  <span class="da-ethb__issue-text">{{ issue.text }}</span>
-                                </li>
-                              </ul>
+                              <div class="da-ethb__issue-tags">
+                                <span v-for="(issue, ii) in author.issues" :key="ii"
+                                  :class="['da-eth__tag', issue.level === 'severe' ? 'da-eth__tag--error' : 'da-eth__tag--warning']">
+                                  {{ issue.text }}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </template>
@@ -281,34 +257,19 @@
                         </template>
                       </div>
 
-                      <!-- AI Writing -->
-                      <div class="da-eth__row da-eth__row--col">
+                      <!-- AI Writing (Plan B) -->
+                      <div class="da-eth__row da-eth__row--donuts da-eth__row--col">
                         <div class="da-eth__label-row">
                           <span class="da-eth__label">AI Writing</span>
-                          <template v-if="item.ethicalityB.ai_writing.manuscript_score < 20 && item.ethicalityB.ai_writing.peer_review_reports.every(r=>r.score < 20)">
-                            <span class="da-eth__ok">No issues</span>
-                          </template>
-                          <template v-else>
-                            <span v-if="[item.ethicalityB.ai_writing.manuscript_score, ...item.ethicalityB.ai_writing.peer_review_reports.map(r=>r.score)].filter(s=>s>=40).length" class="da-eth__tag da-eth__tag--error">{{ [item.ethicalityB.ai_writing.manuscript_score, ...item.ethicalityB.ai_writing.peer_review_reports.map(r=>r.score)].filter(s=>s>=40).length }}</span>
-                            <span v-if="[item.ethicalityB.ai_writing.manuscript_score, ...item.ethicalityB.ai_writing.peer_review_reports.map(r=>r.score)].filter(s=>s>=20&&s<40).length" class="da-eth__tag da-eth__tag--warning">{{ [item.ethicalityB.ai_writing.manuscript_score, ...item.ethicalityB.ai_writing.peer_review_reports.map(r=>r.score)].filter(s=>s>=20&&s<40).length }}</span>
-                          </template>
                         </div>
-                        <button class="da-rb__details-toggle da-eth__sub-toggle" @click="toggleDetails(item.id + '-ai-all')">
-                          <ChevronUp v-if="isDetailsOpen(item.id + '-ai-all')" class="h-3.5 w-3.5" />
-                          <ChevronDown v-else class="h-3.5 w-3.5" />
-                          {{ isDetailsOpen(item.id + '-ai-all') ? 'Hide' : 'Show' }} Details
-                        </button>
-                        <div v-if="isDetailsOpen(item.id + '-ai-all')" class="da-ethb__list da-eth__sub-content">
-                          <div class="da-ethb__ai-chip-row">
-                            <span class="da-ethb__ai-chip-label">Manuscript</span>
-                            <span :class="['da-ethb__score-badge', item.ethicalityB.ai_writing.manuscript_score >= 40 ? 'da-ethb__score-badge--severe' : item.ethicalityB.ai_writing.manuscript_score >= 20 ? 'da-ethb__score-badge--warning' : 'da-ethb__score-badge--ok']">{{ item.ethicalityB.ai_writing.manuscript_score }}</span>
-                            <span class="da-ethb__ai-chip-hint">{{ item.ethicalityB.ai_writing.manuscript_score >= 40 ? 'High' : item.ethicalityB.ai_writing.manuscript_score >= 20 ? 'Medium' : 'Low' }}</span>
-                          </div>
-                          <div v-for="(rpt, ri) in item.ethicalityB.ai_writing.peer_review_reports" :key="ri" class="da-ethb__ai-chip-row">
-                            <span class="da-ethb__ai-chip-label">Report {{ ri + 1 }}</span>
-                            <span :class="['da-ethb__score-badge', rpt.score >= 40 ? 'da-ethb__score-badge--severe' : rpt.score >= 20 ? 'da-ethb__score-badge--warning' : 'da-ethb__score-badge--ok']">{{ rpt.score }}</span>
-                            <span class="da-ethb__ai-chip-hint">{{ rpt.score >= 40 ? 'High' : rpt.score >= 20 ? 'Medium' : 'Low' }}</span>
-                          </div>
+                        <div class="da-donut-row">
+                          <AiWritingDonut :ai-writing="item.ethicalityB.ai_writing" label="Manuscript" />
+                          <AiWritingDonut
+                            v-for="(rpt, ri) in item.ethicalityB.ai_writing.peer_review_reports"
+                            :key="ri"
+                            :ai-writing="rpt"
+                            :label="`Report ${ri + 1}`"
+                          />
                         </div>
                       </div>
                     </div>
@@ -461,7 +422,7 @@
                           <span v-if="item.ethicality.issues_summary.references.warning_count" class="da-eth__tag da-eth__tag--warning">
                             {{ item.ethicality.issues_summary.references.warning_count }} 
                           </span>
-                          <span class="da-eth__label">这里可以展开具体的有问题的reference（待确定）</span>
+                          <!-- <span class="da-eth__label">这里可以展开具体的有问题的reference（待确定）</span> -->
                           <!-- <button v-if="item.ethicality.references_html" class="da-rb__details-toggle" @click="toggleDetails(item.id + '-refs')">
                             <ChevronUp v-if="isDetailsOpen(item.id + '-refs')" class="h-3.5 w-3.5" />
                             <ChevronDown v-else class="h-3.5 w-3.5" />
@@ -470,42 +431,17 @@
                         </template>
                       </div>
                       <div v-if="isDetailsOpen(item.id + '-refs') && item.ethicality.references_html" class="da-html da-eth__html" v-html="item.ethicality.references_html" />
-                      <!-- AI Writing + Peer Review Reports: 紧凑比例行 -->
-                      <div class="da-eth__row da-eth__row--ai">
+                      <!-- AI Writing + Peer Review Reports -->
+                      <div class="da-eth__row da-eth__row--donuts">
                         <span class="da-eth__label">AI Writing</span>
-                        <div class="da-eth__ai-table">
-                          <div class="da-eth__ai-row">
-                            <span class="da-eth__ai-row-label">Manuscript</span>
-                            <div class="da-eth__ai-bar">
-                              <div class="da-eth__ai-seg da-eth__ai-seg--human" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.human_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--maybe" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.maybe_ai_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--likely" :style="{ width: pct100(item.ethicality.issues_summary.ai_writing.likely_ai_proportion) }" />
-                            </div>
-                            <div class="da-eth__ai-nums">
-                              <span class="da-eth__ai-num da-eth__ai-num--human">{{ pct100(item.ethicality.issues_summary.ai_writing.human_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--maybe">{{ pct100(item.ethicality.issues_summary.ai_writing.maybe_ai_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--likely">{{ pct100(item.ethicality.issues_summary.ai_writing.likely_ai_proportion) }}</span>
-                            </div>
-                          </div>
-                          <div v-for="(rpt, ri) in item.ethicality.issues_summary.peer_review_reports" :key="ri" class="da-eth__ai-row">
-                            <span class="da-eth__ai-row-label">Report {{ ri + 1 }}</span>
-                            <div class="da-eth__ai-bar">
-                              <div class="da-eth__ai-seg da-eth__ai-seg--human" :style="{ width: pct100(rpt.human_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--maybe" :style="{ width: pct100(rpt.maybe_ai_proportion) }" />
-                              <div class="da-eth__ai-seg da-eth__ai-seg--likely" :style="{ width: pct100(rpt.likely_ai_proportion) }" />
-                            </div>
-                            <div class="da-eth__ai-nums">
-                              <span class="da-eth__ai-num da-eth__ai-num--human">{{ pct100(rpt.human_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--maybe">{{ pct100(rpt.maybe_ai_proportion) }}</span>
-                              <span class="da-eth__ai-num da-eth__ai-num--likely">{{ pct100(rpt.likely_ai_proportion) }}</span>
-                            </div>
-                          </div>
-                          <!-- 图例 -->
-                          <div class="da-eth__ai-legend-row">
-                            <span class="da-eth__ai-dot da-eth__ai-dot--human" />Low
-                            <span class="da-eth__ai-dot da-eth__ai-dot--maybe" />Medium
-                            <span class="da-eth__ai-dot da-eth__ai-dot--likely" />High
-                          </div>
+                        <div class="da-donut-row">
+                          <AiWritingDonut :ai-writing="item.ethicality.issues_summary.ai_writing" label="Manuscript" />
+                          <AiWritingDonut
+                            v-for="(rpt, ri) in item.ethicality.issues_summary.peer_review_reports"
+                            :key="ri"
+                            :ai-writing="rpt"
+                            :label="`Report ${ri + 1}`"
+                          />
                         </div>
                       </div>
                     </div>
@@ -562,6 +498,7 @@
 import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
 import { AlertTriangle, Calendar, CheckCircle, ChevronDown, ChevronUp, Download, FileText, Loader2, RefreshCcw, UserCheck, XCircle } from 'lucide-vue-next'
 import { detectionConfig } from '../migrated-detection/detection-config.js'
+import AiWritingDonut from './AiWritingDonut.vue'
 import './DetectionAssistant.css'
 
 const statusMap = {
@@ -600,9 +537,9 @@ function getEthStats(item) {
   if (item.ethicalityB) {
     const b = item.ethicalityB
     const severe = b.authors.reduce((n, a) => n + a.issues.filter(i => i.level === 'severe').length, 0)
-      + b.references.filter(r => r.level === 'severe').length
-    const warning = b.authors.reduce((n, a) => n + a.issues.filter(i => i.level === 'warning').length, 0)
-      + b.references.filter(r => r.level === 'warning').length
+      + b.references.flatMap(r => r.problems).filter(p => p.level === 'severe').length
+    const warning = b.authors.reduce((n, a) => n + a.issues.filter(i => i.level !== 'severe').length, 0)
+      + b.references.flatMap(r => r.problems).filter(p => p.level !== 'severe').length
     return { severe, warning }
   }
   return { severe: 0, warning: 0 }
@@ -739,4 +676,6 @@ function handleDownload(item) {
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
 }
+
+
 </script>
