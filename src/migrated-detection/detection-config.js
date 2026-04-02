@@ -15,7 +15,6 @@ export const detectionConfig = [
 {
   id: "section-1",
   title: "Manuscript",
-  description: "Manuscript-related automated checks",
   items: [
     {
       id: "item-1-1",
@@ -99,7 +98,6 @@ export const detectionConfig = [
 {
   id: "section-2",
   title: "Author",
-  description: "Author identity, history, and compliance checks",
   items: [
     {
       id: "item-2-1",
@@ -213,7 +211,6 @@ export const detectionConfig = [
 {
   id: "section-3",
   title: "Review Report",
-  description: "Automated checks for reviewer reports",
   items: [
     {
       id: "item-3-1",
@@ -227,7 +224,6 @@ export const detectionConfig = [
 {
   id: "section-4",
   title: "Ethicality",
-  description: "",
   items: [
     {
       id: "item-4-1",
@@ -270,7 +266,6 @@ export const detectionConfig = [
 {
   id: "section-5",
   title: "Ethicality Plan B",
-  description: "",
   items: [
     {
       id: "item-5-1",

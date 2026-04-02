@@ -20,22 +20,22 @@
     <!-- 统计概览条 -->
     <div class="da-stats-bar">
       <div class="da-stat da-stat--error">
-        <XCircle class="da-stat__icon" />
+        <span class="material-symbols-outlined da-stat__icon">cancel</span>
         <span class="da-stat__num">{{ overallStats.error }}</span>
         <span class="da-stat__label">Severe</span>
       </div>
       <div class="da-stat da-stat--warning">
-        <AlertTriangle class="da-stat__icon" />
+        <span class="material-symbols-outlined da-stat__icon">warning</span>
         <span class="da-stat__num">{{ overallStats.warning }}</span>
         <span class="da-stat__label">Warning</span>
       </div>
       <div class="da-stat da-stat--success">
-        <CheckCircle class="da-stat__icon" />
+        <span class="material-symbols-outlined da-stat__icon">check_circle</span>
         <span class="da-stat__num">{{ overallStats.healthy }}</span>
         <span class="da-stat__label">Passed</span>
       </div>
       <div class="da-stat da-stat--confirmed">
-        <UserCheck class="da-stat__icon" />
+        <span class="material-symbols-outlined da-stat__icon">how_to_reg</span>
         <span class="da-stat__num">{{ overallStats.confirmed }}</span>
         <span class="da-stat__label">Resolved</span>
       </div>
@@ -72,14 +72,14 @@
                 <span v-if="section.description" class="da-section__desc">{{ section.description }}</span>
               </div>
               <el-button text size="small" :loading="sectionLoading === section.id" @click="handleRedetectSection(section.id)">
-                <template #icon><RefreshCcw class="h-3.5 w-3.5" /></template>
+                <template #icon><span class="material-symbols-outlined" style="font-size:14px;">refresh</span></template>
                 Re-detect
               </el-button>
             </div>
 
             <!-- 检测项列表 -->
             <div v-if="sectionLoading === section.id" class="da-section__loading">
-              <Loader2 class="h-4 w-4 animate-spin" />
+              <span class="material-symbols-outlined da-spinner-icon">progress_activity</span>
             </div>
             <div v-else class="da-items">
               <template v-for="item in getFilteredItems(section.items)" :key="item.id">
@@ -89,8 +89,7 @@
                     <!-- 文件名行：点击折叠/展开 -->
                     <div class="da-eth-file__head" @click="toggleEthItem(item.id)">
                       <div class="da-eth-file__left">
-                        <ChevronDown v-if="!ethExpandedItems[item.id]" class="da-eth-file__chevron" />
-                        <ChevronUp v-else class="da-eth-file__chevron" />
+                        <span class="material-symbols-outlined da-eth-file__chevron">{{ ethExpandedItems[item.id] ? 'expand_less' : 'expand_more' }}</span>
                         <span class="da-eth-file__name">{{ item.title }}</span>
                         <template v-if="getEthStats(item).severe || getEthStats(item).warning">
                           <span v-if="getEthStats(item).severe" class="da-eth__tag da-eth__tag--error">{{ getEthStats(item).severe }} </span>
@@ -100,14 +99,15 @@
                       </div>
                       <div class="da-item__actions" @click.stop>
                         <button class="da-view-report-btn" @click="handleViewReport(item)">
-                          <FileText class="h-3.5 w-3.5" />
+                          <span class="material-symbols-outlined" style="font-size:14px;">description</span>
                           View Report
                         </button>
                         <el-button size="small" plain @click="handleDownload(item)">
-                          <template #icon><Download class="h-3.5 w-3.5" /></template>
+                          <template #icon><span class="material-symbols-outlined" style="font-size:14px;">download</span></template>
                           Download
                         </el-button>
                         <el-popover
+                          v-if="item.status !== 'healthy'"
                           :ref="el => setPopoverRef(item.id, el)"
                           placement="bottom-end"
                           :width="340"
@@ -117,7 +117,7 @@
                         >
                           <template #reference>
                             <button :class="['da-confirm-btn', item.confirmed ? 'da-confirm-btn--done' : '']">
-                              <UserCheck v-if="item.confirmed" class="h-3.5 w-3.5" />
+                              <span v-if="item.confirmed" class="material-symbols-outlined" style="font-size:14px;">how_to_reg</span>
                               <span>{{ item.confirmed ? 'Resolved' : 'Resolve' }}</span>
                             </button>
                           </template>
@@ -203,8 +203,7 @@
                         </div>
                         <template v-if="item.ethicalityB.authors.length">
                           <button class="da-rb__details-toggle da-eth__sub-toggle" @click="toggleDetails(item.id + '-authors-all')">
-                            <ChevronUp v-if="isDetailsOpen(item.id + '-authors-all')" class="h-3.5 w-3.5" />
-                            <ChevronDown v-else class="h-3.5 w-3.5" />
+                            <span class="material-symbols-outlined" style="font-size:14px;">{{ isDetailsOpen(item.id + '-authors-all') ? 'expand_less' : 'expand_more' }}</span>
                             {{ isDetailsOpen(item.id + '-authors-all') ? 'Hide' : 'Show' }} Details
                           </button>
                           <div v-if="isDetailsOpen(item.id + '-authors-all')" class="da-ethb__list da-eth__sub-content">
@@ -238,8 +237,7 @@
                         </div>
                         <template v-if="item.ethicalityB.references.length">
                           <button class="da-rb__details-toggle da-eth__sub-toggle" @click="toggleDetails(item.id + '-refs-all')">
-                            <ChevronUp v-if="isDetailsOpen(item.id + '-refs-all')" class="h-3.5 w-3.5" />
-                            <ChevronDown v-else class="h-3.5 w-3.5" />
+                            <span class="material-symbols-outlined" style="font-size:14px;">{{ isDetailsOpen(item.id + '-refs-all') ? 'expand_less' : 'expand_more' }}</span>
                             {{ isDetailsOpen(item.id + '-refs-all') ? 'Hide' : 'Show' }} Details
                           </button>
                           <div v-if="isDetailsOpen(item.id + '-refs-all')" class="da-ethb__list da-eth__sub-content">
@@ -275,8 +273,8 @@
                     </div>
 
                     <div v-if="item.confirmed" class="da-item__confirmed-info da-item__confirmed-info--eth">
-                      <UserCheck class="h-3 w-3" />{{ item.confirmed.user }}
-                      <Calendar class="h-3 w-3 ml-2" />{{ item.confirmed.time }}
+                      <span class="material-symbols-outlined" style="font-size:12px;">how_to_reg</span>{{ item.confirmed.user }}
+                      <span class="material-symbols-outlined ml-2" style="font-size:12px;">calendar_today</span>{{ item.confirmed.time }}
                       <span v-if="item.confirmed.note" class="da-item__confirmed-note">{{ item.confirmed.note }}</span>
                     </div>
                   </div>
@@ -289,7 +287,7 @@
 
                   <!-- 图标 -->
                   <div class="da-item__icon-wrap">
-                    <component :is="getItemStatus(item).icon" :class="['da-item__icon', getItemStatus(item).color]" />
+                    <span class="material-symbols-outlined da-item__icon" :class="getItemStatus(item).color">{{ getItemStatus(item).icon }}</span>
                   </div>
 
                   <!-- 主内容 -->
@@ -302,16 +300,17 @@
                       <div class="da-item__actions">
                         <template v-if="item.ethicality">
                           <button class="da-view-report-btn" @click="handleViewReport(item)">
-                            <FileText class="h-3.5 w-3.5" />
+                            <span class="material-symbols-outlined" style="font-size:14px;">description</span>
                             View Report
                           </button>
                           <el-button size="small" plain @click="handleDownload(item)">
-                            <template #icon><Download class="h-3.5 w-3.5" /></template>
+                            <template #icon><span class="material-symbols-outlined" style="font-size:14px;">download</span></template>
                             Download
                           </el-button>
                         </template>
                         <!-- Resolve popover -->
                         <el-popover
+                          v-if="item.status !== 'healthy'"
                           :ref="el => setPopoverRef(item.id, el)"
                           placement="bottom-end"
                           :width="340"
@@ -321,7 +320,7 @@
                         >
                           <template #reference>
                             <button :class="['da-confirm-btn', item.confirmed ? 'da-confirm-btn--done' : '']">
-                              <UserCheck v-if="item.confirmed" class="h-3.5 w-3.5" />
+                              <span v-if="item.confirmed" class="material-symbols-outlined" style="font-size:14px;">how_to_reg</span>
                               <span>{{ item.confirmed ? 'Resolved' : 'Resolve' }}</span>
                             </button>
                           </template>
@@ -372,8 +371,7 @@
                         <!-- details 展开 -->
                         <template v-if="rb.details?.length || rb.htmlContent">
                           <button class="da-rb__details-toggle" @click="toggleDetails(item.id + '-' + ri)">
-                            <ChevronUp v-if="isDetailsOpen(item.id + '-' + ri)" class="h-3.5 w-3.5" />
-                            <ChevronDown v-else class="h-3.5 w-3.5" />
+                            <span class="material-symbols-outlined" style="font-size:14px;">{{ isDetailsOpen(item.id + '-' + ri) ? 'expand_less' : 'expand_more' }}</span>
                             {{ isDetailsOpen(item.id + '-' + ri) ? 'Hide' : 'Show' }} Details
                             <span v-if="rb.detailsType !== 'html' && rb.details">({{ rb.details.length }})</span>
                           </button>
@@ -448,8 +446,8 @@
 
                     <!-- 解决信息 -->
                     <div v-if="item.confirmed" class="da-item__confirmed-info">
-                      <UserCheck class="h-3 w-3" />{{ item.confirmed.user }}
-                      <Calendar class="h-3 w-3 ml-2" />{{ item.confirmed.time }}
+                      <span class="material-symbols-outlined" style="font-size:12px;">how_to_reg</span>{{ item.confirmed.user }}
+                      <span class="material-symbols-outlined ml-2" style="font-size:12px;">calendar_today</span>{{ item.confirmed.time }}
                       <span v-if="item.confirmed.note" class="da-item__confirmed-note">{{ item.confirmed.note }}</span>
                     </div>
                   </div>
@@ -457,7 +455,7 @@
               </template>
 
               <div v-if="getFilteredItems(section.items).length === 0" class="da-section__empty">
-                <CheckCircle class="h-4 w-4 text-green-500" />
+                <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;">check_circle</span>
                 All checks passed in this section
               </div>
             </div>
@@ -496,16 +494,15 @@
 
 <script setup>
 import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
-import { AlertTriangle, Calendar, CheckCircle, ChevronDown, ChevronUp, Download, FileText, Loader2, RefreshCcw, UserCheck, XCircle } from 'lucide-vue-next'
 import { detectionConfig } from '../migrated-detection/detection-config.js'
 import AiWritingDonut from './AiWritingDonut.vue'
 import './DetectionAssistant.css'
 
 const statusMap = {
-  healthy: { icon: CheckCircle, color: 'text-green-500', label: 'Passed', tagType: 'success' },
-  warning: { icon: AlertTriangle, color: 'text-yellow-500', label: 'Warning', tagType: 'warning' },
-  error: { icon: XCircle, color: 'text-red-500', label: 'Failed', tagType: 'danger' },
-  resolved: { icon: UserCheck, color: 'text-gray-400', label: 'Resolved', tagType: 'info' },
+  healthy:  { icon: 'check_circle',  color: 'text-green-500',  label: 'Passed',   tagType: 'success' },
+  warning:  { icon: 'warning',        color: 'text-yellow-500', label: 'Warning',  tagType: 'warning' },
+  error:    { icon: 'cancel',         color: 'text-red-500',    label: 'Failed',   tagType: 'danger'  },
+  resolved: { icon: 'how_to_reg',     color: 'text-gray-400',   label: 'Resolved', tagType: 'info'    },
 }
 
 const sections = ref(detectionConfig.map((s) => ({
@@ -558,7 +555,7 @@ const showOnlyIssues = ref(false)
 const activeSection = ref(sections.value[0]?.id)
 
 const resolveOptions = [
-  'Resolved with responsible person, the detected problem will not affect the paper processing',
+  'Confirmed with responsible person, the detected problem will not affect the paper processing',
   'Have solved the problems and it can be continued',
   'The detection is wrong',
 ]

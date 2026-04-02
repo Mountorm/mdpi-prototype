@@ -48,7 +48,7 @@
   z-index: 19;
 }
 .da-stat { display: flex; align-items: center; gap: 5px; }
-.da-stat__icon { width: 16px; height: 16px; }
+.da-stat__icon { font-size: 17px; line-height: 1; }
 .da-stat__num { font-size: 16px; font-weight: 700; }
 .da-stat__label { font-size: 13px; color: #626f86; }
 .da-stat--error .da-stat__num { color: #dc2626; }
@@ -153,7 +153,7 @@
 .da-item--confirmed .da-item__stripe { background: #d1d5db; }
 
 .da-item__icon-wrap { padding: 16px 10px 13px 12px; flex-shrink: 0; }
-.da-item__icon { width: 17px; height: 17px; }
+.da-item__icon { width: 20px; height: 20px; font-size: 20px; line-height: 1; }
 
 .da-item__body { flex: 1; min-width: 0; padding: 11px 14px 11px 0; }
 .da-item__top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 7px; }
@@ -208,6 +208,7 @@
 /* Loading */
 .da-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; gap: 12px; color: #64748b; font-size: 13px; }
 .da-spinner { width: 32px; height: 32px; border: 3px solid #e5e7eb; border-top-color: #0156ce; border-radius: 50%; animation: da-spin 0.8s linear infinite; }
+.da-spinner-icon { font-size: 28px; color: #0156ce; animation: da-spin 0.8s linear infinite; }
 @keyframes da-spin { to { transform: rotate(360deg); } }
 
 /* Confirm / Resolve button */
@@ -411,7 +412,7 @@
   min-width: 0;
   flex-wrap: wrap;
 }
-.da-eth-file__chevron { width: 14px; height: 14px; color: #94a3b8; flex-shrink: 0; }
+.da-eth-file__chevron { font-size: 14px; color: #94a3b8; flex-shrink: 0; line-height: 1; }
 .da-eth-file__name { font-size: 14px; font-weight: 600; color: #172b4d; }
 
 .da-item--eth .da-eth { padding: 0 14px 12px 14px; }
