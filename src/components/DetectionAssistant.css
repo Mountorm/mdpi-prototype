@@ -33,6 +33,56 @@
 .da-header__actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .da-toggle { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #626f86; }
 
+/* File version indicator */
+.da-header__sep { color: #d1d5db; font-size: 16px; }
+.da-file-ver__icon { font-size: 15px; color: #94a3b8; }
+.da-file-ver__name--btn {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 13px; color: #374151; background: none; border: none;
+  cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.15s;
+}
+
+/* File Version Dialog */
+.da-fvd {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 520px;
+  overflow-y: auto;
+  margin: -4px 0;
+}
+
+.da-fvd__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.da-fvd__row:hover { border-color: #c7d7f5; background: #f8faff; }
+.da-fvd__row--active { border-color: #0156ce; background: #eef4ff; }
+
+.da-fvd__row-icon { font-size: 20px; color: #94a3b8; flex-shrink: 0; align-self: flex-start; margin-top: 1px; }
+.da-fvd__row--active .da-fvd__row-icon { color: #0156ce; }
+
+.da-fvd__row-body { flex: 1; min-width: 0; }
+.da-fvd__row-top { display: flex; align-items: center; gap: 8px; margin-bottom: 3px; }
+.da-fvd__row-name { font-size: 13px; font-weight: 600; color: #172b4d; }
+.da-fvd__row--active .da-fvd__row-name { color: #0156ce; }
+
+.da-fvd__row-meta {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 4px;
+  font-size: 12px; color: #94a3b8; line-height: 1.4;
+}
+.da-fvd__meta-actor { font-weight: 600; color: #626f86; }
+.da-fvd__row-type { font-size: 12px; color: #626f86; margin-bottom: 2px; }
+.da-fvd__meta-sep { color: #d1d5db; }
+
+.da-fvd__row-check { font-size: 18px; color: #0156ce; flex-shrink: 0; }
+
 /* Stats bar */
 .da-stats-bar {
   background: #fff;
@@ -133,6 +183,7 @@
 .da-section__desc { font-size: 13px; color: #94a3b8; }
 .da-section__loading { padding: 20px; display: flex; justify-content: center; color: #94a3b8; }
 .da-section__empty { padding: 14px 16px; display: flex; align-items: center; gap: 6px; font-size: 14px; color: #64748b; }
+.da-section__empty--muted { color: #94a3b8; font-size: 13px; align-items: flex-start; }
 
 /* Items */
 .da-items { display: flex; flex-direction: column; }
@@ -169,6 +220,13 @@
 .da-item--error .da-rb__result { color: #dc2626; }
 .da-item--warning .da-rb__result { color: #d97706; }
 .da-item--confirmed .da-rb__result { color: #6a7282; }
+
+/* Inline result slot elements */
+.da-rb__link { color: #0156ce; text-decoration: underline; font-weight: 600; }
+.da-rb__link:hover { color: #014bb5; }
+
+.da-rb__tooltip-icon { font-size: 18px; opacity: 0.5; vertical-align: middle; cursor: default; }
+.da-rb__tooltip-icon:hover { opacity: 0.85; }
 
 .da-rb__author {
   display: flex;
@@ -414,6 +472,11 @@
 }
 .da-eth-file__chevron { font-size: 14px; color: #94a3b8; flex-shrink: 0; line-height: 1; }
 .da-eth-file__name { font-size: 14px; font-weight: 600; color: #172b4d; }
+.da-eth-file__latest {
+  display: inline-flex; align-items: center; gap: 2px;
+  font-size: 11px; font-weight: 600; color: #16a34a;
+  background: #dcfce7; padding: 1px 6px; border-radius: 9999px;
+}
 
 .da-item--eth .da-eth { padding: 0 14px 12px 14px; }
 
@@ -483,3 +546,24 @@
   flex: 1;
   padding-top: 4px;
 }
+
+.da-file-ver__name--btn:hover { background: #f1f5f9; color: #0156ce; }
+.da-file-ver__tag--latest  { font-size: 12px; color: #16a34a; font-weight: 500; }
+.da-file-ver__tag--outdated { font-size: 12px; color: #d97706; font-weight: 500; }
+
+.da-apply-btn {
+  margin-left:10px;
+  width:58px;
+  height: 22px;
+  
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: 4px;
+  border: 1px solid #0156ce;
+  background: #0156ce;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.da-apply-btn:hover { background: #014bb5; border-color: #014bb5; }
+.da-apply-btn--disabled { opacity: 0.45; cursor: not-allowed; }

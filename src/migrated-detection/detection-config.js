@@ -177,8 +177,23 @@ export const detectionConfig = [
       description: "Monitors submission frequency.",
       status: "error",
       results: [
-        { author: { name: "Dr. Michael Chen", email: "michael.chen@example.com" }, result: "8 manuscripts submitted in last 3 months (≥ 6)", detailsType: 'list', details: ["nutrients-4201234", "ijms-4198765", "cells-4187654"] },
-        { author: { name: "Prof. Sarah Johnson", email: "sarah.johnson@example.com" }, result: "7 manuscripts submitted in last 3 months (≥ 6)", detailsType: 'list', details: ["water-4211111", "genes-4209876"] }
+        {
+          author: { name: "Dr. Michael Chen", email: "michael.chen@example.com" },
+          result: "manuscripts submitted in last 3 months (≥ 6) {{guide}} {{icon}}",
+          resultSlots: {
+            guide: { type: 'link', content: 'view guide',  href: '#' },
+            icon: { type: 'tooltip', tooltip: 'hover text',icon: 'info' },
+
+          },
+          detailsType: 'list',
+          details: ["nutrients-4201234", "ijms-4198765", "cells-4187654"]
+        },
+        {
+          author: { name: "Prof. Sarah Johnson", email: "sarah.johnson@example.com" },
+          result: "7 manuscripts submitted in last 3 months (≥ 6)",
+          detailsType: 'list',
+          details: ["water-4211111", "genes-4209876"]
+        }
       ]
     },
     {
@@ -218,126 +233,6 @@ export const detectionConfig = [
       description: "Ensures reviewer comments remain professional.",
       status: "error",
       results: [{ result: "Sensitive language detected in review report", detailsType: 'list', details: ["incompetent analysis", "unprofessional conclusion"] }]
-    }
-  ]
-},
-{
-  id: "section-4",
-  title: "Ethicality",
-  items: [
-    {
-      id: "item-4-1",
-      title: "fileName_1.pdf",
-      description: "",
-      status: "error",
-      results: [],
-      ethicality: {
-        issues_summary: {
-          authors: { warning_count: 2, severe_warning_count: 1 },
-          references: { warning_count: 3, severe_warning_count: 0 },
-          ai_writing: { human_proportion: 0.52, maybe_ai_proportion: 0.28, likely_ai_proportion: 0.20 },
-          peer_review_reports: [
-            { human_proportion: 0.80, maybe_ai_proportion: 0.12, likely_ai_proportion: 0.08 },
-            { human_proportion: 0.45, maybe_ai_proportion: 0.30, likely_ai_proportion: 0.25 }
-          ]
-        }
-      }
-    },
-    {
-      id: "item-4-2",
-      title: "fileName_2.pdf",
-      description: "",
-      status: "healthy",
-      results: [],
-      ethicality: {
-        issues_summary: {
-          authors: { warning_count: 0, severe_warning_count: 0 },
-          references: { warning_count: 0, severe_warning_count: 0 },
-          ai_writing: { human_proportion: 0.95, maybe_ai_proportion: 0.03, likely_ai_proportion: 0.02 },
-          peer_review_reports: [
-            { human_proportion: 0.92, maybe_ai_proportion: 0.05, likely_ai_proportion: 0.03 }
-          ]
-        },
-        references_html: null
-      }
-    }
-  ]
-},
-{
-  id: "section-5",
-  title: "Ethicality Plan B",
-  items: [
-    {
-      id: "item-5-1",
-      title: "fileName_1.pdf",
-      description: "",
-      status: "error",
-      results: [],
-      ethicalityB: {
-        authors: [
-          {
-            name: "Dr. John Smith",
-            email: "john.smith@example.com",
-            issues: [
-              { level: "severe", text: "Card" },
-              { level: "warning", text: "Poor Topic Similarity" },
-            ]
-          },
-          {
-            name: "Prof. Li Wei",
-            email: "li.wei@example.com",
-            issues: [
-              { level: "warning", text: "Poor Topic Similarity" },
-            ]
-          },
-        ],
-        references: [
-          {
-            index: "[1]",
-            title: "Studies of the mechanism by which hepatic citrate synthase activity increases in vitamin B12 deprivation.",
-            doi: "10.1042/bj0870078",
-            problems: [
-              { text: "Out of scope", level: "warning" },
-              { text: "Out of context", level: "warning" },
-            ]
-          },
-          {
-            index: "[12]",
-            title: "Reduced expression of citrate synthase leads to excessive superoxide formation and cell apoptosis",
-            doi: "10.1038/s41419-020-2638-4",
-            problems: [
-              { text: "Outdated", level: "warning" },
-              { text: "Corrected", level: "severe" },
-            ]
-          },
-        ],
-        ai_writing: {
-          maybe_ai_proportion: 0.28,
-          likely_ai_proportion: 0.20,
-          peer_review_reports: [
-            { maybe_ai_proportion: 0.12, likely_ai_proportion: 0.08 },
-            { maybe_ai_proportion: 0.18, likely_ai_proportion: 0.22 }
-          ]
-        }
-      }
-    },
-    {
-      id: "item-5-2",
-      title: "fileName_2.pdf",
-      description: "",
-      status: "healthy",
-      results: [],
-      ethicalityB: {
-        authors: [],
-        references: [],
-        ai_writing: {
-          maybe_ai_proportion: 0.03,
-          likely_ai_proportion: 0.02,
-          peer_review_reports: [
-            { maybe_ai_proportion: 0.04, likely_ai_proportion: 0.01 }
-          ]
-        }
-      }
     }
   ]
 }

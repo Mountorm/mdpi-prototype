@@ -5,6 +5,14 @@
       <div class="da-header__left">
         <span class="da-page-title">Detection Assistant</span>
         <span class="da-ms-id">nutrients-4224751</span>
+        <span class="da-header__sep">|</span>
+        <span class="material-symbols-outlined da-file-ver__icon">description</span>
+        <button class="da-file-ver__name da-file-ver__name--btn" @click="fileVerDialogVisible = true">
+          {{ currentFileVersion.name }}
+          <span class="material-symbols-outlined" style="font-size:13px;">unfold_more</span>
+        </button>
+        <span v-if="currentFileVersion.isLatest" class="da-file-ver__tag da-file-ver__tag--latest">Latest</span>
+        <span v-else class="da-file-ver__tag da-file-ver__tag--outdated">Not latest</span>
       </div>
       <div class="da-header__actions">
         <div class="da-toggle">
@@ -83,14 +91,14 @@
             </div>
             <div v-else class="da-items">
               <template v-for="item in getFilteredItems(section.items)" :key="item.id">
-                <!-- Ethicality / Ethicality Plan B item：可折叠，无状态图标 -->
-                <div v-if="item.ethicality || item.ethicalityB" class="da-item da-item--eth">
+                <!-- Ethicality item：可折叠，无状态图标 -->
+                <div v-if="(item.ethicality || item.ethicalityB) && /\.pdf$/i.test(currentFileVersion.name)" class="da-item da-item--eth">
                   <div class="da-item__body">
                     <!-- 文件名行：点击折叠/展开 -->
                     <div class="da-eth-file__head" @click="toggleEthItem(item.id)">
                       <div class="da-eth-file__left">
                         <span class="material-symbols-outlined da-eth-file__chevron">{{ ethExpandedItems[item.id] ? 'expand_less' : 'expand_more' }}</span>
-                        <span class="da-eth-file__name">{{ item.title }}</span>
+                        <span class="da-eth-file__name">{{ currentFileVersion.name }}</span>
                         <template v-if="getEthStats(item).severe || getEthStats(item).warning">
                           <span v-if="getEthStats(item).severe" class="da-eth__tag da-eth__tag--error">{{ getEthStats(item).severe }} </span>
                           <span v-if="getEthStats(item).warning" class="da-eth__tag da-eth__tag--warning">{{ getEthStats(item).warning }} </span>
@@ -98,7 +106,7 @@
                         <span v-else class="da-eth__ok">No issues</span>
                       </div>
                       <div class="da-item__actions" @click.stop>
-                        <button class="da-view-report-btn" @click="handleViewReport(item)">
+                        <button v-if="currentFileVersion.isLatest" class="da-view-report-btn" @click="handleViewReport(item)">
                           <span class="material-symbols-outlined" style="font-size:14px;">description</span>
                           View Report
                         </button>
@@ -280,8 +288,8 @@
                   </div>
                 </div>
 
-                <!-- 普通 item -->
-                <div v-else :class="['da-item', `da-item--${item.confirmed ? 'confirmed' : item.status}`]">
+                <!-- 普通 item（排除 ethicality item） -->
+                <div v-else-if="!item.ethicality && !item.ethicalityB" :class="['da-item', `da-item--${item.confirmed ? 'confirmed' : item.status}`]">
                   <!-- 状态指示条 -->
                   <!-- <div class="da-item__stripe" /> -->
 
@@ -362,7 +370,18 @@
                         class="da-rb"
                       >
                         <!-- result 文字 -->
-                        <p class="da-rb__result">{{ rb.result }}</p>
+                        <p class="da-rb__result">
+                          <template v-if="rb.resultSlots">
+                            <template v-for="(seg, si) in parseResultSlots(rb.result, rb.resultSlots)" :key="si">
+                              <span v-if="seg.type === 'text'">{{ seg.content }}</span>
+                              <a v-else-if="seg.type === 'link'" :href="seg.href" :target="seg.target || '_blank'" class="da-rb__link">{{ seg.content }}</a>
+                              <el-tooltip v-else-if="seg.type === 'tooltip'" :content="seg.tooltip" placement="top" :show-after="200">
+                                <span class="da-rb__tooltip-icon material-symbols-outlined">{{ seg.icon || 'info' }}</span>
+                              </el-tooltip>
+                            </template>
+                          </template>
+                          <template v-else>{{ rb.result }}</template>
+                        </p>
                         <!-- 作者行（可选），用上边框分隔 -->
                         <div v-if="rb.author" class="da-rb__author">
                           <span class="da-rb__author-name">{{ rb.author.name }}</span>
@@ -458,6 +477,11 @@
                 <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;">check_circle</span>
                 All checks passed in this section
               </div>
+              <!-- Ethicality section：当前文件非 PDF 时显示提示 -->
+              <div v-if="section.items.some(i => i.ethicality || i.ethicalityB) && !(/\.pdf$/i.test(currentFileVersion.name))" class="da-section__empty da-section__empty--muted">
+                <span class="material-symbols-outlined" style="font-size:16px;color:#94a3b8;">info</span>
+                No results available for the currently selected file. Switch to another file to view the ethicality.
+              </div>
             </div>
           </div>
         </template>
@@ -475,8 +499,10 @@
             <span class="da-nav__title">{{ section.title }}</span>
             <div class="da-nav__badges">
               <template v-if="section.items.some(i => i.ethicality || i.ethicalityB)">
-                <span v-if="getEthNavStats(section.items).severe" class="da-badge da-badge--error">{{ getEthNavStats(section.items).severe }}</span>
-                <span v-if="getEthNavStats(section.items).warning" class="da-badge da-badge--warning">{{ getEthNavStats(section.items).warning }}</span>
+                <template v-if="/\.pdf$/i.test(currentFileVersion.name)">
+                  <span v-if="getEthNavStats(section.items).severe" class="da-badge da-badge--error">{{ getEthNavStats(section.items).severe }}</span>
+                  <span v-if="getEthNavStats(section.items).warning" class="da-badge da-badge--warning">{{ getEthNavStats(section.items).warning }}</span>
+                </template>
               </template>
               <template v-else>
                 <span v-if="getStats(section.items).error" class="da-badge da-badge--error">{{ getStats(section.items).error }}</span>
@@ -489,6 +515,34 @@
       </nav>
     </div>
   </div>
+
+  <!-- File Version Dialog -->
+  <el-dialog v-model="fileVerDialogVisible" title="Manuscript Files" width="720px" :close-on-click-modal="false">
+    <div class="da-fvd">
+      <div v-for="(log, i) in fileVersionLog" :key="i"
+        :class="['da-fvd__row', { 'da-fvd__row--active': fileVerSelected === log.name }]"
+        @click="fileVerSelected = log.name"
+      >
+        <span class="material-symbols-outlined da-fvd__row-icon">description</span>
+        <div class="da-fvd__row-body">
+          <div class="da-fvd__row-top">
+            <span class="da-fvd__row-name">{{ log.name }}</span>
+            <span v-if="i === 0" class="da-file-ver__tag--latest">Latest</span>
+          </div>
+          <div class="da-fvd__row-meta">
+            <span>{{ log.time }}</span>
+            <span class="da-fvd__meta-sep">·</span>
+            <span class="da-fvd__meta-actor">{{ log.actor }}</span>
+          </div>
+        </div>
+        <span v-if="fileVerSelected === log.name" class="material-symbols-outlined da-fvd__row-check">check_circle</span>
+      </div>
+    </div>
+    <template #footer>
+      <el-button size="small" @click="fileVerDialogVisible = false">Cancel</el-button>
+      <button :class="['da-apply-btn', { 'da-apply-btn--disabled': fileVerSelected === currentFileVersion.name }]" :disabled="fileVerSelected === currentFileVersion.name" @click="handleApplyVersion">Apply</button>
+    </template>
+  </el-dialog>
 </template>
 
 
@@ -505,18 +559,91 @@ const statusMap = {
   resolved: { icon: 'how_to_reg',     color: 'text-gray-400',   label: 'Resolved', tagType: 'info'    },
 }
 
-const sections = ref(detectionConfig.map((s) => ({
-  ...s,
-  items: s.items.map((i) => ({ ...i, confirmed: undefined }))
-})))
+// ── Ethicality 写死数据 ──
+const ethicalityData = {
+  issues_summary: {
+    authors: { warning_count: 2, severe_warning_count: 1 },
+    references: { warning_count: 3, severe_warning_count: 0 },
+    ai_writing: { human_proportion: 0.52, maybe_ai_proportion: 0.28, likely_ai_proportion: 0.20 },
+    peer_review_reports: [
+      { human_proportion: 0.80, maybe_ai_proportion: 0.12, likely_ai_proportion: 0.08 },
+      { human_proportion: 0.45, maybe_ai_proportion: 0.30, likely_ai_proportion: 0.25 },
+    ],
+  },
+}
 
-// ethicality item 折叠状态：默认展开每个 section 中第一个 ethicality/ethicalityB item
+const ethicalityBData = {
+  authors: [
+    {
+      name: 'Dr. John Smith', email: 'john.smith@example.com',
+      issues: [
+        { level: 'severe',  text: 'Card' },
+        { level: 'warning', text: 'Poor Topic Similarity' },
+      ],
+    },
+    {
+      name: 'Prof. Li Wei', email: 'li.wei@example.com',
+      issues: [{ level: 'warning', text: 'Poor Topic Similarity' }],
+    },
+  ],
+  references: [
+    {
+      index: '[1]',
+      title: 'Studies of the mechanism by which hepatic citrate synthase activity increases in vitamin B12 deprivation.',
+      doi: '10.1042/bj0870078',
+      problems: [
+        { text: 'Out of scope',   level: 'warning' },
+        { text: 'Out of context', level: 'warning' },
+      ],
+    },
+    {
+      index: '[12]',
+      title: 'Reduced expression of citrate synthase leads to excessive superoxide formation and cell apoptosis',
+      doi: '10.1038/s41419-020-2638-4',
+      problems: [
+        { text: 'Outdated',   level: 'warning' },
+        { text: 'Corrected',  level: 'severe'  },
+      ],
+    },
+  ],
+  ai_writing: {
+    maybe_ai_proportion: 0.28,
+    likely_ai_proportion: 0.20,
+    peer_review_reports: [
+      { maybe_ai_proportion: 0.12, likely_ai_proportion: 0.08 },
+      { maybe_ai_proportion: 0.18, likely_ai_proportion: 0.22 },
+    ],
+  },
+}
+
+const ethicalitySectionId = 'section-eth'
+const ethicalityItemId    = 'item-eth-1'
+const ethicalityBItemId   = 'item-eth-b-1'
+
+const sections = ref([
+  ...detectionConfig.map((s) => ({
+    ...s,
+    items: s.items.map((i) => ({ ...i, confirmed: undefined }))
+  })),
+  {
+    id: ethicalitySectionId,
+    title: 'Ethicality',
+    items: [
+      { id: ethicalityItemId,  title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData  },
+      { id: ethicalityBItemId, title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData },
+    ],
+  },
+])
+
+// ethicality item 折叠状态：默认展开第一个
 const ethExpandedItems = reactive((() => {
   const map = {}
   detectionConfig.forEach(s => {
     const ethItems = s.items.filter(i => i.ethicality || i.ethicalityB)
     ethItems.forEach((item, idx) => { map[item.id] = idx === 0 })
   })
+  map[ethicalityItemId]  = true
+  map[ethicalityBItemId] = false
   return map
 })())
 
@@ -553,6 +680,34 @@ const loading = ref(false)
 const sectionLoading = ref(null)
 const showOnlyIssues = ref(false)
 const activeSection = ref(sections.value[0]?.id)
+
+// 页面级文件版本
+const currentFileVersion = ref({ name: 'peer-review.v1.pdf', isLatest: false })
+
+const fileVerDialogVisible = ref(false)
+const fileVerSelected = ref(currentFileVersion.value.name)
+
+const fileVersionOptions = [
+  { name: 'manuscript.v3.docx',  fileType: 'Manuscript (Word/ZIP)',    isPdf: false },
+  { name: 'peer-review.v2.pdf',  fileType: 'Manuscript (PDF Version)', isPdf: true  },
+]
+
+const fileVersionLog = [
+  { name: 'peer-review.v2.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
+  { name: 'manuscript.v3.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
+  { name: 'manuscript.v2.zip',    fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-05 14:22:10', actor: 'Maura Zhao uploaded at Peer review' },
+  { name: 'manuscript.v2.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 10:40:59', actor: 'Maura Zhao uploaded at Peer review' },
+  { name: 'peer-review.v1.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-02 10:37:24', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
+  { name: 'manuscript.v1.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 04:57:01', actor: 'Evelyn Du uploaded at Upload step 0' },
+]
+
+function handleApplyVersion() {
+  const isPdf = /\.pdf$/i.test(fileVerSelected.value)
+  const isLatest = fileVerSelected.value === fileVersionLog[0]?.name
+  currentFileVersion.value = { name: fileVerSelected.value, isLatest, isPdf }
+  fileVerDialogVisible.value = false
+  handleRedetectAll()
+}
 
 const resolveOptions = [
   'Confirmed with responsible person, the detected problem will not affect the paper processing',
@@ -629,6 +784,19 @@ function getItemStatus(item) {
 const expandedDetails = reactive({})
 function toggleDetails(itemId) { expandedDetails[itemId] = !expandedDetails[itemId] }
 function isDetailsOpen(itemId) { return !!expandedDetails[itemId] }
+
+// 解析 result 模板字符串，将 {{key}} 替换为对应的 slot 节点
+function parseResultSlots(result, slots) {
+  const parts = result.split(/({{[^}]+}})/)
+  return parts.map(part => {
+    const match = part.match(/^{{(.+)}}$/)
+    if (match) {
+      const key = match[1]
+      return slots[key] ? { ...slots[key] } : { type: 'text', content: part }
+    }
+    return { type: 'text', content: part }
+  }).filter(seg => seg.content !== '')
+}
 
 function scrollToSection(id) {
   activeSection.value = id
