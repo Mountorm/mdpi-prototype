@@ -66,6 +66,15 @@
           <p>Running detection analysis...</p>
         </div>
 
+        <div v-else-if="detectionBanner === 'pending'" class="da-loading da-loading--pending">
+          <span class="material-symbols-outlined da-loading__icon">hourglass_top</span>
+          <p>Detection in progress for <b>{{ currentFileVersion.name }}</b></p>
+          <p class="da-loading__sub">This file hasn't been analyzed yet. Results will be available shortly.</p>
+          <p v-if="prevFileVersionName" class="da-loading__sub">
+            <button class="da-inline-link" @click="switchToPrevVersion">View previous file's results</button>
+          </p>
+        </div>
+
         <template v-else>
           <div
             v-for="section in sections"
@@ -486,8 +495,8 @@
           </div>
         </template>
       </div>
-      <!-- 右侧 section 导航 -->
-      <nav class="da-nav">
+      <!-- 右侧 section 导航：loading 中或未检测时隐藏 -->
+      <nav v-if="!loading && detectionBanner !== 'pending'" class="da-nav">
         <div class="da-nav__label">Sections</div>
         <div
           v-for="section in sections"
@@ -525,10 +534,10 @@
       >
         <span class="material-symbols-outlined da-fvd__row-icon">description</span>
         <div class="da-fvd__row-body">
-          <div class="da-fvd__row-top">
-            <span class="da-fvd__row-name">{{ log.name }}</span>
-            <span v-if="i === 0" class="da-file-ver__tag--latest">Latest</span>
-          </div>
+            <div class="da-fvd__row-top">
+              <span class="da-fvd__row-name">{{ log.name }}</span>
+              <span v-if="i === 0" class="da-file-ver__tag--latest">Latest</span>
+            </div>
           <div class="da-fvd__row-meta">
             <span>{{ log.time }}</span>
             <span class="da-fvd__meta-sep">·</span>
@@ -682,30 +691,61 @@ const showOnlyIssues = ref(false)
 const activeSection = ref(sections.value[0]?.id)
 
 // 页面级文件版本
-const currentFileVersion = ref({ name: 'peer-review.v1.pdf', isLatest: false })
+const currentFileVersion = ref({ name: 'peer-review-v1.pdf', isLatest: false })
 
 const fileVerDialogVisible = ref(false)
 const fileVerSelected = ref(currentFileVersion.value.name)
 
 const fileVersionOptions = [
-  { name: 'manuscript.v3.docx',  fileType: 'Manuscript (Word/ZIP)',    isPdf: false },
+  { name: 'manuscript-v3.docx',  fileType: 'Manuscript (Word/ZIP)',    isPdf: false },
   { name: 'peer-review.v2.pdf',  fileType: 'Manuscript (PDF Version)', isPdf: true  },
 ]
 
 const fileVersionLog = [
-  { name: 'peer-review.v2.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
-  { name: 'manuscript.v3.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
-  { name: 'manuscript.v2.zip',    fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-05 14:22:10', actor: 'Maura Zhao uploaded at Peer review' },
-  { name: 'manuscript.v2.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 10:40:59', actor: 'Maura Zhao uploaded at Peer review' },
-  { name: 'peer-review.v1.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-02 10:37:24', actor: 'Maura Zhao uploaded at Editor Ajax Upload File' },
-  { name: 'manuscript.v1.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 04:57:01', actor: 'Evelyn Du uploaded at Upload step 0' },
+  { name: 'peer-review-v2.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File',  detected: true },
+  { name: 'manuscript-v3.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-08 08:05:27', actor: 'Maura Zhao uploaded at Editor Ajax Upload File',  detected: true  },
+  { name: 'manuscript-v2.zip',    fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-05 14:22:10', actor: 'Maura Zhao uploaded at Peer review',               detected: true  },
+  { name: 'manuscript-undetected.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 10:40:59', actor: 'Maura Zhao uploaded at Peer review',               detected: false },
+  { name: 'peer-review-v1.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-02 10:37:24', actor: 'Maura Zhao uploaded at Editor Ajax Upload File',  detected: true  },
+  { name: 'manuscript-v1.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 04:57:01', actor: 'Evelyn Du uploaded at Upload step 0',              detected: true  },
 ]
 
+// 检测状态 banner：null | 'pending'
+const detectionBanner = ref(null)
+// 切换版本前的上一个版本名（用于"查看旧版本"）
+const prevFileVersionName = ref(null)
+
 function handleApplyVersion() {
+  const selected = fileVersionLog.find(f => f.name === fileVerSelected.value)
   const isPdf = /\.pdf$/i.test(fileVerSelected.value)
   const isLatest = fileVerSelected.value === fileVersionLog[0]?.name
+
+  prevFileVersionName.value = currentFileVersion.value.name
   currentFileVersion.value = { name: fileVerSelected.value, isLatest, isPdf }
   fileVerDialogVisible.value = false
+  detectionBanner.value = null
+
+  if (selected?.detected) {
+    // 已检测过：短暂 loading 后直接显示
+    handleRedetectAll()
+  } else {
+    // 未检测过：显示异步提示 banner，不触发 loading
+    detectionBanner.value = 'pending'
+  }
+}
+
+function dismissBanner() {
+  detectionBanner.value = null
+}
+
+function switchToPrevVersion() {
+  if (!prevFileVersionName.value) return
+  const prev = fileVersionLog.find(f => f.name === prevFileVersionName.value)
+  if (!prev) return
+  const isPdf = /\.pdf$/i.test(prev.name)
+  const isLatest = prev.name === fileVersionLog[0]?.name
+  currentFileVersion.value = { name: prev.name, isLatest, isPdf }
+  detectionBanner.value = null
   handleRedetectAll()
 }
 
