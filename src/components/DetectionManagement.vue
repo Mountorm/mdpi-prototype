@@ -327,12 +327,12 @@ import './DetectionManagement.css'
 
 const scopeOptions = [
   { value: 'manuscript', label: 'Manuscript', children: [
-    { value: 'manuscript.title',    label: 'Title' },
-    { value: 'manuscript.abstract', label: 'Abstract' },
-    { value: 'manuscript.keywords', label: 'Keywords' },
-    { value: 'manuscript.body',     label: 'Body' },
-    { value: 'manuscript.funds',    label: 'Funds' },
-    { value: 'manuscript.conflict', label: 'Potential Conflict' },
+    { value: 'manuscript.title',    label: 'Title (SuSy)' },
+    { value: 'manuscript.abstract', label: 'Abstract (SuSy)' },
+    { value: 'manuscript.keywords', label: 'Keywords (SuSy)' },
+    { value: 'manuscript.body',     label: 'Body (File)' },
+    { value: 'manuscript.funds',    label: 'Funds (SuSy)' },
+    { value: 'manuscript.conflict', label: 'Potential Conflict (SuSy)' },
   ]},
   { value: 'author', label: 'Author', children: [
     { value: 'author.affiliation', label: 'Affiliation' },

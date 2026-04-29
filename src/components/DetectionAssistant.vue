@@ -7,12 +7,18 @@
         <span class="da-ms-id">nutrients-4224751</span>
         <span class="da-header__sep">|</span>
         <span class="material-symbols-outlined da-file-ver__icon">description</span>
+        <span class="da-file-ver__name">{{ currentFileVersion.name }}</span>
+        <button class="da-refresh-btn" title="Get latest file version" @click="handleRefreshFile">
+          <span class="material-symbols-outlined" :class="{ 'da-refresh-btn--spin': refreshing }">refresh</span>
+        </button>
+        <!-- 切换文件功能暂时注释
         <button class="da-file-ver__name da-file-ver__name--btn" @click="fileVerDialogVisible = true">
           {{ currentFileVersion.name }}
           <span class="material-symbols-outlined" style="font-size:13px;">unfold_more</span>
         </button>
         <span v-if="currentFileVersion.isLatest" class="da-file-ver__tag da-file-ver__tag--latest">Latest</span>
         <span v-else class="da-file-ver__tag da-file-ver__tag--outdated">Not latest</span>
+        -->
       </div>
       <div class="da-header__actions">
         <div class="da-toggle">
@@ -66,15 +72,6 @@
           <p>Running detection analysis...</p>
         </div>
 
-        <div v-else-if="detectionBanner === 'pending'" class="da-loading da-loading--pending">
-          <span class="material-symbols-outlined da-loading__icon">hourglass_top</span>
-          <p>Detection in progress for <b>{{ currentFileVersion.name }}</b></p>
-          <p class="da-loading__sub">This file hasn't been analyzed yet. Results will be available shortly.</p>
-          <p v-if="prevFileVersionName" class="da-loading__sub">
-            <button class="da-inline-link" @click="switchToPrevVersion">View previous file's results</button>
-          </p>
-        </div>
-
         <template v-else>
           <div
             v-for="section in sections"
@@ -101,65 +98,91 @@
             <div v-else class="da-items">
               <template v-for="item in getFilteredItems(section.items)" :key="item.id">
                 <!-- Ethicality item：可折叠，无状态图标 -->
-                <div v-if="(item.ethicality || item.ethicalityB) && /\.pdf$/i.test(currentFileVersion.name)" class="da-item da-item--eth">
+                <div v-if="(item.ethicality || item.ethicalityB || item.ethicalityPending || item.ethicalityFailed) && /\.pdf$/i.test(currentFileVersion.name)" class="da-item da-item--eth">
                   <div class="da-item__body">
                     <!-- 文件名行：点击折叠/展开 -->
                     <div class="da-eth-file__head" @click="toggleEthItem(item.id)">
                       <div class="da-eth-file__left">
                         <span class="material-symbols-outlined da-eth-file__chevron">{{ ethExpandedItems[item.id] ? 'expand_less' : 'expand_more' }}</span>
-                        <span class="da-eth-file__name">{{ currentFileVersion.name }}</span>
-                        <template v-if="getEthStats(item).severe || getEthStats(item).warning">
-                          <span v-if="getEthStats(item).severe" class="da-eth__tag da-eth__tag--error">{{ getEthStats(item).severe }} </span>
-                          <span v-if="getEthStats(item).warning" class="da-eth__tag da-eth__tag--warning">{{ getEthStats(item).warning }} </span>
+                        <span class="da-eth-file__name">{{ item.fileName }}</span>
+                        <!-- 正常检测结果 -->
+                        <template v-if="(item.ethicality || item.ethicalityB) && (getEthStats(item).severe || getEthStats(item).warning)">
+                          <span v-if="getEthStats(item).severe" class="da-eth__tag da-eth__tag--error">{{ getEthStats(item).severe }}</span>
+                          <span v-if="getEthStats(item).warning" class="da-eth__tag da-eth__tag--warning">{{ getEthStats(item).warning }}</span>
                         </template>
-                        <span v-else class="da-eth__ok">No issues</span>
+                        <template v-else-if="item.ethicality || item.ethicalityB">
+                          <span class="da-eth__ok">No issues</span>
+                        </template>
                       </div>
                       <div class="da-item__actions" @click.stop>
-                        <button v-if="currentFileVersion.isLatest" class="da-view-report-btn" @click="handleViewReport(item)">
-                          <span class="material-symbols-outlined" style="font-size:14px;">description</span>
-                          View Report
-                        </button>
+                        <!-- 正常状态才显示 View Report 和 Resolve -->
+                        <template v-if="item.ethicality || item.ethicalityB">
+                          <button class="da-view-report-btn" @click="handleViewReport(item)">
+                            <span class="material-symbols-outlined" style="font-size:14px;">description</span>
+                            View Report
+                          </button>
+                        </template>
+                        <!-- 所有状态都显示 Download -->
                         <el-button size="small" plain @click="handleDownload(item)">
                           <template #icon><span class="material-symbols-outlined" style="font-size:14px;">download</span></template>
                           Download
                         </el-button>
-                        <el-popover
-                          v-if="item.status !== 'healthy'"
-                          :ref="el => setPopoverRef(item.id, el)"
-                          placement="bottom-end"
-                          :width="340"
-                          trigger="click"
-                          popper-class="da-confirm-pop"
-                          @show="onPopoverShow(item.id)"
-                        >
-                          <template #reference>
-                            <button :class="['da-confirm-btn', item.confirmed ? 'da-confirm-btn--done' : '']">
-                              <span v-if="item.confirmed" class="material-symbols-outlined" style="font-size:14px;">how_to_reg</span>
-                              <span>{{ item.confirmed ? 'Resolved' : 'Resolve' }}</span>
-                            </button>
-                          </template>
-                          <div class="da-cpop">
-                            <div class="da-cpop__head">
-                              <span class="da-cpop__title">Resolve this check</span>
-                              <button class="da-cpop__close" @click="closePopover(item.id)">✕</button>
+                        <!-- 正常状态才显示 Resolve -->
+                        <template v-if="item.ethicality || item.ethicalityB">
+                          <el-popover
+                            v-if="item.status !== 'healthy'"
+                            :ref="el => setPopoverRef(item.id, el)"
+                            placement="bottom-end"
+                            :width="340"
+                            trigger="click"
+                            popper-class="da-confirm-pop"
+                            @show="onPopoverShow(item.id)"
+                          >
+                            <template #reference>
+                              <button :class="['da-confirm-btn', item.confirmed ? 'da-confirm-btn--done' : '']">
+                                <span v-if="item.confirmed" class="material-symbols-outlined" style="font-size:14px;">how_to_reg</span>
+                                <span>{{ item.confirmed ? 'Resolved' : 'Resolve' }}</span>
+                              </button>
+                            </template>
+                            <div class="da-cpop">
+                              <div class="da-cpop__head">
+                                <span class="da-cpop__title">Resolve this check</span>
+                                <button class="da-cpop__close" @click="closePopover(item.id)">✕</button>
+                              </div>
+                              <p class="da-cpop__hint">Select a reason:</p>
+                              <div class="da-cpop__options">
+                                <label v-for="option in resolveOptions" :key="option"
+                                  :class="['da-cpop__option', { 'da-cpop__option--selected': popoverSelections[item.id] === option }]"
+                                  @click="popoverSelections[item.id] = option">
+                                  <span class="da-cpop__radio" :class="{ 'da-cpop__radio--checked': popoverSelections[item.id] === option }" />
+                                  <span class="da-cpop__option-text">{{ option }}</span>
+                                </label>
+                              </div>
+                              <div class="da-cpop__footer">
+                                <button class="da-cpop__cancel" @click="closePopover(item.id)">Cancel</button>
+                                <button :class="['da-cpop__submit', { 'da-cpop__submit--disabled': !popoverSelections[item.id] }]"
+                                  :disabled="!popoverSelections[item.id]"
+                                  @click="commitConfirmInline(section.id, item.id)">Resolve</button>
+                              </div>
                             </div>
-                            <p class="da-cpop__hint">Select a reason:</p>
-                            <div class="da-cpop__options">
-                              <label v-for="option in resolveOptions" :key="option"
-                                :class="['da-cpop__option', { 'da-cpop__option--selected': popoverSelections[item.id] === option }]"
-                                @click="popoverSelections[item.id] = option">
-                                <span class="da-cpop__radio" :class="{ 'da-cpop__radio--checked': popoverSelections[item.id] === option }" />
-                                <span class="da-cpop__option-text">{{ option }}</span>
-                              </label>
-                            </div>
-                            <div class="da-cpop__footer">
-                              <button class="da-cpop__cancel" @click="closePopover(item.id)">Cancel</button>
-                              <button :class="['da-cpop__submit', { 'da-cpop__submit--disabled': !popoverSelections[item.id] }]"
-                                :disabled="!popoverSelections[item.id]"
-                                @click="commitConfirmInline(section.id, item.id)">Resolve</button>
-                            </div>
-                          </div>
-                        </el-popover>
+                          </el-popover>
+                        </template>
+                      </div>
+                    </div>
+
+                    <!-- Pending 状态内容 -->
+                    <div v-if="item.ethicalityPending && ethExpandedItems[item.id]" class="da-eth">
+                      <div class="da-eth__pending-content">
+                        <span class="material-symbols-outlined da-eth__pending-icon">hourglass_top</span>
+                        <span class="da-eth__pending-text">Detection in progress. Results will be available shortly.</span>
+                      </div>
+                    </div>
+
+                    <!-- Failed 状态内容 -->
+                    <div v-if="item.ethicalityFailed && ethExpandedItems[item.id]" class="da-eth">
+                      <div class="da-eth__failed-content">
+                        <span class="material-symbols-outlined da-eth__failed-icon">error</span>
+                        <span class="da-eth__failed-text">Ethicality detection failed. Please check the manuscript file or <a href="#" class="da-eth__retry-link" @click.prevent="handleRetryEthicality(item)">Retry</a>.</span>
                       </div>
                     </div>
 
@@ -489,14 +512,14 @@
               <!-- Ethicality section：当前文件非 PDF 时显示提示 -->
               <div v-if="section.items.some(i => i.ethicality || i.ethicalityB) && !(/\.pdf$/i.test(currentFileVersion.name))" class="da-section__empty da-section__empty--muted">
                 <span class="material-symbols-outlined" style="font-size:16px;color:#94a3b8;">info</span>
-                No results available for the currently selected file. Switch to another file to view the ethicality.
+                No results available for the current file. 
               </div>
             </div>
           </div>
         </template>
       </div>
-      <!-- 右侧 section 导航：loading 中或未检测时隐藏 -->
-      <nav v-if="!loading && detectionBanner !== 'pending'" class="da-nav">
+      <!-- 右侧 section 导航 -->
+      <nav class="da-nav">
         <div class="da-nav__label">Sections</div>
         <div
           v-for="section in sections"
@@ -525,7 +548,7 @@
     </div>
   </div>
 
-  <!-- File Version Dialog -->
+  <!-- File Version Dialog — 暂时注释
   <el-dialog v-model="fileVerDialogVisible" title="Manuscript Files" width="720px" :close-on-click-modal="false">
     <div class="da-fvd">
       <div v-for="(log, i) in fileVersionLog" :key="i"
@@ -550,6 +573,22 @@
     <template #footer>
       <el-button size="small" @click="fileVerDialogVisible = false">Cancel</el-button>
       <button :class="['da-apply-btn', { 'da-apply-btn--disabled': fileVerSelected === currentFileVersion.name }]" :disabled="fileVerSelected === currentFileVersion.name" @click="handleApplyVersion">Apply</button>
+    </template>
+  </el-dialog>
+  -->
+
+  <!-- 确认切换到最新文件弹窗 -->
+  <el-dialog v-model="confirmDialogVisible" title="New File Version Available" width="480px" :close-on-click-modal="false">
+    <div class="da-confirm-new">
+      <p class="da-confirm-new__text">
+        A newer file version is available: <b>{{ latestFileName }}</b>
+      </p>
+      <p class="da-confirm-new__hint">
+The detection will run in the background. Please refresh the page later to view the latest detection results.      </p>
+    </div>
+    <template #footer>
+      <el-button size="small" @click="confirmDialogVisible = false">Cancel</el-button>
+      <el-button size="small" type="primary" class="dm-btn-primary" @click="confirmSwitchToLatest">Start Detection</el-button>
     </template>
   </el-dialog>
 </template>
@@ -626,8 +665,10 @@ const ethicalityBData = {
 }
 
 const ethicalitySectionId = 'section-eth'
-const ethicalityItemId    = 'item-eth-1'
-const ethicalityBItemId   = 'item-eth-b-1'
+const ethicalityItemId    = 'item-eth-v4'
+const ethicalityBItemId   = 'item-eth-v3'
+const ethicalityPendingId = 'item-eth-v2'
+const ethicalityFailedId  = 'item-eth-v1'
 
 const sections = ref([
   ...detectionConfig.map((s) => ({
@@ -638,8 +679,10 @@ const sections = ref([
     id: ethicalitySectionId,
     title: 'Ethicality',
     items: [
-      { id: ethicalityItemId,  title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData  },
-      { id: ethicalityBItemId, title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData },
+      { id: ethicalityItemId,    title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData,  fileName: 'peer-review-v4.pdf' },
+      { id: ethicalityBItemId,   title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData, fileName: 'peer-review-v3.pdf' },
+      { id: ethicalityPendingId, title: '', status: 'pending', results: [], confirmed: undefined, ethicalityPending: true,      fileName: 'peer-review-v2.pdf' },
+      { id: ethicalityFailedId,  title: '', status: 'failed',  results: [], confirmed: undefined, ethicalityFailed: true,       fileName: 'peer-review-v1.pdf' },
     ],
   },
 ])
@@ -651,8 +694,10 @@ const ethExpandedItems = reactive((() => {
     const ethItems = s.items.filter(i => i.ethicality || i.ethicalityB)
     ethItems.forEach((item, idx) => { map[item.id] = idx === 0 })
   })
-  map[ethicalityItemId]  = true
-  map[ethicalityBItemId] = false
+  map[ethicalityItemId]    = true
+  map[ethicalityBItemId]   = false
+  map[ethicalityPendingId] = false
+  map[ethicalityFailedId]  = false
   return map
 })())
 
@@ -693,6 +738,14 @@ const activeSection = ref(sections.value[0]?.id)
 // 页面级文件版本
 const currentFileVersion = ref({ name: 'peer-review-v1.pdf', isLatest: false })
 
+// 刷新按钮状态
+const refreshing = ref(false)
+
+// 确认弹窗
+const confirmDialogVisible = ref(false)
+const latestFileName = ref('manuscript-v2.docx')
+
+/* === 切换文件功能暂时注释 ===
 const fileVerDialogVisible = ref(false)
 const fileVerSelected = ref(currentFileVersion.value.name)
 
@@ -709,11 +762,6 @@ const fileVersionLog = [
   { name: 'peer-review-v1.pdf',   fileType: 'Manuscript (PDF Version)', time: '2026-04-02 10:37:24', actor: 'Maura Zhao uploaded at Editor Ajax Upload File',  detected: true  },
   { name: 'manuscript-v1.docx',   fileType: 'Manuscript (Word/ZIP)',    time: '2026-04-02 04:57:01', actor: 'Evelyn Du uploaded at Upload step 0',              detected: true  },
 ]
-
-// 检测状态 banner：null | 'pending'
-const detectionBanner = ref(null)
-// 切换版本前的上一个版本名（用于"查看旧版本"）
-const prevFileVersionName = ref(null)
 
 function handleApplyVersion() {
   const selected = fileVersionLog.find(f => f.name === fileVerSelected.value)
@@ -733,20 +781,29 @@ function handleApplyVersion() {
     detectionBanner.value = 'pending'
   }
 }
+=== 切换文件功能暂时注释结束 === */
 
-function dismissBanner() {
-  detectionBanner.value = null
+// 刷新文件版本
+function handleRefreshFile() {
+  if (refreshing.value) return
+  refreshing.value = true
+
+  // 模拟获取最新文件信息
+  setTimeout(() => {
+    refreshing.value = false
+    // 模拟：当前文件不是最新
+    if (!currentFileVersion.value.isLatest) {
+      // 弹窗询问
+      confirmDialogVisible.value = true
+    }
+    // 如果是最新，不做任何操作
+  }, 800)
 }
 
-function switchToPrevVersion() {
-  if (!prevFileVersionName.value) return
-  const prev = fileVersionLog.find(f => f.name === prevFileVersionName.value)
-  if (!prev) return
-  const isPdf = /\.pdf$/i.test(prev.name)
-  const isLatest = prev.name === fileVersionLog[0]?.name
-  currentFileVersion.value = { name: prev.name, isLatest, isPdf }
-  detectionBanner.value = null
-  handleRedetectAll()
+// 确认切换到最新文件
+function confirmSwitchToLatest() {
+  currentFileVersion.value = { name: latestFileName.value, isLatest: true }
+  confirmDialogVisible.value = false
 }
 
 const resolveOptions = [
@@ -867,6 +924,11 @@ function handleRedetectSection(sectionId) {
 function handleViewReport(item) {
   // TODO: 跳转或弹出 ethicality 完整报告
   console.log('View report for:', item.title)
+}
+
+function handleRetryEthicality(item) {
+  // TODO: 重新触发检测
+  console.log('Retry ethicality detection for:', item.id)
 }
 
 function handleDownload(item) {

@@ -36,6 +36,26 @@
 /* File version indicator */
 .da-header__sep { color: #d1d5db; font-size: 16px; }
 .da-file-ver__icon { font-size: 15px; color: #94a3b8; }
+.da-file-ver__name { font-size: 13px; color: #374151; }
+
+/* Refresh button */
+.da-refresh-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
+}
+.da-refresh-btn:hover { background: #f1f5f9; color: #0156ce; }
+.da-refresh-btn .material-symbols-outlined { font-size: 16px; }
+.da-refresh-btn--spin { animation: da-spin 1s linear infinite; }
 .da-file-ver__name--btn {
   display: inline-flex; align-items: center; gap: 2px;
   font-size: 13px; color: #374151; background: none; border: none;
@@ -372,6 +392,22 @@
 .da-eth__tag { font-size: 12px; font-weight: 600; padding: 2px 7px; border-radius: 4px; }
 .da-eth__tag--error { background: #fee2e2; color: #dc2626; }
 .da-eth__tag--warning { background: #fef3c7; color: #d97706; }
+
+/* Pending & Failed content */
+.da-eth__pending-content, .da-eth__failed-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 6px;
+}
+.da-eth__pending-content { background: #f0f9ff; }
+.da-eth__failed-content { background: #fef2f2; }
+.da-eth__pending-icon { font-size: 18px; color: #0284c7; }
+.da-eth__failed-icon { font-size: 18px; color: #dc2626; }
+.da-eth__pending-text, .da-eth__failed-text { font-size: 13px; color: #475569; line-height: 1.5; }
+.da-eth__retry-link { color: #0156ce; text-decoration: none; font-size: 13px; }
+.da-eth__retry-link:hover { text-decoration: underline; }
 .da-eth__html { margin: -2px 0 6px; padding: 8px 10px; background: #f8fafc; border-radius: 6px; }
 
 /* AI proportion rows */
@@ -597,3 +633,18 @@
   from { transform: rotate(0deg); }
   to   { transform: rotate(360deg); }
 }
+
+/* Confirm new file dialog */
+.da-confirm-new { }
+.da-confirm-new__text { font-size: 13px; color: #1e293b; margin-bottom: 12px; line-height: 1.6; }
+.da-confirm-new__hint {
+  font-size: 12px;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  padding: 10px 12px;
+  line-height: 1.5;
+}
+
+
