@@ -69,7 +69,19 @@
       <div class="da-content">
         <div v-if="loading" class="da-loading">
           <div class="da-spinner" />
-          <p>Running detection analysis...</p>
+          <p>Running detection ...</p>
+        </div>
+
+        <!-- 整个检测助手没有结果的空状态 -->
+        <div v-else-if="hasNoDetectionResults" class="da-empty-state">
+          <span class="material-symbols-outlined da-empty-state__icon">hourglass_empty</span>
+          <h3 class="da-empty-state__title">Detection in Progress</h3>
+          <p class="da-empty-state__desc">
+            Detection is currently running for this manuscript. Please refresh the page later to view the detection results.
+          </p>
+          <el-button type="primary" class="susy-btn" @click="handleRedetectAll">
+            View Results (Demo)
+          </el-button>
         </div>
 
         <template v-else>
@@ -96,7 +108,17 @@
               <span class="material-symbols-outlined da-spinner-icon">progress_activity</span>
             </div>
             <div v-else class="da-items">
-              <template v-for="item in getFilteredItems(section.items)" :key="item.id">
+              <!-- Ethicality section：当前文件非 PDF 时只显示提示，不显示 item -->
+              <template v-if="section.items.some(i => i.ethicality || i.ethicalityB || i.ethicalityPending || i.ethicalityFailed) && !(/\.pdf$/i.test(currentFileVersion.name))">
+                <div class="da-section__empty da-section__empty--muted">
+                  <span class="material-symbols-outlined" style="font-size:16px;color:#94a3b8;">info</span>
+                  No results available for the current file. 
+                </div>
+              </template>
+              
+              <!-- 正常渲染 items（非 PDF 时过滤掉 ethicality items） -->
+              <template v-else>
+                <template v-for="item in getFilteredItems(section.items)" :key="item.id">
                 <!-- Ethicality item：可折叠，无状态图标 -->
                 <div v-if="(item.ethicality || item.ethicalityB || item.ethicalityPending || item.ethicalityFailed) && /\.pdf$/i.test(currentFileVersion.name)" class="da-item da-item--eth">
                   <div class="da-item__body">
@@ -504,22 +526,19 @@
                   </div>
                 </div>
               </template>
+              </template>
 
-              <div v-if="getFilteredItems(section.items).length === 0" class="da-section__empty">
+              <!-- 其他 section 的空状态提示 -->
+              <div v-if="!section.items.some(i => i.ethicality || i.ethicalityB || i.ethicalityPending || i.ethicalityFailed) && getFilteredItems(section.items).length === 0" class="da-section__empty">
                 <span class="material-symbols-outlined" style="font-size:16px;color:#16a34a;">check_circle</span>
                 All checks passed in this section
-              </div>
-              <!-- Ethicality section：当前文件非 PDF 时显示提示 -->
-              <div v-if="section.items.some(i => i.ethicality || i.ethicalityB) && !(/\.pdf$/i.test(currentFileVersion.name))" class="da-section__empty da-section__empty--muted">
-                <span class="material-symbols-outlined" style="font-size:16px;color:#94a3b8;">info</span>
-                No results available for the current file. 
               </div>
             </div>
           </div>
         </template>
       </div>
       <!-- 右侧 section 导航 -->
-      <nav class="da-nav">
+      <nav v-if="!loading && !hasNoDetectionResults" class="da-nav">
         <div class="da-nav__label">Sections</div>
         <div
           v-for="section in sections"
@@ -670,22 +689,8 @@ const ethicalityBItemId   = 'item-eth-v3'
 const ethicalityPendingId = 'item-eth-v2'
 const ethicalityFailedId  = 'item-eth-v1'
 
-const sections = ref([
-  ...detectionConfig.map((s) => ({
-    ...s,
-    items: s.items.map((i) => ({ ...i, confirmed: undefined }))
-  })),
-  {
-    id: ethicalitySectionId,
-    title: 'Ethicality',
-    items: [
-      { id: ethicalityItemId,    title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData,  fileName: 'peer-review-v4.pdf' },
-      { id: ethicalityBItemId,   title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData, fileName: 'peer-review-v3.pdf' },
-      { id: ethicalityPendingId, title: '', status: 'pending', results: [], confirmed: undefined, ethicalityPending: true,      fileName: 'peer-review-v2.pdf' },
-      { id: ethicalityFailedId,  title: '', status: 'failed',  results: [], confirmed: undefined, ethicalityFailed: true,       fileName: 'peer-review-v1.pdf' },
-    ],
-  },
-])
+// 初始状态为空，模拟首次进入页面时没有检测结果
+const sections = ref([])
 
 // ethicality item 折叠状态：默认展开第一个
 const ethExpandedItems = reactive((() => {
@@ -734,6 +739,37 @@ const loading = ref(false)
 const sectionLoading = ref(null)
 const showOnlyIssues = ref(false)
 const activeSection = ref(sections.value[0]?.id)
+
+// 判断是否完全没有检测结果
+const hasNoDetectionResults = computed(() => {
+  // 如果没有任何 section，认为没有结果
+  if (!sections.value || sections.value.length === 0) {
+    return true
+  }
+  
+  // 如果所有 section 的所有 item 都没有实际检测数据，则认为没有结果
+  return sections.value.every(section => {
+    // 如果 section 没有 items，跳过
+    if (!section.items || section.items.length === 0) {
+      return true
+    }
+    
+    return section.items.every(item => {
+      // 对于 ethicality item，检查是否有实际数据
+      if (item.ethicality || item.ethicalityB) {
+        return false // 有 ethicality 数据，说明有结果
+      }
+      
+      // 对于 pending 或 failed 状态，也算作"有结果"（虽然不是成功的结果）
+      if (item.ethicalityPending || item.ethicalityFailed) {
+        return false
+      }
+      
+      // 对于普通 item，检查是否有 results 数据
+      return !item.results || item.results.length === 0
+    })
+  })
+})
 
 // 页面级文件版本
 const currentFileVersion = ref({ name: 'peer-review-v1.pdf', isLatest: false })
@@ -913,7 +949,26 @@ onUnmounted(() => window.removeEventListener('scroll', onContentScroll))
 
 function handleRedetectAll() {
   loading.value = true
-  setTimeout(() => { loading.value = false }, 2000)
+  setTimeout(() => {
+    // 加载实际的检测数据
+    sections.value = [
+      ...detectionConfig.map((s) => ({
+        ...s,
+        items: s.items.map((i) => ({ ...i, confirmed: undefined }))
+      })),
+      {
+        id: ethicalitySectionId,
+        title: 'Ethicality',
+        items: [
+          { id: ethicalityItemId,    title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData,  fileName: 'peer-review-v4.pdf' },
+          { id: ethicalityBItemId,   title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData, fileName: 'peer-review-v3.pdf' },
+          { id: ethicalityPendingId, title: '', status: 'pending', results: [], confirmed: undefined, ethicalityPending: true,      fileName: 'peer-review-v2.pdf' },
+          { id: ethicalityFailedId,  title: '', status: 'failed',  results: [], confirmed: undefined, ethicalityFailed: true,       fileName: 'peer-review-v1.pdf' },
+        ],
+      },
+    ]
+    loading.value = false
+  }, 2000)
 }
 
 function handleRedetectSection(sectionId) {

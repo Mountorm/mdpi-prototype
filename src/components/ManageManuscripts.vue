@@ -38,7 +38,7 @@
       </div>
 
       <div class="panel-body">
-        <el-form :model="filterForm" label-position="right">
+        <el-form :model="filterForm" label-position="top">
           <div class="filter-grid">
             <!-- 前18项：默认显示 -->
             <el-form-item label="Journal">
@@ -926,7 +926,7 @@ const getColorMarkClass = (colorMark) => {
 <style scoped>
 .filter-grid {
   display: grid;
-  gap: 1.5rem 2rem;
+  gap: 0.75rem 2rem;
   grid-template-columns: 1fr;
   max-width: 100%;
 }
@@ -946,10 +946,9 @@ const getColorMarkClass = (colorMark) => {
 
 :deep(.el-form-item) {
   margin-bottom: 0;
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 8px;
-  align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
   width: 100%;
 }
 
@@ -957,19 +956,18 @@ const getColorMarkClass = (colorMark) => {
   color: #172b4d;
   font-size: 14px;
   font-weight: 500;
-  text-align: right;
+  text-align: left;
   white-space: normal;
   word-wrap: break-word;
-  width: 160px !important;
-  padding-right: 10px;
-  line-height: 1.4;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  width: 100% !important;
+  /* padding: 0 0 6px 0; */
+  line-height: 1.3;
+  display: block;
 }
 
 :deep(.el-form-item__content) {
   width: 100%;
+  margin-left: 0 !important;
 }
 
 :deep(.el-input),
@@ -997,17 +995,6 @@ const getColorMarkClass = (colorMark) => {
 :deep(.el-button--primary:hover) {
   background-color: #014bb5;
   border-color: #014bb5;
-}
-
-@media (max-width: 700px) {
-  :deep(.el-form-item) {
-    grid-template-columns: 150px 1fr;
-  }
-  
-  :deep(.el-form-item__label) {
-    width: 150px !important;
-    padding-right: 10px;
-  }
 }
 
 .status-tabs {

@@ -826,7 +826,7 @@ const getStatusBadgeClass = (status) => {
 
 @media (min-width: 1400px) {
   .two-column-layout {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.618fr 1fr;
   }
 }
 
