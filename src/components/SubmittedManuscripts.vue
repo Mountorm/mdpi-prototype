@@ -21,9 +21,23 @@
         <!-- ORCID 提示条（仅 published 页签且未连接时显示） -->
         <div v-if="activeTab === 'published' && !orcidConnected" class="orcid-banner mb-3">
           <a href="#" class="orcid-banner__link" @click.prevent="handleConnectOrcid">Create or connect your ORCID ID</a>
-          <span class="orcid-banner__info material-symbols-outlined" title="What is this?">
-            help
-          </span>
+          <div 
+            class="orcid-banner__info-wrapper"
+            @mouseenter="handleOrcidInfoEnter"
+            @mouseleave="handleOrcidInfoLeave"
+          >
+            <span class="orcid-banner__info material-symbols-outlined">
+              help
+            </span>
+            <div v-show="showOrcidInfoPanel" class="orcid-info-panel">
+              <p class="orcid-info-text">
+                ORCID provides a persistent digital identifier that distinguishes you from other researchers and supports automated links between you and your professional activities.
+              </p>
+              <a href="https://support.orcid.org/hc/en-us/articles/360006897334-What-is-an-ORCID-iD-and-how-do-I-use-it" target="_blank" class="orcid-info-link">
+                View Details
+              </a>
+            </div>
+          </div>
         </div>
 
         <!-- 表格容器 -->
@@ -45,12 +59,8 @@
           <template #cell-title="{ row }">
             <div class="title-cell">
               <template v-if="row.title">
-                <a href="#" class="title-link-wrapper">
-                  <span class="title-text">{{ row.title }}</span><span 
-                    v-if="activeTab === 'published'" 
-                    class="external-link-icon"
-                    title="View published article"
-                  ><span class="material-symbols-outlined">open_in_new</span></span>
+                <a href="#" class="title-link-wrapper" title="View the manuscript overview">
+                  <span class="title-text">{{ row.title }}</span>
                 </a>
               </template>
               <span v-else class="text-gray-400">—</span>
@@ -73,18 +83,23 @@
 
             <!-- processing -->
             <div v-else-if="activeTab === 'processing'" class="action-cell">
-              <a href="#" class="action-link-secondary" title="View manuscript">View</a>
+              <!-- 如果有其他操作按钮，则不显示 View -->
               <template v-if="row.status === 'Author proofreading' || row.status === 'Author proofreading - resubmit manuscript'">
                 <a href="#" class="action-link action-link--primary" title="Submit Proofreading Version">Submit</a>
               </template>
               <template v-else-if="row.status === 'Pending resubmission'">
                 <a href="#" class="action-link action-link--primary" title="Resubmit manuscript">Resubmit</a>
               </template>
+              <template v-else>
+                <a href="#" class="action-link-secondary" title="View manuscript">View</a>
+              </template>
             </div>
 
             <!-- published -->
             <div v-else-if="activeTab === 'published'" class="action-cell">
-              <a href="#" class="action-link-secondary">View</a>
+              <a href="#" class="action-link action-link--primary" title="Go to the published article">
+                Access<span class="material-symbols-outlined" style="font-size: 16px; margin-left: 4px; vertical-align: middle;">open_in_new</span>
+              </a>
               <template v-if="orcidConnected">
                 <button
                   :class="['orcid-btn', row.orcidLinked ? 'orcid-btn--active' : 'orcid-btn--inactive']"
@@ -163,6 +178,21 @@ const activeTab = ref('incomplete')
 const orcidConnected = ref(false)
 const showOrcidModal = ref(false)
 const selectedManuscript = ref(null)
+const showOrcidInfoPanel = ref(false)
+let orcidInfoPanelTimer = null
+
+const handleOrcidInfoEnter = () => {
+  if (orcidInfoPanelTimer) {
+    clearTimeout(orcidInfoPanelTimer)
+  }
+  showOrcidInfoPanel.value = true
+}
+
+const handleOrcidInfoLeave = () => {
+  orcidInfoPanelTimer = setTimeout(() => {
+    showOrcidInfoPanel.value = false
+  }, 200)
+}
 
 const handleConnectOrcid = () => {
   orcidConnected.value = true
@@ -387,6 +417,12 @@ const handleDelete = (id) => {
 }
 .orcid-banner__link:hover { color: #014bb5; }
 
+.orcid-banner__info-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
 .orcid-banner__info {
   display: inline-flex;
   align-items: center;
@@ -396,6 +432,36 @@ const handleDelete = (id) => {
   font-size: 16px;
 }
 .orcid-banner__info:hover { color: #6b7280; }
+
+.orcid-info-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 12px;
+  width: 410px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  z-index: 100;
+}
+
+.orcid-info-text {
+  font-size: 13px;
+  color: #374151;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.orcid-info-link {
+  font-size: 13px;
+  color: #0156ce;
+  text-decoration: none;
+  font-weight: 500;
+}
+.orcid-info-link:hover {
+  text-decoration: underline;
+}
 
 /* Action 列通用 */
 .action-cell {
@@ -638,26 +704,7 @@ const handleDelete = (id) => {
   text-decoration: underline;
 }
 
-.title-link-wrapper:hover .external-link-icon {
-  color: #0156ce;
-}
-
 .title-text {
   display: inline;
-}
-
-.external-link-icon {
-  display: inline-flex;
-  align-items: center;
-  color: #94a3b8;
-  transition: color 0.15s;
-  vertical-align: middle;
-  margin-left: 4px;
-  text-decoration: none;
-}
-
-.external-link-icon .material-symbols-outlined {
-  font-size: 14px;
-  display: block;
 }
 </style>
