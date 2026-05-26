@@ -961,7 +961,7 @@ function handleRedetectAll() {
         title: 'Ethicality',
         items: [
           { id: ethicalityItemId,    title: '', status: 'error',   results: [], confirmed: undefined, ethicality:  ethicalityData,  fileName: 'peer-review-v4.pdf' },
-          { id: ethicalityBItemId,   title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData, fileName: 'peer-review-v3.pdf' },
+          { id: ethicalityBItemId,   title: '', status: 'error',   results: [], confirmed: undefined, ethicalityB: ethicalityBData, fileName: 'peer-review-v3.pdf（暂时不需要实现）' },
           { id: ethicalityPendingId, title: '', status: 'pending', results: [], confirmed: undefined, ethicalityPending: true,      fileName: 'peer-review-v2.pdf' },
           { id: ethicalityFailedId,  title: '', status: 'failed',  results: [], confirmed: undefined, ethicalityFailed: true,       fileName: 'peer-review-v1.pdf' },
         ],
