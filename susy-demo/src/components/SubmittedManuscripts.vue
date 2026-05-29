@@ -59,7 +59,8 @@
           <template #cell-title="{ row }">
             <div class="title-cell">
               <template v-if="row.title">
-                <a href="#" class="title-link-wrapper" title="View the manuscript overview">
+                <span v-if="activeTab === 'incomplete'" class="title-text">{{ row.title }}</span>
+                <a v-else href="#" class="title-link-wrapper" title="View the manuscript overview">
                   <span class="title-text">{{ row.title }}</span>
                 </a>
               </template>
@@ -97,9 +98,9 @@
 
             <!-- published -->
             <div v-else-if="activeTab === 'published'" class="action-cell">
-              <a href="#" class="action-link action-link--primary" title="Go to the published article">
-                Access<span class="material-symbols-outlined" style="font-size: 16px; margin-left: 4px; vertical-align: middle;">open_in_new</span>
-              </a>
+              <button class="action-icon-btn action-icon-btn--primary" title="Go to the published article">
+                <span class="material-symbols-outlined">{{ getPublishedIcon(row.id) }}</span>
+              </button>
               <template v-if="orcidConnected">
                 <button
                   :class="['orcid-btn', row.orcidLinked ? 'orcid-btn--active' : 'orcid-btn--inactive']"
@@ -309,6 +310,7 @@ const manuscripts = ref([
   { id: 18, manuscriptId: 'fractlract-3245695', title: 'Sustainable Energy Solutions for Urban Areas', journal: 'fractlract', section: 'S: Energy Systems', submissionDate: '2024-02-15', status: 'Pending resubmission', statusType: 'processing' },
   { id: 13, manuscriptId: 'fractlract-3245690', title: 'Novel Approaches to Quantum Computing', journal: 'fractlract', section: 'S: Physics', submissionDate: '2023-12-01', status: 'Published', statusType: 'published', orcidLinked: true, orcidId: '0000-0002-1234-5678', doi: '10.3390/physics8010001' },
   { id: 14, manuscriptId: 'fractlract-3245691', title: 'Biodiversity Conservation in Tropical Forests', journal: 'fractlract', section: 'S: Ecology', submissionDate: '2023-11-15', status: 'Published', statusType: 'published', orcidLinked: false, doi: '10.3390/tomography8010043' },
+  { id: 19, manuscriptId: 'fractlract-3245696', title: 'Advanced Computational Methods in Physics', journal: 'fractlract', section: 'S: Computational Science', submissionDate: '2023-10-20', status: 'Published', statusType: 'published', orcidLinked: false, doi: '10.3390/computation8010015' },
   { id: 15, manuscriptId: 'fractlract-3245692', title: 'Experimental Study on Material Properties', journal: 'fractlract', section: 'S: Materials Science', submissionDate: '2024-01-10', status: 'Rejected', statusType: 'rejected' }
 ])
 
@@ -360,6 +362,14 @@ const tableColumns = computed(() => {
 
 const handleDelete = (id) => {
   console.log('Delete manuscript:', id)
+}
+
+const getPublishedIcon = (id) => {
+  // 前三条 published 数据分别使用不同的图标
+  if (id === 13) return 'public'
+  if (id === 14) return 'language'
+  if (id === 19) return 'captive_portal'
+  return 'public' // 默认使用 public
 }
 </script>
 
@@ -517,6 +527,13 @@ const handleDelete = (id) => {
 }
 .action-icon-btn:hover { background: #f1f5f9; color: #475569; }
 .action-icon-btn--danger:hover { background: #fee2e2; color: #dc2626; }
+.action-icon-btn--primary {
+  color: #0156ce;
+}
+.action-icon-btn--primary:hover {
+  background: #dbeafe;
+  color: #014bb5;
+}
 
 /* ORCID 图标按钮 */
 .orcid-btn {
