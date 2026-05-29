@@ -1,0 +1,836 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Select Editor (SuSy Prototype - Hongqiang Cui)</title>
+    <!-- Element UI & Vue 2 via CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css" />
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_notes,info" />
+
+    <style>
+        /* Material Symbols Outlined 字体样式 */
+        .ms {
+            display: inline-block;
+            font: normal normal normal 1.125rem/1 Material Symbols Outlined;
+            letter-spacing: normal;
+            text-transform: none;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-feature-settings: "liga";
+            -webkit-font-feature-settings: "liga";
+            -webkit-font-smoothing: antialiased;
+            cursor: pointer;
+            color: #606266;
+        }
+
+        .ms:hover {
+            color: #4f5671;
+        }
+
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        /* 主按钮区域 */
+        .page-wrapper {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .open-btn-wrapper {
+            margin-bottom: 16px;
+        }
+
+        /* Dialog 标题栏样式接近截图 */
+        .el-dialog__header {
+            padding: 12px 20px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .el-dialog__title {
+            color: #4f5671;
+            font-size: 20px;
+            font-weight: 700;
+            line-height: 32px;
+        }
+
+        .el-dialog__headerbtn .el-dialog__close {
+            color: #909399;
+        }
+
+        .el-dialog__body {
+            padding: 5px 10px !important;
+            height: 750px;
+            overflow: auto;
+        }
+
+        /* Alternative selector for dialog body */
+        .editor-dialog .el-dialog__body {
+            padding: 5px 10px !important;
+            height: 750px;
+            overflow: auto;
+        }
+
+        /* 顶部工具条：标题下方的 Clear All 链接 */
+        .editor-toolbar {
+            padding: 0 0 6px 0;
+        }
+
+        .editor-toolbar a {
+            color: #3156A2;
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .editor-toolbar a:hover {
+            text-decoration: underline;
+        }
+
+       
+
+        /* 模拟原表格的固定布局与自动换行 */
+        .editor-table-wrapper table {
+            table-layout: fixed;
+            word-wrap: break-word;
+        }
+
+        .editor-table-wrapper .el-table th {
+            background-color: #4f5671;
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .editor-table-wrapper .el-table thead.is-group th {
+            background-color: #f2f2f2;
+        }
+
+        .editor-table-wrapper .el-link--primary {
+            color: #3156A2;
+        }
+
+        /* 模拟“Invite”等链接颜色 */
+        .editor-table-link {
+            color: #3156A2;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .editor-table-link:hover {
+            text-decoration: underline;
+        }
+
+        /* 单元格中多行文本的行高 */
+        .multi-line {
+            white-space: normal;
+            line-height: 1.4;
+        }
+
+        /* 过滤器输入框减少左右边距 */
+        .editor-table-wrapper .el-input__inner {
+            padding-left: 5px;
+            padding-right: 5px;
+            border-radius: 0 !important;
+        }
+
+        /* Input聚焦时边框颜色 */
+        .editor-table-wrapper .el-input__inner:focus,
+        .editor-table-wrapper .el-input__inner.is-focus {
+            border-color: #000;
+        }
+
+        /* Input聚焦时阴影 */
+        .editor-table-wrapper .el-input__inner:focus,
+        .editor-table-wrapper .el-input__inner.is-focus {
+            box-shadow: 0 0 0 1px rgba(79, 86, 113, 0.2);
+        }
+
+        /* 表格数据字体样式 */
+        .editor-table-wrapper .el-table td {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 13px;
+            font-weight: 400;
+        }
+
+        /* 表格斑马条 - 手动控制 */
+        .editor-table-wrapper .el-table .data-row-odd td {
+            background-color: #F1F1F1;
+        }
+
+        /* 表格行hover效果 - 排除过滤器行 */
+        .editor-table-wrapper .el-table--enable-row-hover .el-table__body tr:not(.filter-row):hover > td {
+            background-color: #FFFFDD !important;
+        }
+
+        /* 过滤器行样式 */
+        .editor-table-wrapper .el-table .filter-row {
+            background-color: #f8f9fa;
+        }
+
+        .editor-table-wrapper .el-table .filter-row td {
+            padding: 4px 2px;
+            vertical-align: left;
+        }
+
+        /* 自定义分页组件样式 */
+        .pagination_nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 12px;
+            font-size: 13px;
+        }
+
+        .pagination_nav .pagination {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+
+        .pagination_nav .pagination li a,
+        .pagination_nav .pagination li span {
+            display: inline-block;
+            padding: 3px 3px;
+            color: #3156A2;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.2;
+            border: 1px solid transparent;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .pagination_nav .pagination li.current span {
+            background-color: #4f5671;
+            color: #ffffff;
+            border-color: #4f5671;
+        }
+
+        .pagination_nav .pagination li.disabled {
+            color: #c0c4cc;
+        }
+
+        .pagination_nav .pagination li.disabled span {
+            cursor: default;
+            color: #c0c4cc;
+        }
+
+        .pagination_nav .pagination li.ellipsis span {
+            padding: 4px 6px;
+            color: #606266;
+            border: none;
+        }
+
+        .pagination_nav .pagination li a:hover {
+            color: #000000;
+            text-decoration: none;
+            background: #e6e6e6;
+        }
+
+        .pagination_nav .ui-paging-tool {
+            margin-left: 25px;
+        }
+
+        .pagination_nav .ui-paging-tool ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .pagination_nav .ui-paging-tool li {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #3156A2;
+        }
+
+        .pagination_nav .ui-paging-tool input {
+            width: 40px;
+            height: 24px;
+            border: 1px solid #dcdfe6;
+            border-radius: 0;
+            padding: 0 4px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .pagination_nav .ui-paging-tool input:focus {
+            border-color: #4f5671;
+            outline: none;
+        }
+
+        .pagination_nav .ui-paging-tool a {
+            color: #3156A2;
+            cursor: pointer;
+            padding: 4px 4px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+            display: inline-block;
+            min-width: 20px;
+            text-align: center;
+        }
+
+        .pagination_nav .per-page-wrap {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+        }
+
+        .pagination_nav .per-page-wrap span {
+            color: #606266;
+        }
+
+        .pagination_nav .per-page-wrap .page-limit-select {
+            height: 24px;
+            font-size: 13px;
+            border: 1px solid #dcdfe6;
+            border-radius: 0;
+            padding: 0 4px;
+        }
+
+        .pagination_nav .per-page-wrap .page-limit-select:focus {
+            border-color: #4f5671;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="page-wrapper">
+    <div class="open-btn-wrapper">
+        <el-button type="primary" @click="dialogVisible = true">Click to open the AcE selection dialog</el-button>
+    </div>
+
+    <!-- 弹窗 -->
+    <el-dialog
+        class="editor-dialog"
+        title="Select Editor"
+        :visible.sync="dialogVisible"
+        width="1320px"
+        top="5vh"
+        :close-on-click-modal="false"
+    >
+ 
+
+        <!-- 表格区域 -->
+        <div class="editor-table-wrapper">
+            <el-table
+                :data="[filterRow].concat(pagedEditors)"
+                border
+                height="670"
+                style="width: 100%"
+                :scroll-gutter="0"
+                :show-header="true"
+                :row-class-name="tableRowClassName"
+            >
+                <el-table-column
+                    prop="name"
+                    label="Name"
+                    width="110"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-input
+                                v-model="filters.name"
+                                size="mini"
+                                clearable
+                            ></el-input>
+                        </div>
+                        <a v-else
+                            href="javascript:void(0);"
+                            class="editor-table-link"
+                            :title="'click here to see invitation history'"
+                        >
+                            {{ scope.row.name }}
+                        </a>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="email"
+                    label="Email"
+                    width="160"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-input
+                                v-model="filters.email"
+                                size="mini"
+                                clearable
+                            ></el-input>
+                        </div>
+                        <div v-else>
+                            {{ scope.row.email }}
+                        </div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="role"
+                    label="Role"
+                    width="200"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-select v-model="filters.role" size="mini" clearable placeholder="Select">
+                                <el-option label="Section Board Member" value="Section Board Member"></el-option>
+                                <el-option label="Editorial Board Member" value="Editorial Board Member"></el-option>
+                                <el-option label="Guest Editor" value="Guest Editor"></el-option>
+                                <el-option label="Topic Associate Editor-in-Chief" value="Topic Associate Editor-in-Chief"></el-option>
+                            </el-select>
+                        </div>
+                        <div v-else class="multi-line" v-html="scope.row.role"></div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="section"
+                    label="Section"
+                    width="180"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-select v-model="filters.section" size="mini" clearable placeholder="Select">
+                                <el-option label="section1" value="section1"></el-option>
+                                <el-option label="section2" value="section2"></el-option>
+                            </el-select>
+                        </div>
+                        <div v-else class="multi-line" v-html="scope.row.section"></div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="lastInviteDate"
+                    label="Last Invite Date"
+                    sortable
+                    width="150"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                        </div>
+                        <div v-else>
+                            {{ scope.row.lastInviteDate }}
+                        </div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="researchInterests"
+                    label="Research Interests"
+                    min-width="200"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0" style="display: flex; align-items: center; gap: 4px;">
+                            <el-input
+                                v-model="filters.researchInterests"
+                                size="mini"
+                                clearable
+                                style="flex: 1;"
+                            ></el-input>
+                            <el-checkbox v-model="researchExactMatch" size="mini">exact</el-checkbox>
+                            <el-tooltip placement="top" effect="dark">
+                                <div slot="content" style="max-width: 280px; line-height: 1.6;">
+                                    <div><strong>On:</strong> Returns results that contain any of the exact terms you typed.</div>
+                                    <div style="margin-top: 6px;"><strong>Off:</strong> Prefix search — each term you enter matches anything starting with it. If you type multiple terms, only the last one uses prefix matching; the rest must be exact.</div>
+                                </div>
+                                <span class="ms" style="font-size: 18px;">info</span>
+                            </el-tooltip>
+                        </div>
+                        <div v-else class="multi-line">{{ scope.row.researchInterests }}</div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="absenceDate"
+                    label="Absence Date"
+                    width="110"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-input
+                                v-model="filters.absenceDate"
+                                size="mini"
+                                clearable
+                            ></el-input>
+                        </div>
+                        <div v-else>
+                            {{ scope.row.absenceDate }}
+                        </div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    label="Action"
+                    width="110"
+                    align="center"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <a href="javascript:void(0);" @click="onClearFilters" class="editor-table-link">Clear All</a>
+                        </div>
+                        <div v-else>
+                            <span class="editor-table-link" @click="onInvite(scope.row)" style="margin-right: 8px;">Invite</span>
+                            <el-tooltip content="Academic Editor Notes" placement="top">
+                                <span class="ms" style="font-size: 20px; width: 18px; height: 22px; vertical-align: middle; display: inline-block;">add_notes</span>
+                            </el-tooltip>
+                            <el-tooltip content="Invitation History" placement="top">
+                                <img src="https://deployment.susy.mdpi.dev/build/img/icon/notebooks.png?a5ce4b8" alt="History" style="width: 16px; height: 16px; margin-left: 8px; cursor: pointer; vertical-align: middle;" />
+                            </el-tooltip>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+        <!-- 分页器：自定义组件 -->
+        <nav class="pagination_nav" aria-label="Pagination">
+            <ul class="pagination margin-0">
+                <!-- Prev -->
+                <li :class="{ disabled: currentPage === 1 }" @click="onPrev">
+                    <span v-if="currentPage === 1">Prev </span>
+                    <a v-else href="javascript:void(0);">Prev </a>
+                </li>
+
+                <!-- 页码列表 -->
+                <li v-for="item in pageList" :key="item.key" :class="item.className" @click="item.clickable && goToPage(item.page)">
+                    <span v-if="item.type === 'current'">{{ item.page }}</span>
+                    <span v-else-if="item.type === 'ellipsis'">...</span>
+                    <a v-else href="javascript:void(0);" :aria-label="'Page ' + item.page">{{ item.page }}</a>
+                </li>
+
+                <!-- Next -->
+                <li :class="{ disabled: currentPage === totalPages }" @click="onNext">
+                    <span v-if="currentPage === totalPages">Next </span>
+                    <a v-else href="javascript:void(0);">Next </a>
+                </li>
+
+                <!-- Jump -->
+                <li class="ui-paging-tool">
+                    <ul>
+                        <li>Jump</li>
+                        <li><input id="jump_page" type="text" v-model.number="jumpPage" size="2"></li>
+                        <li><a class="pagination-jump" href="javascript:void(0);" @click="onJump">GO</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <!-- 每页条数 View -->
+            <div class="per-page-wrap">
+                <span>View</span>
+                <select class="page-limit-select" v-model.number="pageSize" @change="onPageSizeChange">
+                    <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
+                </select>
+            </div>
+        </nav>
+    </el-dialog>
+</div>
+
+<script>
+    // 配置Element UI使用英文
+    ELEMENT.locale(ELEMENT.lang.en);
+    
+    new Vue({
+        el: '#app',
+        data: function () {
+            // 生成假数据：以现有 4 条为模板扩展到 200 条
+            var baseEditors = [
+                {
+                    name: 'Ariando',
+                    email: 'phyarian@nus.edu.sg',
+                    role: 'Section Board Member',
+                    section: 'section1',
+                    lastInviteDate: '4 Mar 2024',
+                    researchInterests: 'strongly correlated electron systems; complex oxide thin films; interfaces; heterostructures and superlattices; superconductivity; condensed matter physics',
+                    absenceDate: ''
+                },
+                {
+                    name: 'Abdeltif Amrane',
+                    email: 'abdeltif.amrane@univ-rennes1.fr',
+                    role: 'Section Board Member<br>Editorial Board Member',
+                    section: 'section2',
+                    lastInviteDate: '30 Nov 2023',
+                    researchInterests: 'environmental engineering; combined processes; biological treatment; advanced (electrochemical) oxidation processes',
+                    absenceDate: ''
+                },
+                {
+                    name: 'Abílio Manuel Pinho de Jesus',
+                    email: 'ajesus@fe.up.pt',
+                    role: 'Guest Editor<br>Section Board Member<br>Topic Associate Editor-in-Chief',
+                    section: 'section1',
+                    lastInviteDate: '18 Oct 2022',
+                    researchInterests: 'manufacturing processes; machining; additive manufacturing; fatigue; fracture; structural integrity; numerical simulation; experimental validation',
+                    absenceDate: ''
+                },
+                {
+                    name: 'Adel Razek',
+                    email: 'adel.razek@centralesupelec.fr',
+                    role: 'Section Board Member',
+                    section: 'section2',
+                    lastInviteDate: '12 Oct 2022',
+                    researchInterests: 'computational electromagnetics; coupled multi-physics modeling; design of electromagnetic systems; exposure assessment in electric vehicle; electromagnetic compatibility; nondestructive testing; smart material actuation; robotics; biomedicine',
+                    absenceDate: ''
+                }
+            ];
+
+            var fakeEditors = [];
+            for (var i = 0; i < 200; i++) {
+                var base = baseEditors[i % baseEditors.length];
+                fakeEditors.push({
+                    name: base.name + ' #' + (i + 1),
+                    email: base.email.replace('@', '+' + (i + 1) + '@'),
+                    role: base.role,
+                    section: (i % 2 === 0) ? 'section1' : 'section2',
+                    lastInviteDate: base.lastInviteDate,
+                    researchInterests: base.researchInterests,
+                    absenceDate: base.absenceDate
+                });
+            }
+
+            return {
+                dialogVisible: false,
+                filters: {
+                    name: '',
+                    email: '',
+                    role: '',
+                    section: '',
+                    lastInviteDate: '',
+                    researchInterests: '',
+                    absenceDate: ''
+                },
+                filterRow: {
+                    name: '',
+                    email: '',
+                    role: '',
+                    section: '',
+                    lastInviteDate: '',
+                    researchInterests: '',
+                    absenceDate: ''
+                },
+                researchExactMatch: false,
+                editors: fakeEditors,
+                currentPage: 1,
+                pageSize: 50,
+                pageSizeOptions: [50, 100, 200, 500],
+                jumpPage: 1
+            };
+        },
+        computed: {
+            filteredEditors: function () {
+                var self = this;
+                return this.editors.filter(function (item) {
+                    var nameMatch = self.filters.name === '' || item.name.toLowerCase().indexOf(self.filters.name.toLowerCase()) !== -1;
+                    var emailMatch = self.filters.email === '' || item.email.toLowerCase().indexOf(self.filters.email.toLowerCase()) !== -1;
+                    var roleMatch = self.filters.role === '' || item.role.toLowerCase().indexOf(self.filters.role.toLowerCase()) !== -1;
+                    var sectionMatch = self.filters.section === '' || (item.section && item.section.toLowerCase().indexOf(self.filters.section.toLowerCase()) !== -1);
+                    var researchMatch = (function() {
+                        var q = self.filters.researchInterests.trim();
+                        if (q === '') return true;
+                        var text = item.researchInterests.toLowerCase();
+                        var words = q.toLowerCase().split(/\s+/).filter(function(w) { return w.length > 0; });
+                        if (words.length === 0) return true;
+                        if (self.researchExactMatch) {
+                            // On: any input word matches as a complete word anywhere in text
+                            return words.some(function(w) {
+                                return self.matchWholeWord(text, w);
+                            });
+                        } else {
+                            // Off: contiguous phrase prefix matching
+                            // All words except the last must appear consecutively and exactly,
+                            // the last word uses prefix matching — as a single phrase.
+                            // e.g. "strongly cor" matches "strongly correlated" but NOT "strongly ... cor..."
+                            var exactPart = words.slice(0, words.length - 1).join(' ');
+                            var lastPart = words[words.length - 1];
+                            var phrase = exactPart.length > 0 ? exactPart + ' ' + lastPart : lastPart;
+                            // phrase must start at a word boundary in text
+                            var escaped = self.escapeRe(phrase);
+                            var re = new RegExp('(?:^|[\\s;,])' + escaped);
+                            return re.test(text);
+                        }
+                    })();
+                    var absenceMatch = self.filters.absenceDate === '' || item.absenceDate.toLowerCase().indexOf(self.filters.absenceDate.toLowerCase()) !== -1;
+                    return nameMatch && emailMatch && roleMatch && sectionMatch && researchMatch && absenceMatch;
+                });
+            },
+            filteredTotal: function () {
+                return this.filteredEditors.length;
+            },
+            totalPages: function () {
+                if (this.pageSize === 'all') return 1;
+                if (this.pageSize <= 0) return 1;
+                var pages = Math.ceil(this.filteredTotal / this.pageSize);
+                return pages > 0 ? pages : 1;
+            },
+            pagedEditors: function () {
+                if (this.pageSize === 'all') {
+                    return this.filteredEditors;
+                }
+                var start = (this.currentPage - 1) * this.pageSize;
+                var end = start + this.pageSize;
+                return this.filteredEditors.slice(start, end);
+            },
+            pageList: function () {
+                var pages = this.totalPages;
+                var current = this.currentPage;
+                var list = [];
+
+                function addPage(page, type, currentPage) {
+                    list.push({
+                        key: 'p-' + page + '-' + type,
+                        type: type,
+                        page: page,
+                        className: type === 'current' ? 'current' : '',
+                        clickable: type === 'page'
+                    });
+                }
+
+                function addEllipsis(key) {
+                    list.push({
+                        key: 'e-' + key,
+                        type: 'ellipsis',
+                        page: null,
+                        className: 'ellipsis',
+                        clickable: false
+                    });
+                }
+
+                if (pages <= 7) {
+                    for (var i = 1; i <= pages; i++) {
+                        addPage(i, i === current ? 'current' : 'page', current);
+                    }
+                    return list;
+                }
+
+                // pages > 7
+                if (current <= 4) {
+                    for (var j = 1; j <= 6; j++) {
+                        addPage(j, j === current ? 'current' : 'page', current);
+                    }
+                    addEllipsis('right');
+                    addPage(pages, 'page', current);
+                } else if (current >= pages - 3) {
+                    addPage(1, 'page', current);
+                    addEllipsis('left');
+                    for (var k = pages - 5; k <= pages; k++) {
+                        addPage(k, k === current ? 'current' : 'page', current);
+                    }
+                } else {
+                    addPage(1, 'page', current);
+                    addEllipsis('left');
+                    for (var m = current - 1; m <= current + 1; m++) {
+                        addPage(m, m === current ? 'current' : 'page', current);
+                    }
+                    addEllipsis('right');
+                    addPage(pages, 'page', current);
+                }
+
+                return list;
+            }
+        },
+        methods: {
+            tableRowClassName: function (row) {
+                if (row.rowIndex === 0) {
+                    return 'filter-row';
+                }
+                // 数据行从第二行开始（rowIndex=1），第一行数据应该是白色
+                // 所以 rowIndex=2,4,6...（偶数）的数据行应该有斑马条
+                if (row.rowIndex > 0 && row.rowIndex % 2 === 0) {
+                    return 'data-row-odd';
+                }
+                return '';
+            },
+            onPrev: function () {
+                if (this.currentPage > 1) {
+                    this.currentPage--;
+                    this.jumpPage = this.currentPage;
+                }
+            },
+            onNext: function () {
+                if (this.currentPage < this.totalPages) {
+                    this.currentPage++;
+                    this.jumpPage = this.currentPage;
+                }
+            },
+            goToPage: function (page) {
+                if (!page) return;
+                if (page < 1) page = 1;
+                if (page > this.totalPages) page = this.totalPages;
+                this.currentPage = page;
+                this.jumpPage = page;
+            },
+            onJump: function () {
+                var page = parseInt(this.jumpPage, 10);
+                if (isNaN(page)) {
+                    this.jumpPage = this.currentPage;
+                    return;
+                }
+                this.goToPage(page);
+            },
+            onPageSizeChange: function () {
+                if (!this.pageSize || this.pageSize <= 0) {
+                    this.pageSize = 50;
+                }
+                this.currentPage = 1;
+                this.jumpPage = 1;
+            },
+            onClearFilters: function () {
+                this.filters = {
+                    name: '',
+                    email: '',
+                    role: '',
+                    section: '',
+                    lastInviteDate: '',
+                    researchInterests: '',
+                    absenceDate: ''
+                };
+                this.researchExactMatch = false;
+                this.currentPage = 1;
+                this.jumpPage = 1;
+            },
+            escapeRe: function(s) {
+                var result = '';
+                for (var i = 0; i < s.length; i++) {
+                    var c = s[i];
+                    if ('[\\^$.|?*+(){}'.indexOf(c) !== -1) {
+                        result += '\\' + c;
+                    } else {
+                        result += c;
+                    }
+                }
+                return result;
+            },
+            matchWholeWord: function(text, word) {
+                var escaped = this.escapeRe(word);
+                var re = new RegExp('(?:^|[\\s;,])' + escaped + '(?=[\\s;,]|$)');
+                return re.test(text);
+            },
+            matchPrefix: function(text, prefix) {
+                var escaped = this.escapeRe(prefix);
+                var re = new RegExp('(?:^|[\\s;,])' + escaped);
+                return re.test(text);
+            },
+            onInvite: function (row) {
+                this.$message({
+                    message: 'Invite: ' + row.name,
+                    type: 'success'
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

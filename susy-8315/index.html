@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recommendation Table</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page">
+      <div class="topbar">
+        <div class="topbar-left">
+          <a class="toplink toplink--danger" href="#">Desk reject (out of scope)</a>
+          <span class="sep">|</span>
+          <a class="toplink" href="#">Reject and decline resubmission</a>
+          <span class="sep">|</span>
+          <a class="toplink" href="#">Others</a>
+        </div>
+        <button class="export-btn" type="button">Export Report</button>
+      </div>
+
+      <div class="tabs">
+        <a class="tab tab--active" href="#">Pending (43)</a>
+        <span class="sep">|</span>
+        <a class="tab" href="#">Accepted (38108)</a>
+        <span class="sep">|</span>
+        <a class="tab" href="#">Rejected with decision (26941)</a>
+        <span class="sep">|</span>
+        <a class="tab" href="#">Rejected without decision (636142)</a>
+        <span class="sep">|</span>
+        <a class="tab" href="#">All (701234)</a>
+      </div>
+
+      <div class="panel">
+        <div class="panel-inner">
+          <div class="controls controls--top">
+            <div class="pager">
+              <button class="pager-btn" type="button" disabled>Prev</button>
+              <button class="page-num page-num--active" type="button">1</button>
+              <button class="page-num" type="button">2</button>
+              <button class="page-num" type="button">3</button>
+              <button class="pager-btn" type="button">Next</button>
+              <span class="pager-spacer"></span>
+              <span class="jump-label">Jump</span>
+              <input class="jump-input" value="1" />
+              <button class="go-btn" type="button">GO</button>
+            </div>
+
+            <div class="view-select">
+              <span class="view-label">View</span>
+              <div class="select">
+                <select id="viewCount">
+                  <option selected>20</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+                <span class="material-icons select-caret">arrow_drop_down</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th class="col-id">Manuscript ID</th>
+                  <th class="col-journal">Recommend Journal</th>
+                  <th class="col-score">
+                    <span>AI Recommendation Score</span>
+                    <span class="sort-arrows">
+                      <span data-sort="ASC" class="sort-arrow sort-asc" title="Sort ascending">
+                        <span class="arrow-item arrow-up"></span>
+                      </span>
+                      <span data-sort="DESC" class="sort-arrow sort-desc" title="Sort descending">
+                        <span class="arrow-item arrow-down"></span>
+                      </span>
+                    </span>
+                  </th>
+                  <th class="col-editor">Assigned Editor</th>
+                  <th class="col-date">Recommend Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr data-score="93">
+                  <td><a class="link link--red" href="#">ijms-1234567</a><span class="material-icons tiny-flag" data-title="Molecular Mechanisms of Antioxidant Defense in Plant Stress Responses" data-abstract="Plants have evolved complex antioxidant defense systems to cope with various environmental stresses. This review provides a comprehensive analysis of the molecular mechanisms underlying antioxidant defense in plants, including enzymatic and non-enzymatic components. We discuss the role of reactive oxygen species (ROS) as signaling molecules and the intricate network of antioxidant enzymes such as superoxide dismutase, catalase, and peroxidases. The review also examines the interplay between different antioxidant pathways and their regulation through transcriptional and post-transcriptional mechanisms. Understanding these defense mechanisms is crucial for developing stress-tolerant crops and improving agricultural sustainability." data-score="93">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="93">93</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="45">
+                  <td><a class="link link--red" href="#">antiox-2345678</a><span class="material-icons tiny-flag" data-title="Therapeutic Potential of Natural Antioxidants in Neurodegenerative Diseases" data-abstract="Neurodegenerative diseases represent a significant global health challenge, with limited treatment options available. This study investigates the therapeutic potential of natural antioxidants derived from plant sources in combating neurodegenerative conditions such as Alzheimer's and Parkinson's diseases. We conducted a systematic review of preclinical and clinical studies examining various natural compounds including curcumin, resveratrol, and epigallocatechin gallate (EGCG). Our findings suggest that these compounds exhibit neuroprotective effects through multiple mechanisms including reduction of oxidative stress, modulation of inflammatory responses, and enhancement of mitochondrial function. The study also addresses challenges in bioavailability and discusses potential strategies for improving therapeutic efficacy." data-score="45">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="45">45</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="">
+                  <td><a class="link link--red" href="#">nutrien-3456789</a><span class="material-icons tiny-flag" data-title="Dietary Polyphenols and Their Impact on Gut Microbiota Composition" data-abstract="The gut microbiota plays a crucial role in human health, influencing metabolism, immune function, and even mental well-being. This comprehensive review explores the bidirectional relationship between dietary polyphenols and gut microbiota. We examine how polyphenols modulate the composition and function of gut microbial communities, while also considering the role of gut bacteria in metabolizing these compounds. The study analyzes evidence from in vitro, animal, and human studies, highlighting the potential of polyphenol-rich foods in promoting gut health. Furthermore, we discuss the mechanisms underlying the prebiotic-like effects of certain polyphenols and their implications for personalized nutrition strategies.">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text score-none">-</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="65">
+                  <td><a class="link link--red" href="#">biomol-4567890</a><span class="material-icons tiny-flag" data-title="Structural Insights into Protein-Ligand Interactions Using Cryo-EM" data-abstract="Cryo-electron microscopy has revolutionized structural biology, enabling the determination of high-resolution structures of macromolecular complexes. This research article presents novel insights into protein-ligand interactions using advanced cryo-EM techniques. We describe the structural characterization of several therapeutically relevant protein targets complexed with their cognate ligands, providing detailed analysis of binding sites, conformational changes, and allosteric effects. The methodology combines single-particle analysis with machine learning approaches for improved particle classification and 3D reconstruction. Our findings contribute to the understanding of molecular recognition principles and offer valuable information for structure-based drug design." data-score="65">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="65">65</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="90">
+                  <td><a class="link link--red" href="#">pharm-5678901</a><span class="material-icons tiny-flag" data-title="Novel Drug Delivery Systems for Enhanced Bioavailability" data-abstract="Poor bioavailability remains a major challenge in drug development, limiting the therapeutic efficacy of many promising compounds. This article reviews recent advances in novel drug delivery systems designed to overcome bioavailability barriers. We discuss various platforms including lipid-based nanoparticles, polymeric micelles, and self-emulsifying drug delivery systems. The review covers formulation strategies, characterization methods, and in vitro-in vivo correlation studies. Special attention is given to the application of these systems in improving the oral bioavailability of poorly water-soluble drugs. Case studies from recent clinical trials are presented to illustrate the translational potential of these technologies." data-score="90">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="90">90</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="">
+                  <td><a class="link link--red" href="#">viruses-6789012</a><span class="material-icons tiny-flag" data-title="Emerging Viral Variants: Evolutionary Dynamics and Public Health Implications" data-abstract="The emergence of viral variants with altered pathogenicity and transmissibility poses significant challenges to global health systems. This study provides a comprehensive analysis of the evolutionary dynamics driving viral variant emergence. Using computational phylogenetics and molecular epidemiology approaches, we trace the origins and spread of recent variants of concern. The research examines the genetic determinants of enhanced fitness, including mutations in spike proteins and polymerase genes. We also discuss the implications for vaccine efficacy, diagnostic accuracy, and therapeutic interventions. The findings underscore the need for robust genomic surveillance systems and adaptive public health strategies.">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text score-none">-</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="88">
+                  <td><a class="link link--red" href="#">mardru-7890123</a><span class="material-icons tiny-flag" data-title="Bioactive Compounds from Marine Sponges: A Source of Novel Pharmaceuticals" data-abstract="Marine sponges represent a rich source of structurally diverse and biologically active natural products. This review highlights recent discoveries in marine sponge-derived compounds with pharmaceutical potential. We discuss the chemical diversity, biosynthetic origins, and biological activities of these compounds, focusing on those with antimicrobial, antiviral, and anticancer properties. The review also addresses sustainable supply issues through aquaculture, total synthesis, and biosynthetic engineering approaches. Furthermore, we examine the ecological roles of these metabolites and their potential as leads for drug development. The unique chemical features of sponge metabolites offer valuable templates for the design of novel therapeutic agents." data-score="88">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="88">88</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="91">
+                  <td><a class="link link--red" href="#">jcm-8901234</a><span class="material-icons tiny-flag" data-title="Precision Medicine Approaches in Chronic Disease Management" data-abstract="Precision medicine aims to tailor healthcare decisions to individual patient characteristics. This clinical study evaluates the implementation of precision medicine approaches in managing chronic diseases including diabetes, cardiovascular disorders, and autoimmune conditions. We present findings from a multi-center prospective cohort study involving over 5000 patients. The research analyzes the impact of genetic testing, biomarker monitoring, and digital health technologies on treatment outcomes. Our results demonstrate that precision medicine interventions lead to improved disease control, reduced adverse events, and enhanced patient quality of life. The study also identifies barriers to widespread implementation and proposes strategies for integration into routine clinical practice." data-score="91">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="91">91</span></td>
+                  <td>Myrilla Xiao</td>
+                  <td>2026-02-27 03:55:36</td>
+                </tr>
+                <tr data-score="82">
+                  <td><a class="link link--blue" href="#">rs-9012345</a><span class="material-icons tiny-flag" data-title="Satellite-Based Monitoring of Environmental Changes in Urban Ecosystems" data-abstract="Urban ecosystems are rapidly transforming due to human activities and climate change. This study demonstrates the application of satellite remote sensing in monitoring environmental changes in metropolitan areas. We utilize multi-spectral and synthetic aperture radar data to assess land cover changes, urban heat island effects, and vegetation health over a 20-year period. The methodology integrates machine learning algorithms for automated classification and change detection. Results reveal significant patterns of urban sprawl, loss of green spaces, and increasing thermal stress in densely populated areas. The findings provide valuable insights for urban planning and sustainable development initiatives." data-score="82">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="82">82</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="58">
+                  <td><a class="link link--blue" href="#">batter-0123456</a><span class="material-icons tiny-flag" data-title="Advanced Electrolyte Design for High-Performance Lithium-Ion Batteries" data-abstract="Lithium-ion batteries are critical for energy storage in portable electronics and electric vehicles. This research presents a novel electrolyte formulation designed to enhance battery performance and safety. We report the synthesis and characterization of a new class of fluorinated solvent-based electrolytes with improved electrochemical stability windows. The study examines the ionic conductivity, lithium transference number, and interfacial properties of these electrolytes. Full cell testing demonstrates superior cycle life and rate capability compared to conventional carbonate-based electrolytes. The proposed electrolyte chemistry offers a promising direction for next-generation high-energy-density battery systems." data-score="58">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="58">58</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="">
+                  <td><a class="link link--blue" href="#">polyme-1123456</a><span class="material-icons tiny-flag" data-title="Biodegradable Polymers for Sustainable Packaging Applications" data-abstract="Plastic pollution has become a global environmental crisis, driving research into biodegradable alternatives. This article reviews the development and application of biodegradable polymers for packaging. We discuss various classes of biodegradable materials including polylactic acid, polyhydroxyalkanoates, and starch-based composites. The review covers material properties, processing methods, and degradation mechanisms under different environmental conditions. Life cycle assessment studies are presented to compare the environmental footprint of biodegradable versus conventional plastics. Challenges related to mechanical performance, barrier properties, and commercial viability are addressed, along with strategies for improvement.">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text score-none">-</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="71">
+                  <td><a class="link link--blue" href="#">biomed-2123456</a><span class="material-icons tiny-flag" data-title="Biomarker Discovery for Early Cancer Detection Using Machine Learning" data-abstract="Early detection significantly improves cancer survival rates. This study presents a machine learning framework for discovering biomarkers from high-dimensional omics data. We analyze transcriptomic, proteomic, and metabolomic profiles from cancer patients and healthy controls using integrated multi-omics approaches. The methodology combines feature selection algorithms with ensemble classification models to identify diagnostic biomarker panels. Validation on independent cohorts demonstrates high sensitivity and specificity for several cancer types. The identified biomarkers provide insights into early tumorigenesis and may serve as candidates for non-invasive screening tests. The framework is publicly available to facilitate reproducible biomarker research." data-score="71">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="71">71</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="95">
+                  <td><a class="link link--blue" href="#">ijerph-3123456</a><span class="material-icons tiny-flag" data-title="Air Quality and Respiratory Health in Urban Populations" data-abstract="Air pollution is a leading environmental risk factor for respiratory diseases. This epidemiological study investigates the association between ambient air quality and respiratory health outcomes in urban populations. We analyzed data from over 100,000 residents across multiple cities, integrating satellite-derived air pollution estimates with health records. Time-series analysis and spatial modeling revealed significant correlations between particulate matter exposure and incidence of asthma, chronic obstructive pulmonary disease, and respiratory infections. Vulnerable populations including children and elderly showed heightened susceptibility. The findings support public health policies aimed at reducing air pollution and protecting at-risk communities." data-score="95">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="95">95</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="84">
+                  <td><a class="link link--blue" href="#">sensor-4123456</a><span class="material-icons tiny-flag" data-title="Wearable Biosensors for Continuous Health Monitoring" data-abstract="Wearable biosensors enable continuous monitoring of physiological parameters, offering new opportunities for personalized healthcare. This article reviews the latest developments in wearable sensing technologies for health applications. We discuss various sensing modalities including electrochemical, optical, and mechanical sensors integrated into wearable platforms. The review covers signal processing algorithms, data analytics approaches, and clinical validation studies. Challenges related to sensor accuracy, power consumption, and user acceptance are addressed. Case studies demonstrate applications in chronic disease management, fitness tracking, and early detection of health abnormalities. The future outlook includes integration with telemedicine and artificial intelligence for predictive health monitoring." data-score="84">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="84">84</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="88">
+                  <td><a class="link link--blue" href="#">molecu-5123456</a><span class="material-icons tiny-flag" data-title="Computational Approaches to Molecular Docking and Virtual Screening" data-abstract="Computational methods play an increasingly important role in drug discovery. This technical article provides an overview of molecular docking and virtual screening methodologies. We describe the theoretical foundations, algorithmic implementations, and practical considerations for successful virtual screening campaigns. The article compares different docking programs and scoring functions, discussing their strengths and limitations. Validation approaches including retrospective enrichment studies and prospective experimental confirmation are presented. We also explore emerging techniques such as ensemble docking, flexible receptor modeling, and machine learning-enhanced scoring. Case studies illustrate the application of these methods in identifying novel bioactive compounds." data-score="88">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="88">88</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="">
+                  <td><a class="link link--blue" href="#">energi-6123456</a><span class="material-icons tiny-flag" data-title="Integration of Renewable Energy Sources in Smart Grid Systems" data-abstract="The transition to renewable energy requires sophisticated grid management systems. This study examines the integration of variable renewable energy sources into smart grid architectures. We present a comprehensive framework for managing distributed generation, energy storage, and demand response. The methodology combines optimization algorithms with real-time monitoring and control systems. Simulation studies demonstrate the feasibility of high renewable penetration scenarios while maintaining grid stability and reliability. Economic analysis shows cost-effective pathways for grid modernization. The research addresses technical challenges including intermittency management, power quality, and cybersecurity considerations for critical infrastructure.">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text score-none">-</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="80">
+                  <td><a class="link link--blue" href="#">cataly-7123456</a><span class="material-icons tiny-flag" data-title="Heterogeneous Catalysis for Sustainable Chemical Synthesis" data-abstract="Heterogeneous catalysts enable efficient and selective chemical transformations with reduced environmental impact. This review highlights recent advances in heterogeneous catalysis for sustainable synthesis. We discuss the design principles, characterization techniques, and catalytic performance of various solid catalysts including metal nanoparticles, metal-organic frameworks, and zeolites. The article covers reactions relevant to fine chemical and pharmaceutical production, focusing on atom economy and energy efficiency. Special attention is given to catalyst recyclability, stability, and green synthesis methods. Examples demonstrate how heterogeneous catalysis contributes to the principles of green chemistry and circular economy." data-score="80">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="80">80</span></td>
+                  <td>Priscilla Du</td>
+                  <td>2025-07-17 10:55:19</td>
+                </tr>
+                <tr data-score="74">
+                  <td><a class="link link--blue" href="#">materi-8123456</a><span class="material-icons tiny-flag" data-title="Advanced Materials for Next-Generation Photovoltaic Devices" data-abstract="Solar energy conversion efficiency depends critically on material properties. This research article presents developments in advanced materials for high-performance photovoltaic devices. We investigate perovskite solar cells, organic photovoltaics, and tandem architectures. The study examines the relationships between material composition, nanostructure, and device performance. Through systematic optimization of synthesis conditions and interface engineering, we achieve significant improvements in power conversion efficiency and stability. Accelerated aging tests demonstrate enhanced operational lifetime under various environmental conditions. The findings contribute to the development of cost-effective and durable solar energy technologies." data-score="74">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="74">74</span></td>
+                  <td>Nontawat Ploysongsri</td>
+                  <td>2025-07-17 10:39:02</td>
+                </tr>
+                <tr data-score="38">
+                  <td><a class="link link--blue" href="#">sustai-9123456</a><span class="material-icons tiny-flag" data-title="Circular Economy Strategies for Industrial Waste Management" data-abstract="Industrial waste generation poses significant environmental and economic challenges. This article examines circular economy approaches to industrial waste management. We present case studies from manufacturing, chemical, and construction sectors demonstrating successful waste valorization and resource recovery. The framework integrates life cycle assessment, material flow analysis, and economic modeling to evaluate circular strategies. Results show that closed-loop systems can significantly reduce waste disposal, lower environmental impacts, and create economic value. The study identifies key success factors including industrial symbiosis networks, policy incentives, and technological innovations. Recommendations are provided for scaling circular economy practices across different industrial contexts." data-score="38">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="38">38</span></td>
+                  <td>Nontawat Ploysongsri</td>
+                  <td>2025-07-17 10:39:02</td>
+                </tr>
+                <tr data-score="85">
+                  <td><a class="link link--blue" href="#">atmosp-0234567</a><span class="material-icons tiny-flag" data-title="Climate Modeling of Atmospheric Aerosol Effects on Regional Weather" data-abstract="Atmospheric aerosols significantly influence regional weather patterns and climate. This study employs advanced climate modeling to investigate aerosol effects on precipitation, temperature, and atmospheric circulation. We integrate satellite observations, ground-based measurements, and numerical simulations to understand aerosol-climate interactions. Results reveal complex feedback mechanisms whereby aerosols modify cloud properties, alter radiative balances, and affect regional hydrological cycles. The research identifies distinct aerosol signatures in extreme weather events and provides improved parameterizations for climate models. These findings have important implications for weather forecasting, climate projections, and air quality management policies." data-score="85">title</span></td>
+                  <td>Hygiene</td>
+                  <td><span class="score-text" data-score="85">85</span></td>
+                  <td>Nontawat Ploysongsri</td>
+                  <td>2025-07-17 10:39:02</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="controls controls--bottom">
+            <div class="pager">
+              <button class="pager-btn" type="button" disabled>Prev</button>
+              <button class="page-num page-num--active" type="button">1</button>
+              <button class="page-num" type="button">2</button>
+              <button class="page-num" type="button">3</button>
+              <button class="pager-btn" type="button">Next</button>
+              <span class="pager-spacer"></span>
+              <span class="jump-label">Jump</span>
+              <input class="jump-input" value="1" />
+              <button class="go-btn" type="button">GO</button>
+            </div>
+
+            <div class="view-select">
+              <span class="view-label">View</span>
+              <div class="select">
+                <select id="viewCountBottom">
+                  <option selected>20</option>
+                  <option>50</option>
+                  <option>100</option>
+                </select>
+                <span class="material-icons select-caret">arrow_drop_down</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

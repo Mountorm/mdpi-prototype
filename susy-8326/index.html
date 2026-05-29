@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manuscript ID Component</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="manuscript-row">
+
+    <!-- ===== Manuscript ID ===== -->
+    <span class="label">Manuscript ID</span>
+
+    <!-- Display state -->
+    <div class="state-display" id="msStateDisplay">
+      <span class="value" id="msDisplayValue">acoustics-4208428</span>
+      <span class="badge cn">CN</span>
+      <span class="icon-btn link-icon" id="msLinkBtn" title="Link manuscript">
+        <i class="material-symbols-outlined" style="font-size:18px;">link</i>
+      </span>
+    </div>
+
+    <!-- Edit state -->
+    <div class="state-edit hidden" id="msStateEdit">
+      <span class="value-text" id="msEditText">acoustics-4208428</span>
+      <span class="badge cn">CN</span>
+      <input type="text" class="edit-input" id="msEditInput" value="acoustics-4208428">
+      <span class="icon-btn confirm-btn" id="msConfirmBtn" title="Confirm">
+        <i class="material-symbols-outlined" style="font-size:20px;color:#52c41a;">check</i>
+      </span>
+      <span class="cancel-text" id="msCancelBtn">Cancel</span>
+    </div>
+
+    <!-- Linked state -->
+    <div class="state-linked hidden" id="msStateLinked">
+      <span class="value" id="msLinkedValue">acoustics-4208428</span>
+      <span class="badge cn">CN</span>
+      <span class="linked-label">Retraction from</span>
+      <a href="javascript:void(0);" class="linked-manuscript" id="msLinkedManuscript">energies-4208455</a>
+      <span class="icon-btn link-icon" id="msRelinkBtn" title="Unlink">
+        <i class="material-symbols-outlined" style="font-size:18px;">link_off</i>
+      </span>
+      <a href="javascript:void(0);" class="icon-btn note-icon" title="Manuscript notes (energies-4208455)">
+        <i class="material-symbols-outlined" style="font-size:18px;">clinical_notes</i>
+      </a>
+    </div>
+
+    <!-- ===== Ethics Issue ===== -->
+    <span class="label-issue hidden" id="ethicsLabel">Ethics Issue</span>
+
+    <!-- Ethics edit state: appears after saving manuscript -->
+    <div class="state-edit hidden" id="ethStateEdit">
+      <div class="ethics-select-wrapper">
+        <select class="edit-select" id="ethEditSelect">
+          <option value="">-- Select --</option>
+          <option value="EI-001">Ethics Issue - 1039</option>
+          <option value="EI-002">Ethics Issue - 1040</option>
+          <option value="EI-003">Ethics Issue - 1041</option>
+        </select>
+        <i class="material-symbols-outlined select-arrow">expand_more</i>
+      </div>
+      <span class="icon-btn confirm-btn" id="ethConfirmBtn" title="Confirm">
+        <i class="material-symbols-outlined" style="font-size:20px;color:#52c41a;">check</i>
+      </span>
+      <span class="cancel-text" id="ethCancelBtn">Cancel</span>
+    </div>
+
+    <!-- Ethics linked state -->
+    <div class="state-linked hidden" id="ethStateLinked">
+      <a href="javascript:void(0);" class="linked-manuscript" id="ethLinkedValue">Ethics Issue - EI-001</a>
+      <span class="icon-btn edit-icon" id="ethRelinkBtn" title="Edit">
+        <i class="material-symbols-outlined" style="font-size:18px;">edit</i>
+      </span>
+    </div>
+
+  </div>
+
+  <!-- PRD Interaction Description -->
+  <div class="prd-section">
+    <h2>交互说明 Interaction Description</h2>
+
+    <div class="prd-block">
+      <h3>操作流程 User Flow</h3>
+      <div class="prd-bilingual">
+        <ol class="prd-cn">
+          <li>用户点击稿件关联图标，输入 ID 选择稿件后保存。</li>
+          <li>用户关联稿件后，显示 Ethics Issue 关联选择器。</li>
+          <li>用户选择 Ethics Issue 并保存后，在右侧显示已关联的 Ethics Issue ID，并超链接跳转至 detail 页面。</li>
+          <li>点击铅笔图标按钮可以重新选择关联的 Ethics Issue。</li>
+        </ol>
+        <ol class="prd-en">
+          <li>User clicks link icon on Manuscript ID, enters ID to select a manuscript and saves.</li>
+          <li>After linking a manuscript, the Ethics Issue selector appears automatically.</li>
+          <li>After selecting an Ethics Issue and saving, the linked Ethics Issue ID is displayed on the right with a hyperlink to the detail page.</li>
+          <li>Click the pencil icon to re-select the linked Ethics Issue.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="prd-block">
+      <h3>注意 Note</h3>
+      <div class="prd-bilingual">
+        <ul class="prd-cn">
+          <li>如果取消关联了稿件 ID，Ethics Issue 自动解除关联。</li>
+          <li>未关联 Ethics Issue 时不允许 Cancel，直接隐藏；编辑修改时才显示 Cancel。</li>
+          <li>未选择Ethics Issue时，对勾按钮禁用不可点击。</li>
+        </ul>
+        <ul class="prd-en">
+          <li>If the manuscript ID is unlinked, the associated Ethics Issue is automatically removed.</li>
+          <li>When Ethics Issue is not linked, Cancel is hidden directly; Cancel only appears when editing.</li>
+          <li>When no Ethics Issue is selected, the check (confirm) button is disabled and cannot be clicked.</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

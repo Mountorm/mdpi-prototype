@@ -1,0 +1,66 @@
+═══════════════════════════════════════════════════════════
+  Cloudflare Workers 网页部署 - 快速参考
+═══════════════════════════════════════════════════════════
+
+📋 部署步骤（5 分钟完成）
+
+1. 访问 https://dash.cloudflare.com/
+   登录你的 Cloudflare 账号
+
+2. 点击左侧 "Workers & Pages"
+
+3. 点击 "Create application" > "Create Worker"
+
+4. 输入名称（例如：mock-api-service）
+   点击 "Deploy"
+
+5. 点击 "Edit code" 按钮
+
+6. 删除默认代码，复制粘贴 src/index.js 的全部内容
+
+7. 点击 "Save and Deploy"
+
+8. 完成！你会得到一个 URL：
+   https://mock-api-service.workers.dev
+
+═══════════════════════════════════════════════════════════
+
+🧪 测试你的 API
+
+替换下面的 URL 为你的 Worker URL：
+
+# Ingest 接口
+curl -X POST "https://your-worker.workers.dev/api/v2/ingest/submission?susy_submission_id=12345"
+
+# Status 接口
+curl "https://your-worker.workers.dev/api/v2/documents/abcdef1234567895/status"
+
+# Summary 接口
+curl "https://your-worker.workers.dev/api/v2/reports/abcdef1234567891/issues_summary"
+
+或在浏览器直接访问：
+https://your-worker.workers.dev/api/v2/documents/abcdef1234567895/status
+
+═══════════════════════════════════════════════════════════
+
+🌐 配置自定义域名（可选）
+
+1. 在 Worker 页面，点击 "Settings" 标签
+2. 找到 "Domains & Routes"
+3. 点击 "Add Custom Domain"
+4. 输入：api.yourdomain.com
+5. 点击 "Add Custom Domain"
+6. 等待几分钟 DNS 生效
+
+═══════════════════════════════════════════════════════════
+
+💡 提示
+
+- 免费套餐：每天 100,000 次请求
+- 全球 CDN 加速
+- 无需信用卡
+- 代码修改后重新 "Save and Deploy" 即可
+
+═══════════════════════════════════════════════════════════
+
+📖 详细说明请查看：网页部署指南.md

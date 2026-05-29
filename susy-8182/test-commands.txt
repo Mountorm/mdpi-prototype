@@ -1,0 +1,56 @@
+# 快速测试命令
+
+## 启动服务
+npm run dev
+
+## 测试 Ingest 接口（不同尾数）
+# 返回: {"date":"...","note":null,"result":{"document_hashes":["...0"],"count":1}}
+curl -X POST "http://localhost:8787/api/v2/ingest/submission?susy_submission_id=12340"
+
+# 返回: {"date":"...","note":null,"result":{"document_hashes":["...5"],"count":1}}
+curl -X POST "http://localhost:8787/api/v2/ingest/submission?susy_submission_id=12345"
+
+# 返回: {"date":"...","note":null,"result":{"document_hashes":["...9"],"count":1}}
+curl -X POST "http://localhost:8787/api/v2/ingest/submission?susy_submission_id=12349"
+
+## 测试 Status 接口
+# 尾数 0 - 随机状态 (pending/in_progress/failed)
+# 返回: {"date":"...","note":null,"result":{"status":"pending"}}
+curl "http://localhost:8787/api/v2/documents/abcdef1234567890/status"
+
+# 尾数 5 - done
+# 返回: {"date":"...","note":null,"result":{"status":"done"}}
+curl "http://localhost:8787/api/v2/documents/abcdef1234567895/status"
+
+## 测试 Summary 接口
+# 尾数 0 - 空 result
+# 返回: {"date":"...","note":null,"result":{}}
+curl "http://localhost:8787/api/v2/reports/abcdef1234567890/issues_summary"
+
+# 尾数 1 - authors 普通问题 + AI 问题
+# 返回: authors.warning_count > 0, severe_warning_count = 0, ai_writing.proportions.human < 0.7
+curl "http://localhost:8787/api/v2/reports/abcdef1234567891/issues_summary"
+
+# 尾数 2 - authors 只有严重问题
+# 返回: authors.warning_count = 0, severe_warning_count > 0
+curl "http://localhost:8787/api/v2/reports/abcdef1234567892/issues_summary"
+
+# 尾数 3 - references 只有普通问题
+# 返回: references.warning_count > 0, severe_warning_count = 0
+curl "http://localhost:8787/api/v2/reports/abcdef1234567893/issues_summary"
+
+# 尾数 5 - authors + references 只有普通问题
+# 返回: authors 和 references 都只有 warning_count > 0
+curl "http://localhost:8787/api/v2/reports/abcdef1234567895/issues_summary"
+
+# 尾数 7 - 所有问题
+# 返回: 所有项的 warning 和 severe 都 > 0，human 都 < 0.7
+curl "http://localhost:8787/api/v2/reports/abcdef1234567897/issues_summary"
+
+# 尾数 8 - 无问题
+# 返回: 所有警告为 0，human_proportion 为 1.0
+curl "http://localhost:8787/api/v2/reports/abcdef1234567898/issues_summary"
+
+# 尾数 9 - 错误
+# 返回: HTTP 500 错误
+curl "http://localhost:8787/api/v2/reports/abcdef1234567899/issues_summary"

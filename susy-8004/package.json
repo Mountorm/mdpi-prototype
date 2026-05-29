@@ -1,0 +1,23 @@
+{
+  "name": "email-template-manager",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "vue": "^2.6.14",
+    "vue-router": "^3.5.3",
+    "element-ui": "^2.15.13",
+    "@tinymce/tinymce-vue": "^3.2.8",
+    "tinymce": "^6.8.2"
+  },
+  "devDependencies": {
+    "@vue/cli-service": "^5.0.8",
+    "tailwindcss": "^2.2.19",
+    "autoprefixer": "^10.4.5",
+    "postcss": "^8.4.31",
+    "vue-template-compiler": "^2.6.14"
+  }
+}

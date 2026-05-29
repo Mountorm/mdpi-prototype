@@ -1,0 +1,303 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 60px;
+  gap: 16px;
+}
+
+.manuscript-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 6px;
+  padding: 12px 16px;
+  min-width: 700px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  flex-wrap: wrap;
+}
+
+.label {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+}
+
+.label-issue {
+  font-size: 13px;
+  color: #c33;
+  white-space: nowrap;
+}
+
+.state-display,
+.state-edit,
+.state-linked {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.value,
+.value-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  line-height: 1.4;
+}
+
+.badge.cn {
+  background: #ff9800;
+  color: #fff;
+}
+
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  cursor: pointer;
+  color: #999;
+  transition: color 0.2s, background 0.2s;
+}
+
+.icon-btn:hover {
+  color: #1890ff;
+  background: #f0f7ff;
+}
+
+.link-icon {
+  color: #4f5671;
+}
+
+.note-icon {
+  color: #8fb529;
+  text-decoration: none;
+}
+
+.edit-icon {
+  color: #4f5671;
+}
+
+.confirm-btn {
+  width: auto;
+  height: auto;
+  padding: 0;
+}
+
+.confirm-btn:hover {
+  background: none;
+}
+
+.cancel-text {
+  font-size: 14px;
+  color: #3156a2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.cancel-text:hover {
+  color: #3156a2;
+  text-decoration: underline;
+}
+
+/* Edit input */
+.edit-input {
+  font-size: 14px;
+  padding: 4px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  outline: none;
+  width: 200px;
+  transition: border-color 0.2s;
+}
+
+.edit-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24,144,255,0.15);
+}
+
+/* Linked state */
+.linked-label {
+  font-size: 13px;
+  color: #008000;
+  white-space: nowrap;
+}
+
+.linked-manuscript {
+  font-size: 14px;
+  font-weight: 500;
+  color: #3156a2;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.linked-manuscript:hover {
+  color: #3156a2;
+  text-decoration: underline;
+}
+
+/* Ethics Issue select */
+.ethics-select-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+.edit-select {
+  font-size: 14px;
+  padding: 4px 32px 4px 10px;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 200px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  background: #fff;
+}
+
+.edit-select:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24,144,255,0.15);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 6px;
+  font-size: 18px;
+  color: #999;
+  pointer-events: none;
+}
+
+/* PRD Section */
+.prd-section {
+  margin-top: 40px;
+  padding: 24px 32px;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  min-width: 700px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+
+.prd-section h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.prd-block {
+  margin-bottom: 24px;
+}
+
+.prd-block h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.prd-block table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.prd-block th,
+.prd-block td {
+  padding: 8px 12px;
+  text-align: left;
+  border: 1px solid #e8e8e8;
+}
+
+.prd-block th {
+  background: #fafafa;
+  font-weight: 600;
+  color: #333;
+}
+
+.prd-block td {
+  color: #555;
+}
+
+.prd-block code {
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: #c41d7f;
+}
+
+.prd-block ol,
+.prd-block ul {
+  padding-left: 20px;
+  font-size: 13px;
+  color: #555;
+  line-height: 1.8;
+}
+
+.prd-block li {
+  margin-bottom: 4px;
+}
+
+.prd-bilingual {
+  margin-top: 8px;
+}
+
+.prd-cn,
+.prd-en {
+  margin-bottom: 8px;
+}
+
+.prd-cn {
+  color: #333;
+}
+
+.prd-en {
+  color: #888;
+  font-size: 12px;
+}
+
+.prd-cn ol,
+.prd-en ol,
+.prd-cn ul,
+.prd-en ul {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.prd-en ol,
+.prd-en ul {
+  font-size: 12px;
+}
