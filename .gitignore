@@ -1,6 +1,30 @@
+# Dependencies
 node_modules/
+
+# Build output
 dist/
+.next/
+
+# Cloudflare Workers
+.wrangler/
+.dev.vars
+
+# v0.dev runtime files
+__v0_*
+
+# IDE / editor
+.vscode/
+
+# Design tool artifacts
+.kiro/
+
+# Environment & OS
 .env
 .env*.local
 .DS_Store
+
+# Logs
 *.log
+
+# TypeScript build info
+*.tsbuildinfo
