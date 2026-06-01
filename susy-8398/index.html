@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- jQuery UI -->
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <!-- Element UI CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="ethics-issue-view.css">
 </head>
@@ -307,8 +309,23 @@
                      <div class="separator"></div>
             
             <!-- Add Comment Button -->
-            <div class="clearfix" style="padding: 10px 20px;">
-                <button class="btn-primary">Add Comment</button>
+            <div style="padding: 10px 20px;">
+                <div class="academic-editor-info">
+                    <span style="font-weight: 700;">Academic Editor</span>
+                    <span style="margin-left: 10px; color: #148a14;">Christopher W.K. Lam</span>
+                    <a href="#" title="Send email"><span class="ms" style="font-size: 18px;">mail</span></a>
+                    <a href="#" title="View profile"><span class="ms ms-filled" style="font-size: 18px;">person</span></a>
+                    <a href="#" title="Copy"><span class="ms" style="font-size: 18px;">add_notes</span></a>
+                    <a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height: 18px; vertical-align: middle;"></a>
+                    <span style="margin-left: 10px;"><a href="#">0 pre-check decisions</a> + <a href="#">0 decisions</a></span>
+                    (<a href="#">click here to see invitation history</a><span>).</span>
+                    <div class="academic-editor-actions">
+                        <span>Invite</span> or <span id="choose-editor-btn">Choose another editor</span> to make a decision
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 15px;">
+                    <button class="btn-primary" style="float: none;">Add Comment</button>
+                </div>
             </div>
         </div>
         
@@ -342,11 +359,166 @@
         
     </div>
     
+    <!-- Editor Selection Dialog (Vue 2 + Element UI) -->
+    <div id="editor-dialog-app">
+        <el-dialog
+            class="editor-dialog"
+            title="Select Editor"
+            :visible.sync="dialogVisible"
+            width="1320px"
+            top="5vh"
+            :close-on-click-modal="false"
+        >
+            <div class="editor-table-wrapper">
+                <el-table
+                    :data="[filterRow].concat(pagedEditors)"
+                    border
+                    height="670"
+                    style="width: 100%"
+                    :scroll-gutter="0"
+                    :show-header="true"
+                    :row-class-name="tableRowClassName"
+                >
+                    <el-table-column prop="name" label="Name" width="110">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <el-input v-model="filters.name" size="mini" clearable></el-input>
+                            </div>
+                            <a v-else href="javascript:void(0);" class="editor-table-link" title="click here to see invitation history">{{ scope.row.name }}</a>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="email" label="Email" width="160">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <el-input v-model="filters.email" size="mini" clearable></el-input>
+                            </div>
+                            <div v-else>{{ scope.row.email }}</div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="role" label="Role" width="200">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <el-select v-model="filters.role" size="mini" clearable placeholder="Select">
+                                    <el-option label="Section Board Member" value="Section Board Member"></el-option>
+                                    <el-option label="Editorial Board Member" value="Editorial Board Member"></el-option>
+                                    <el-option label="Guest Editor" value="Guest Editor"></el-option>
+                                    <el-option label="Topic Associate Editor-in-Chief" value="Topic Associate Editor-in-Chief"></el-option>
+                                </el-select>
+                            </div>
+                            <div v-else class="multi-line" v-html="scope.row.role"></div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="section" label="Section" width="180">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <el-select v-model="filters.section" size="mini" clearable placeholder="Select">
+                                    <el-option label="section1" value="section1"></el-option>
+                                    <el-option label="section2" value="section2"></el-option>
+                                </el-select>
+                            </div>
+                            <div v-else class="multi-line" v-html="scope.row.section"></div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="lastInviteDate" label="Last Invite Date" sortable width="150">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0"></div>
+                            <div v-else>{{ scope.row.lastInviteDate }}</div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="researchInterests" label="Research Interests" min-width="200">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0" style="display: flex; align-items: center; gap: 4px;">
+                                <el-input v-model="filters.researchInterests" size="mini" clearable style="flex: 1;"></el-input>
+                                <el-checkbox v-model="researchExactMatch" size="mini">exact</el-checkbox>
+                                <el-tooltip placement="top" effect="dark">
+                                    <div slot="content" style="max-width: 280px; line-height: 1.6;">
+                                        <div><strong>On:</strong> Returns results that contain any of the exact terms you typed.</div>
+                                        <div style="margin-top: 6px;"><strong>Off:</strong> Prefix search — each term you enter matches anything starting with it.</div>
+                                    </div>
+                                    <span class="ms" style="font-size: 18px;">info</span>
+                                </el-tooltip>
+                            </div>
+                            <div v-else class="multi-line">{{ scope.row.researchInterests }}</div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column prop="absenceDate" label="Absence Date" width="110">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <el-input v-model="filters.absenceDate" size="mini" clearable></el-input>
+                            </div>
+                            <div v-else>{{ scope.row.absenceDate }}</div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="Action" width="110" align="center">
+                        <template slot-scope="scope">
+                            <div v-if="scope.$index === 0">
+                                <a href="javascript:void(0);" @click="onClearFilters" class="editor-table-link">Clear All</a>
+                            </div>
+                            <div v-else>
+                                <span class="editor-table-link" @click="onInvite(scope.row)" style="margin-right: 8px;">Invite</span>
+                                <el-tooltip content="Academic Editor Notes" placement="top">
+                                    <a href="#" title="Copy"><span class="ms" style="font-size: 18px;">add_notes</span></a>
+                                </el-tooltip>
+                                <el-tooltip content="Invitation History" placement="top">
+                                    <img src="https://susy.mdpi.com/build/img/icon/notebooks.png?a5ce4b8" alt="History" style="width: 16px; height: 16px; margin-left: 8px; cursor: pointer; vertical-align: middle;" />
+                                </el-tooltip>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </div>
+
+            <nav class="pagination_nav" aria-label="Pagination">
+                <ul class="pagination margin-0">
+                    <li :class="{ disabled: currentPage === 1 }" @click="onPrev">
+                        <span v-if="currentPage === 1">Prev </span>
+                        <a v-else href="javascript:void(0);">Prev </a>
+                    </li>
+                    <li v-for="item in pageList" :key="item.key" :class="item.className" @click="item.clickable && goToPage(item.page)">
+                        <span v-if="item.type === 'current'">{{ item.page }}</span>
+                        <span v-else-if="item.type === 'ellipsis'">...</span>
+                        <a v-else href="javascript:void(0);" :aria-label="'Page ' + item.page">{{ item.page }}</a>
+                    </li>
+                    <li :class="{ disabled: currentPage === totalPages }" @click="onNext">
+                        <span v-if="currentPage === totalPages">Next </span>
+                        <a v-else href="javascript:void(0);">Next </a>
+                    </li>
+                    <li class="ui-paging-tool">
+                        <ul>
+                            <li>Jump</li>
+                            <li><input id="jump_page" type="text" v-model.number="jumpPage" size="2"></li>
+                            <li><a class="pagination-jump" href="javascript:void(0);" @click="onJump">GO</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="per-page-wrap">
+                    <span>View</span>
+                    <select class="page-limit-select" v-model.number="pageSize" @change="onPageSizeChange">
+                        <option v-for="size in pageSizeOptions" :key="size" :value="size">{{ size }}</option>
+                    </select>
+                </div>
+            </nav>
+        </el-dialog>
+    </div>
+
     <!-- jQuery 3.x -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- jQuery UI -->
     <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <!-- Vue 2 + Element UI -->
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
     <!-- Custom JavaScript -->
     <script src="ethics-issue-view.js"></script>
+    <!-- Editor Dialog JavaScript -->
+    <script src="editor-dialog.js"></script>
 </body>
 </html>
