@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDPI Ethics Issue View</title>
+    
+    <!-- Google Material Symbols Outlined 图标库 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0">
+    <!-- Font Awesome 4.7 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    
+    <style>
+        /* 全局样式 */
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #ffffff;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        #maincol {
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 13px;
+            line-height: 1.5;
+            padding: 20px;
+        }
+        
+        /* 导航菜单 */
+        .navigation-menu {
+            height: auto;
+            border-bottom: none;
+            background: transparent;
+            margin-bottom: 20px;
+            display: none; /* 根据真实页面，这个导航可能不显示 */
+        }
+        
+        .navigation-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            align-items: stretch;
+            height: 100%;
+        }
+        
+        .navigation-menu li {
+            display: flex;
+            align-items: center;
+            min-width: 64px;
+            margin-right: 20px;
+        }
+        
+        .navigation-menu li:last-child {
+            margin-right: 0;
+        }
+        
+        .navigation-menu li a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            color: #6c757d;
+            font-size: 14px;
+            font-weight: 400;
+            text-decoration: none;
+        }
+        
+        .navigation-menu li a:visited {
+            color: #6c757d;
+        }
+        
+        .navigation-menu li.active {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .navigation-menu li.active a {
+            color: #0d6efd;
+            font-weight: 500;
+        }
+        
+        /* Quickform 样式 */
+        .quickform {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 0;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .quickform legend {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000000;
+            border-bottom: none;
+            padding-bottom: 0;
+            width: auto;
+            margin-bottom: 15px;
+        }
+        
+        .quickform fieldset {
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        /* Grid 系统 */
+        .row {
+            margin-bottom: 8px;
+        }
+        
+        .grid-x {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        
+        .grid-padding-x {
+            padding: 0;
+        }
+        
+        .grid-margin-y {
+            margin-bottom: 8px;
+        }
+        
+        .cell {
+            padding: 0;
+        }
+        
+        .cell.small-12 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .cell.large-2 {
+            flex: 0 0 150px;
+            max-width: 150px;
+            font-weight: 400;
+            color: #000000;
+            text-align: right;
+            padding-right: 15px;
+        }
+        
+        .cell.large-8 {
+            flex: 1;
+            max-width: calc(100% - 150px);
+        }
+        
+        .break-word {
+            word-wrap: break-word;
+        }
+        
+        /* User Box */
+        .user_box {
+            padding: 15px 20px;
+            font-size: 13px;
+            background: #ffffff;
+            width: 100%;
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+        }
+        
+        .user_box_wide {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        #ethic-issue_info {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin-bottom: 10px;
+        }
+        
+        #ethic-issue_info h1 {
+            margin: 0;
+            min-height: auto;
+            font-size: 14px;
+        }
+        
+        /* Caption Table */
+        .caption table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+        }
+        
+        .caption table th {
+            font-weight: 400;
+            background-color: transparent;
+            padding: 8px 15px 8px 0;
+            text-align: right;
+            width: 150px;
+            border-bottom: none;
+            white-space: nowrap;
+            vertical-align: top;
+            color: #000000;
+        }
+        
+        .caption table td {
+            font-weight: 400;
+            padding: 8px 0 8px 15px;
+            border-bottom: none;
+            vertical-align: top;
+            color: #000000;
+        }
+        
+        .caption table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .caption table tr:last-child {
+            border-bottom: none;
+        }
+        
+        /* 按钮样式 */
+        .submit {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 400;
+            line-height: 1.5;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: middle;
+            cursor: pointer;
+            user-select: none;
+            background-image: none;
+            border: 1px solid #0d6efd;
+            border-radius: 4px;
+            color: #FFFFFF;
+            background-color: #0d6efd;
+        }
+        
+        .submit:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        
+        .submit:active {
+            background-color: #0a58ca;
+            border-color: #0a53be;
+            transform: translateY(0.5px);
+        }
+        
+        .submit:disabled {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        /* Material Symbols 图标 */
+        .ms {
+            font-family: "Material Symbols Outlined";
+            font-weight: normal;
+            font-style: normal;
+            font-size: 16px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: "liga";
+            -webkit-font-smoothing: antialiased;
+            cursor: pointer;
+            color: #6c757d;
+            vertical-align: middle;
+        }
+        
+        .ms:hover {
+            color: #0d6efd;
+        }
+        
+        .ms-xs { font-size: 12px; }
+        .ms-sm { font-size: 14px; }
+        .ms-xm { font-size: 16px; }
+        .ms-lg { font-size: 20px; }
+        .ms-xl { font-size: 24px; }
+        
+        .ms-filled {
+            color: #6c757d;
+            font-variation-settings: "FILL" 1;
+        }
+        
+        .ms-faded {
+            color: #6c757d;
+        }
+        
+        .ms-faded:hover {
+            color: #0d6efd;
+        }
+        
+        .ms-note:before { content: "\e06f"; }
+        .ms-note-add:before { content: "\e06f"; color: #198754; }
+        .ms-note-add:hover:before { color: #157347; }
+        .ms-edit:before { content: "\e3c9"; }
+        .ms-error:before { content: "\e000"; }
+        
+        /* 工具类 */
+        .float-right { float: right !important; }
+        .margin-left-1 { margin-left: 10px !important; }
+        .margin-bottom-1 { margin-bottom: 10px !important; }
+        .cursor-pointer { cursor: pointer !important; }
+        .color-red { color: #dc3545 !important; }
+        .color-gray { color: #6c757d !important; }
+        .colorFGreen { color: #007f7f !important; }
+        .morandiRed { color: #dc3545 !important; }
+        
+        .required {
+            color: #dc3545;
+        }
+        
+        .required sup {
+            top: 0;
+            font-size: 1.25rem;
+        }
+        
+        .quick-search-no-jump {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+        
+        .ui-autocomplete {
+            z-index: 11111 !important;
+        }
+        
+        /* 分隔线 */
+        .separator-line {
+            display: block;
+            clear: both;
+            width: 100%;
+            margin: 20px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        /* Issue Feed */
+        .issue_feed {
+            padding: 15px 0;
+        }
+        
+        /* 其他样式 */
+        .tooltip-info {
+            text-decoration: none;
+        }
+        
+        .change-buttons {
+            margin-top: 10px;
+        }
+        
+        .tiny-mce-editor {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 13px;
+        }
+        
+        input[type="file"] {
+            padding: 5px;
+            font-size: 13px;
+        }
+        
+        a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            color: #0a58ca;
+            text-decoration: underline;
+        }
+        
+        a:visited {
+            color: #0d6efd;
+        }
+        
+        /* FA 图标调整 */
+        .fa {
+            font-size: 14px;
+        }
+        
+        .fa-plus-circle {
+            color: #198754;
+        }
+        
+        .fa-plus-circle:hover {
+            color: #157347;
+        }
+        
+        .fa-trash {
+            color: #dc3545;
+        }
+        
+        .fa-trash:hover {
+            color: #bb2d3b;
+        }
+    </style>
+</head>
+<body>
+    <div id="maincol">
+
+        <!-- 导航子菜单 -->
+        <div class="navigation-menu">
+            <ul>
+                <li class="active"><a href="#">Ethics Issues</a></li>
+                <li><a href="#">Public Forum</a></li>
+            </ul>
+        </div>
+        
+        <!-- Manuscript Information -->
+        <div class="quickform">
+            <fieldset>
+                <legend>Manuscript Information</legend>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Assigned Editor:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Ines Zhong</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Journal:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word"><i>Mathematics</i></div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Type:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Article</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Open Review:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">no</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Number of Pages:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">26</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Manuscript Status:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Website online</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Title:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Nonlinear Optical Characteristics of Copper Oxide Thin Films Interpreted Through Stillion Solutions of the Convective–Diffusive Cahn–Hilliard Equation</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Authors:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">
+                        Dr. Nan-Xing Hu, Department of Mathematics, xingnan@uhu.edu.cn, CN<br>
+                        Mr. Umar Asghar, Department of Mathematics, umar.asghar@math.uol.edu.pk, PK<br>
+                        Mr. Khurram Shabbir, Department of Mathematics, s2032066011@cmt.edu.pk, PK<br>
+                        Dr. Luminita Ioana Cotirla, Department of Mathematics, luminita.cotirla@uoradea.ro, RO
+                    </div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Keywords:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Kristen An solutions; nonlinear equation; Modified Sardar sub-equation method; closed-form solutions; Thin film of copper oxide; Applications</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Submitted to Section:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">E: Applied Mathematics</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Submitted to Special Issue:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">Advances in Computational Mathematics and Applied Mathematics, 2nd Edition</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Submission Received:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">02 October 2025</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Accepted:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">21 November 2025</div>
+                </div>
+                
+                <div class="row grid-x grid-padding-x grid-margin-y">
+                    <div class="cell small-12 medium-6 large-2">Published:</div>
+                    <div class="cell small-12 medium-6 large-8 break-word">26 November 2025</div>
+                </div>
+            </fieldset>
+        </div>
+        
+        <!-- Ethics Issue 详情头 -->
+        <div class="user_box user_box_wide" id="ethic-issue_info">
+            <h1>
+                <button onclick="window.location.href='#'" class="submit float-right margin-left-1" title="Edit issue">Edit Issue</button>
+            </h1>
+        </div>
+        
+        <!-- Ethics Issue 详情 -->
+        <div class="quickform">
+            <fieldset>
+                <legend>
+                    Ethics Issue - 9287
+                    <a href="javascript:void(0);" class="manuscript-special-issue-notes" data-load-url="#">
+                        <i class="ms ms-note-add ms-faded tooltip-info" title="Ethics Issue notes"></i>
+                    </a>
+                </legend>
+                
+                <div class="caption">
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <th>Issue Status</th>
+                            <td>In Progress</td>
+                            <th>Submission Date</th>
+                            <td>2026-05-09 11:03:35</td>
+                        </tr>
+                        <tr>
+                            <th>Priority</th>
+                            <td>Normal</td>
+                            <th>Issue Type</th>
+                            <td>Citation Irregularities</td>
+                        </tr>
+                        <tr>
+                            <th>Doi Id</th>
+                            <td>10.3390/math13233766</td>
+                            <th>Manuscript ID</th>
+                            <td><a href="#" target="_blank">mathematics-3927272</a></td>
+                        </tr>
+                        <tr>
+                            <th>Assigned Editor</th>
+                            <td>Jenny Lingzeng lin@mdpi.com</td>
+                            <th>Complainant Name/E-Mail</th>
+                            <td>Jenny Lingzeng lin@mdpi.com</td>
+                        </tr>
+                        <tr>
+                            <th>Watchers</th>
+                            <td>
+                                <span id="watcher-1">Vivian Liu(vivian.liu@mdpi.com)</span>
+                                <a href="#" class="tooltip-info color-red" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <br>
+                                <span id="watcher-2">Siya Mulyono mu@mdpi.com</span>
+                                <a href="#" class="tooltip-info color-red" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <br>
+                                <span id="watcher-3">Cathlyn Tong(cathlyn.tong@mdpi.com)</span>
+                                <a href="#" class="tooltip-info color-red" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <br>
+                                <span id="watcher-4">Rebecca Xue(rebecca.xue@mdpi.com)</span>
+                                <a href="#" class="tooltip-info color-red" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <br>
+                                <span id="watcher-5">Namo Guan(namo.guan@mdpi.com)</span>
+                                <a href="#" class="tooltip-info color-red" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash" aria-hidden="true"></i></a>
+                                <br>
+                                <i id="add-watcher" title="Add Watcher" class="fa fa-lg fa-plus-circle cursor-pointer" aria-hidden="true"></i>
+                            </td>
+                            <th>Result</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>Title of Complaint</th>
+                            <td>citation misuse / references</td>
+                            <th>Related Manuscripts</th>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <th>Public Forum with Same DOI</th>
+                            <td colspan="3">
+                                <a href="#">Case - 8173</a> (Follow-up: New)
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </fieldset>
+        </div>
+
+        
+        <!-- Description 描述 -->
+        <div class="user_box user_box_wide">
+            <b>Description:</b>
+            <div id="content-12345">
+                <p>https://pubpeer.com/publications/DF3F5D01FF8926229EC1C10</p>
+            </div>
+            <!-- 修订编辑器（隐藏） -->
+            <span style="display: none;" class="update-revised-content" id="change-revised-content-12345">
+                <textarea id="revised-content-12345" class="tiny-mce-editor" cols="60" rows="6" placeholder="Revised Description"></textarea>
+                <input data-id="12345" type="button" value="Submit" class="submit submit-revised-content"> or <a href="#" onclick="cancelAddRevisedContent(12345); return false;">Cancel</a>
+            </span>
+            <!-- 编辑按钮 -->
+            <div class="float-right change-buttons">
+                <a href="javascript:void(0);" data-id="12345" class="change-revised-content-button tooltip-info" title="Revised Description">
+                    <i class="ms ms-edit"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- File Attachments 文件附件 -->
+        <div class="user_box user_box_wide">
+            <b>File Attachments:</b>
+            <a href="#" class="colorFGreen" style="font-weight: bold;" id="files-additional-info-button">Display Files [+]</a>
+            
+            <div class="files-additional-info" style="display: none; margin-top: 10px;">
+                <p style="color: #6c757d; font-style: italic;">No Files</p>
+            </div>
+            
+            <!-- 上传表单 -->
+            <div class="quickform" style="margin-top: 15px; background: transparent; border: none; padding: 0;">
+                <form id="upload-form">
+                    <div><fieldset>
+                        <div class="row grid-x grid-padding-x grid-margin-y">
+                            <div class="cell small-12 medium-6 large-2"></div>
+                            <div class="cell small-12 medium-6 large-8">
+                                <input type="file" name="attachment" id="file-upload">
+                            </div>
+                        </div>
+                        <div class="row grid-x grid-padding-x grid-margin-y">
+                            <div class="cell small-12 medium-6 large-2"></div>
+                            <div class="cell small-12 medium-6 large-8">
+                                <input class="submit" type="submit" value="Upload">
+                            </div>
+                        </div>
+                    </fieldset></div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Feeds（仅内部编辑显示） -->
+        <div class="issue_feed">
+            <div class="row grid-x grid-padding-x grid-margin-y">
+                <div class="cell small-12 medium-6 large-2"></div>
+                <div class="cell small-12 medium-6 large-8 break-word">
+                    <a href="#" style="font-weight: bold;" class="display-feed-btn colorFGreen" data-title="Issue Feed" data-url="#">Display Feeds</a>
+                </div>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            
+            <!-- 评论 1 -->
+            <span class="separator-line"></span>
+            
+            <div style="background-color: #fff3cd; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                <strong>Jenny Lin</strong>
+                <div style="margin-top: 10px;">
+                    <p style="margin: 5px 0;"><strong>Create Issue</strong></p>
+                </div>
+            </div>
+            
+            <div class="user_box user_box_wide margin-bottom-1">
+                <div id="comment-1">
+                    <div class="margin-bottom-1"><b>Jenny Lin</b> <span class="color-gray float-right">2026-05-09 11:04:08</span></div>
+                    <div id="comment-file-1">
+                        <p>Create Issue</p>
+                    </div>
+                </div>
+                
+                <!-- 编辑框（display none） -->
+                <span style="display: none;" class="comment-to-editor" id="change-comment-1">
+                    <textarea id="new-comment-1" class="tiny-mce-editor" cols="60" rows="6" placeholder="Revised Comment"></textarea>
+                    <input data-id="1" type="button" value="Submit" class="submit submit-comment"> or <a href="javascript:void(0);" class="cancelComment" data-id="1" data-commentType="add">Cancel</a>
+                </span>
+                
+                <div class="float-right change-buttons">
+                    <a href="javascript:void(0);" data-id="1" class="comment-to-editor-button tooltip-info" title="Add Revised Comment"><i class="ms ms-edit"></i></a>
+                </div>
+            </div>
+            
+            <!-- 评论 2 -->
+            <span class="separator-line"></span>
+            
+            <div style="background-color: #fff3cd; padding: 15px; margin-bottom: 15px; border-left: 4px solid #ffc107;">
+                <strong>Jenny Lin</strong>
+                <div style="margin-top: 10px;">
+                    <ul style="margin: 5px 0; padding-left: 20px;">
+                        <li><strong>Issue Status</strong> updated from <i>Created</i> to <i>In Progress</i></li>
+                        <li><strong>Ethics Type</strong> updated from <i>Unassigned/other</i> to <i>Citation irregularities</i></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="user_box user_box_wide"><b>Comments for editors (will not be revealed to authors/reader)</b></div>
+            
+            <div class="user_box user_box_wide margin-bottom-1">
+                <div id="comment-2">
+                    <div class="margin-bottom-1"><b>Jenny Lin</b> <span class="color-gray float-right">2026-05-09 11:04:08</span></div>
+                    <div id="comment-file-2">
+                        <p>Edit Issue</p>
+                    </div>
+                </div>
+                
+                <!-- 编辑框（display none） -->
+                <span style="display: none;" class="comment-to-editor" id="change-comment-2">
+                    <textarea id="new-comment-2" class="tiny-mce-editor" cols="60" rows="6" placeholder="Revised Comment"></textarea>
+                    <input data-id="2" type="button" value="Submit" class="submit submit-comment"> or <a href="javascript:void(0);" class="cancelComment" data-id="2" data-commentType="add">Cancel</a>
+                </span>
+                
+                <div class="float-right change-buttons">
+                    <a href="javascript:void(0);" data-id="2" class="comment-to-editor-button tooltip-info" title="Add Revised Comment"><i class="ms ms-edit"></i></a>
+                </div>
+            </div>
+            
+            <!-- 底部按钮 -->
+            <button onclick="window.location.href='#'" class="submit float-right margin-left-1" title="Add Comment">Add Comment</button>
+            <div style="clear: both;"></div>
+        </div>
+
+        
+        <!-- 隐藏对话框占位 -->
+        <!-- Add Watcher 表单 -->
+        <form id="dialog" style="display: none;" class="QuickForm2" action="#" method="get">
+            <div class="row grid-x grid-padding-x grid-margin-y">
+                <div class="cell small-12 medium-6 large-2"><label><span class="required">*</span> Email</label></div>
+                <div class="cell small-12 medium-6 large-8">
+                    <input id="add-watcher-select" name="watcher_email" type="text" class="quick-search-no-jump" placeholder="Add Watcher email" autocomplete="true" required>
+                </div>
+            </div>
+            <input name="issue_id" value="12345" type="hidden">
+            <div class="row grid-x grid-padding-x grid-margin-y">
+                <div class="cell small-12 medium-6 large-2"></div>
+                <div class="cell small-12 medium-6 large-8">
+                    <input class="submit" type="submit" value="Add" id="submit_watcher">
+                </div>
+            </div>
+        </form>
+        
+        <div id="edit-history-feed-browser" title="Assigned History" style="display: none;"></div>
+        <div id="manuscript-special-issue-notes" title="Ethics Issue Notes" style="display: none;">
+            <p><strong>Note added by Admin User on 2026-01-22:</strong></p>
+            <p>Initial assessment completed. Case requires full investigation due to severity of allegations.</p>
+            <hr>
+            <p><strong>Note added by Jane Doe on 2026-01-25:</strong></p>
+            <p>Authors have been cooperative and provided requested documentation promptly.</p>
+        </div>
+        <div id="feed_dialog" style="display: none;">
+            <h3>Issue Feed</h3>
+            <div style="max-height: 400px; overflow-y: auto;">
+                <p><strong>2026-02-10 14:30</strong> - Admin User revised comment #1</p>
+                <p><strong>2026-01-28 16:45</strong> - Jane Doe uploaded response_letter.docx</p>
+                <p><strong>2026-01-25 11:20</strong> - Admin User uploaded investigation_report.pdf</p>
+                <p><strong>2026-01-25 09:15</strong> - Jane Doe added note</p>
+                <p><strong>2026-01-22 14:00</strong> - Admin User added note</p>
+                <p><strong>2026-01-20 10:00</strong> - Jane Doe added internal comment</p>
+                <p><strong>2026-01-20 09:30</strong> - Admin User assigned Jane Doe as Coordinator</p>
+                <p><strong>2026-01-20 09:00</strong> - Issue created by Admin User</p>
+            </div>
+        </div>
+        <div id="feed_details_dialog" style="display: none;"></div>
+        
+        <div id="same-doi-dialog" style="display: none;">
+            <h3>Other Issues with Same Manuscript ID</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background-color: #f2f2f2;">
+                        <th style="padding: 8px; border: 1px solid #ddd;">Issue ID</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Status</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Type</th>
+                        <th style="padding: 8px; border: 1px solid #ddd;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><a href="#">12340</a></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Closed</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Authorship Dispute</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">2025-12-15</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 8px; border: 1px solid #ddd;"><a href="#">12342</a></td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Resolved</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">Plagiarism Check</td>
+                        <td style="padding: 8px; border: 1px solid #ddd;">2026-01-05</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+    </div>
+    
+    <!-- jQuery 3.x -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            
+            // 1. 防重复提交：所有 form submit 后禁用自身
+            $('form').on('submit', function(e) {
+                e.preventDefault();
+                var $submitBtn = $(this).find('input[type="submit"]');
+                $submitBtn.prop('disabled', true);
+                
+                // 模拟提交
+                alert('Form submitted successfully!');
+                setTimeout(function() {
+                    $submitBtn.prop('disabled', false);
+                }, 2000);
+            });
+            
+            // 2. Add Watcher 对话框
+            $('#dialog').dialog({
+                autoOpen: false,
+                title: "Add Watcher",
+                width: 600,
+                modal: true
+            });
+            
+            $('#add-watcher').on('click', function() {
+                $('#dialog').dialog('open');
+            });
+            
+            $('#submit_watcher').on('click', function(e) {
+                e.preventDefault();
+                var email = $('#add-watcher-select').val();
+                if (!email || email.trim() === '') {
+                    alert('Please enter an email address');
+                    return false;
+                }
+                alert('Watcher added: ' + email);
+                $('#dialog').dialog('close');
+                $('#add-watcher-select').val('');
+            });
+            
+            // 3. Description 修订编辑
+            $('.change-revised-content-button').on('click', function() {
+                var id = $(this).data('id');
+                $('#content-' + id).hide();
+                $('.change-buttons').hide();
+                $('#change-revised-content-' + id).show();
+            });
+            
+            // 4. Comment 编辑切换
+            $('.comment-to-editor-button').on('click', function() {
+                var id = $(this).data('id');
+                $('#comment-file-' + id).hide();
+                $(this).hide();
+                $('#change-comment-' + id).show();
+            });
+            
+            // 5. Revised Comment 编辑切换
+            $('.change-revised-comment-button').on('click', function() {
+                var id = $(this).data('id');
+                $('#revised-comment-' + id).hide();
+                $(this).hide();
+                $('#change-revised-comment-' + id).show();
+            });
+            
+            // 6. 取消编辑
+            $('.cancelComment').on('click', function(e) {
+                e.preventDefault();
+                var id = $(this).data('id');
+                var commentType = $(this).data('commenttype');
+                
+                if (commentType === 'update') {
+                    $('#revised-comment-' + id).show();
+                    $('#change-revised-comment-' + id).hide();
+                } else {
+                    $('#comment-file-' + id).show();
+                    $('#change-comment-' + id).hide();
+                }
+                $('.change-buttons').show();
+            });
+            
+            // 7. Submit Comment
+            $('.submit-comment').on('click', function() {
+                var id = $(this).data('id');
+                var content = $('#new-comment-' + id).val();
+                
+                if (!content || content.trim() === '') {
+                    alert('Please enter a comment');
+                    return;
+                }
+                
+                // 模拟 AJAX
+                alert('Comment submitted successfully!');
+                // window.location.reload();
+            });
+            
+            // 8. Submit Revised Content
+            $('.submit-revised-content').on('click', function() {
+                var id = $(this).data('id');
+                var content = $('#revised-content-' + id).val();
+                
+                if (!content || content.trim() === '') {
+                    alert('Please enter revised content');
+                    return;
+                }
+                
+                // 模拟 AJAX
+                alert('Revised content submitted successfully!');
+                // window.location.reload();
+            });
+            
+            // 9. Submit Revised Comment
+            $('.submit-revised-comment').on('click', function() {
+                var id = $(this).data('id');
+                var content = $('#new-revised-comment-' + id).val();
+                
+                if (!content || content.trim() === '') {
+                    alert('Please enter revised comment');
+                    return;
+                }
+                
+                // 模拟 AJAX
+                alert('Revised comment submitted successfully!');
+                // window.location.reload();
+            });
+            
+            // 10. 文件切换
+            $('#files-additional-info-button').on('click', function(e) {
+                e.preventDefault();
+                $('.files-additional-info').toggle();
+                
+                if ($('.files-additional-info').is(':visible')) {
+                    $(this).text('Collapse [-]');
+                } else {
+                    $(this).text('Display Files [+]');
+                }
+            });
+            
+            // 11. Edit History Dialog
+            $('a[data-edit-history-url]').on('click', function(e) {
+                e.preventDefault();
+                var url = $(this).data('edit-history-url');
+                
+                // 模拟 AJAX 加载
+                $('#edit-history-feed-browser').html('<p>Loading history...</p>');
+                $('#edit-history-feed-browser').dialog({
+                    width: 800,
+                    modal: true,
+                    title: 'Assigned History'
+                });
+                $('#edit-history-feed-browser').dialog('open');
+            });
+            
+            // 12. Notes 对话框
+            $('.manuscript-special-issue-notes').on('click', function(e) {
+                e.preventDefault();
+                
+                $('#manuscript-special-issue-notes').dialog({
+                    width: 600,
+                    modal: true,
+                    title: 'Ethics Issue Notes'
+                });
+                $('#manuscript-special-issue-notes').dialog('open');
+            });
+            
+            // 13. Feeds
+            $('.display-feed-btn').on('click', function(e) {
+                e.preventDefault();
+                var title = $(this).data('title');
+                
+                $('#feed_dialog').dialog({
+                    width: 700,
+                    modal: true,
+                    title: title || 'Issue Feed'
+                });
+                $('#feed_dialog').dialog('open');
+            });
+            
+            // 18. Show Dialog（same DOI）
+            $('.show-dialog-btn').on('click', function(e) {
+                e.preventDefault();
+                
+                $('#same-doi-dialog').dialog({
+                    width: 800,
+                    modal: true,
+                    title: 'Other Issues with Same Manuscript ID'
+                });
+                $('#same-doi-dialog').dialog('open');
+            });
+            
+        });
+        
+        // 14. cancelAddRevisedContent 全局函数
+        function cancelAddRevisedContent(id) {
+            $('#content-' + id).show();
+            $('.change-buttons').show();
+            $('#change-revised-content-' + id).hide();
+        }
+        
+        // 15. cancelComment 全局函数
+        function cancelComment(id) {
+            $('#comment-' + id).show();
+            $('.change-buttons').show();
+            $('#change-comment-' + id).hide();
+        }
+        
+        // 16. cancelSecondComment 全局函数
+        function cancelSecondComment(id) {
+            $('.change-buttons').show();
+            $('#comment-to-comment-' + id).hide();
+        }
+    </script>
+</body>
+</html>

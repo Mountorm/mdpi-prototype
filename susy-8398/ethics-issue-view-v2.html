@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MDPI Ethics Issue View</title>
+    
+    <!-- Google Material Symbols Outlined 图标库 -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0">
+    <!-- Font Awesome 4.7 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #212529;
+        }
+        
+        #maincol {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Manuscript Information Box */
+        .manuscript-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .manuscript-info h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #000;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+            align-items: flex-start;
+        }
+        
+        .info-label {
+            width: 180px;
+            flex-shrink: 0;
+            text-align: right;
+            padding-right: 15px;
+            color: #000;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: #000;
+        }
+        
+        /* Ethics Issue Box */
+        .ethics-issue-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ethics-issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .ethics-issue-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #000;
+        }
+        
+        .edit-issue-btn {
+            background: #0d6efd;
+            color: #fff;
+            border: 1px solid #0d6efd;
+            padding: 6px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .edit-issue-btn:hover {
+            background: #0b5ed7;
+            border-color: #0a58ca;
+        }
+        
+        /* Details Table */
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .details-table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .details-table tr:last-child {
+            border-bottom: none;
+        }
+        
+        .details-table th {
+            width: 180px;
+            text-align: right;
+            padding: 10px 15px 10px 0;
+            font-weight: 400;
+            color: #000;
+            vertical-align: top;
+        }
+        
+        .details-table td {
+            padding: 10px 0 10px 15px;
+            color: #000;
+            vertical-align: top;
+        }
+        
+        /* Content Box */
+        .content-box {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        .content-box h4 {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .edit-icon {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: #6c757d;
+            cursor: pointer;
+            font-size: 18px;
+        }
+        
+        .edit-icon:hover {
+            color: #0d6efd;
+        }
+        
+        /* Comment Box */
+        .comment-box {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            padding: 20px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+        
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .comment-author {
+            font-weight: 700;
+        }
+        
+        .comment-date {
+            color: #6c757d;
+        }
+        
+        .change-history-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .change-history-box strong {
+            display: block;
+            margin-bottom: 10px;
+        }
+        
+        .change-history-box ul {
+            margin-left: 20px;
+        }
+        
+        .change-history-box li {
+            margin-bottom: 5px;
+        }
+        
+        .editor-note {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        /* Separator */
+        .separator {
+            border-bottom: 1px solid #dee2e6;
+            margin: 20px 0;
+        }
+        
+        /* Links */
+        a {
+            color: #0d6efd;
+            text-decoration: none;
+        }
+        
+        a:hover {
+            text-decoration: underline;
+        }
+        
+        .green-link {
+            color: #007f7f;
+            font-weight: 700;
+        }
+        
+        /* Icons */
+        .ms {
+            font-family: "Material Symbols Outlined";
+            font-size: 18px;
+            vertical-align: middle;
+            color: #6c757d;
+            cursor: pointer;
+        }
+        
+        .ms:hover {
+            color: #0d6efd;
+        }
+        
+        .ms-note:before { content: "\e06f"; }
+        .ms-edit:before { content: "\e3c9"; }
+        
+        .fa-plus-circle {
+            color: #198754;
+            cursor: pointer;
+        }
+        
+        .fa-trash {
+            color: #dc3545;
+            font-size: 12px;
+        }
+        
+        /* Buttons */
+        .btn-primary {
+            background: #0d6efd;
+            color: #fff;
+            border: 1px solid #0d6efd;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            float: right;
+            margin-left: 10px;
+        }
+        
+        .btn-primary:hover {
+            background: #0b5ed7;
+        }
+        
+        /* Textarea */
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 13px;
+            resize: vertical;
+        }
+        
+        /* File input */
+        input[type="file"] {
+            font-size: 13px;
+        }
+        
+        /* Utility */
+        .clearfix::after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+        
+        .mb-2 {
+            margin-bottom: 20px;
+        }
+        
+        .text-muted {
+            color: #6c757d;
+        }
+        
+        .text-italic {
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="maincol">
+
+        <!-- Manuscript Information -->
+        <div class="manuscript-info">
+            <h3>Manuscript Information</h3>
+            
+            <div class="info-row">
+                <div class="info-label">Assigned Editor:</div>
+                <div class="info-value">Ines Zhong</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Journal:</div>
+                <div class="info-value"><i>Mathematics</i></div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Type:</div>
+                <div class="info-value">Article</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Open Review:</div>
+                <div class="info-value">no</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Number of Pages:</div>
+                <div class="info-value">26</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Manuscript Status:</div>
+                <div class="info-value">Website online</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Title:</div>
+                <div class="info-value">Nonlinear Optical Characteristics of Copper Oxide Thin Films Interpreted Through Stillion Solutions of the Convective–Diffusive Cahn–Hilliard Equation</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Authors:</div>
+                <div class="info-value">
+                    Dr. Nan-Xing Hu, Department of Mathematics, xingnan@uhu.edu.cn, CN<br>
+                    Mr. Umar Asghar, Department of Mathematics, umar.asghar@math.uol.edu.pk, PK<br>
+                    Mr. Khurram Shabbir, Department of Mathematics, s2032066011@cmt.edu.pk, PK<br>
+                    Dr. Luminita Ioana Cotirla, Department of Mathematics, luminita.cotirla@uoradea.ro, RO
+                </div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Keywords:</div>
+                <div class="info-value">Kristen An solutions; nonlinear equation; Modified Sardar sub-equation method; closed-form solutions; Thin film of copper oxide; Applications</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Submitted to Section:</div>
+                <div class="info-value">E: Applied Mathematics</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Submitted to Special Issue:</div>
+                <div class="info-value">Advances in Computational Mathematics and Applied Mathematics, 2nd Edition</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Submission Received:</div>
+                <div class="info-value">02 October 2025</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Accepted:</div>
+                <div class="info-value">21 November 2025</div>
+            </div>
+            
+            <div class="info-row">
+                <div class="info-label">Published:</div>
+                <div class="info-value">26 November 2025</div>
+            </div>
+        </div>
+        
+        <!-- Ethics Issue -->
+        <div class="ethics-issue-box">
+            <div class="ethics-issue-header">
+                <h3>
+                    Ethics Issue - 9287
+                    <a href="javascript:void(0);" class="manuscript-special-issue-notes">
+                        <i class="ms ms-note" title="Ethics Issue notes"></i>
+                    </a>
+                </h3>
+                <a href="#" class="edit-issue-btn">Edit Issue</a>
+            </div>
+            
+            <table class="details-table">
+                <tr>
+                    <th>Issue Status</th>
+                    <td>In Progress</td>
+                    <th>Submission Date</th>
+                    <td>2026-05-09 11:03:35</td>
+                </tr>
+                <tr>
+                    <th>Priority</th>
+                    <td>Normal</td>
+                    <th>Issue Type</th>
+                    <td>Citation Irregularities</td>
+                </tr>
+                <tr>
+                    <th>Doi Id</th>
+                    <td>10.3390/math13233766</td>
+                    <th>Manuscript ID</th>
+                    <td><a href="#" target="_blank">mathematics-3927272</a></td>
+                </tr>
+                <tr>
+                    <th>Assigned Editor</th>
+                    <td>Jenny Lingzeng lin@mdpi.com</td>
+                    <th>Complainant Name/E-Mail</th>
+                    <td>Jenny Lingzeng lin@mdpi.com</td>
+                </tr>
+                <tr>
+                    <th>Watchers</th>
+                    <td>
+                        <div style="margin-bottom: 5px;">
+                            Vivian Liu(vivian.liu@mdpi.com)
+                            <a href="#" class="text-muted" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            Siya Mulyono mu@mdpi.com
+                            <a href="#" class="text-muted" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            Cathlyn Tong(cathlyn.tong@mdpi.com)
+                            <a href="#" class="text-muted" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            Rebecca Xue(rebecca.xue@mdpi.com)
+                            <a href="#" class="text-muted" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <div style="margin-bottom: 5px;">
+                            Namo Guan(namo.guan@mdpi.com)
+                            <a href="#" class="text-muted" title="Delete Watcher" onclick="return confirm('Are you sure to delete this watcher?');"><i class="fa fa-trash"></i></a>
+                        </div>
+                        <div>
+                            <i id="add-watcher" class="fa fa-lg fa-plus-circle" title="Add Watcher"></i>
+                        </div>
+                    </td>
+                    <th>Result</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Title of Complaint</th>
+                    <td>citation misuse / references</td>
+                    <th>Related Manuscripts</th>
+                    <td></td>
+                </tr>
+                <tr>
+                    <th>Public Forum with Same DOI</th>
+                    <td colspan="3">
+                        <a href="#">Case - 8173</a> (Follow-up: New)
+                    </td>
+                </tr>
+            </table>
+        </div>
+        
+        <!-- Description -->
+        <div class="content-box">
+            <h4>Description:</h4>
+            <div id="content-desc">
+                <p>https://pubpeer.com/publications/DF3F5D01FF8926229EC1C10</p>
+            </div>
+            <a href="javascript:void(0);" class="edit-icon change-desc-btn" title="Revised Description">
+                <i class="ms ms-edit"></i>
+            </a>
+            <div id="edit-desc" style="display: none;">
+                <textarea rows="6" placeholder="Revised Description"></textarea>
+                <div style="margin-top: 10px;">
+                    <button class="btn-primary submit-desc">Submit</button>
+                    <a href="javascript:void(0);" class="cancel-desc">Cancel</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- File Attachments -->
+        <div class="content-box">
+            <h4>File Attachments:</h4>
+            <a href="#" class="green-link" id="toggle-files">Display Files [+]</a>
+            
+            <div id="files-list" style="display: none; margin-top: 15px;">
+                <p class="text-muted text-italic">No Files</p>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <form id="upload-form">
+                    <div style="margin-bottom: 10px;">
+                        <input type="file" name="attachment">
+                    </div>
+                    <button type="submit" class="btn-primary">Upload</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Display Feeds -->
+        <div style="margin-bottom: 20px;">
+            <a href="#" class="green-link display-feeds-btn">Display Feeds</a>
+        </div>
+
+        
+        <!-- Comments Section -->
+        <div class="separator"></div>
+        
+        <!-- Comment 1 -->
+        <div class="change-history-box">
+            <strong>Jenny Lin</strong>
+            <p style="margin-top: 10px;"><strong>Create Issue</strong></p>
+        </div>
+        
+        <div class="comment-box">
+            <div class="comment-header">
+                <span class="comment-author">Jenny Lin</span>
+                <span class="comment-date">2026-05-09 11:04:08</span>
+            </div>
+            <div class="comment-content">
+                <p>Create Issue</p>
+            </div>
+            <a href="javascript:void(0);" class="edit-icon" title="Add Revised Comment">
+                <i class="ms ms-edit"></i>
+            </a>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Comment 2 -->
+        <div class="change-history-box">
+            <strong>Jenny Lin</strong>
+            <ul style="margin-top: 10px;">
+                <li><strong>Issue Status</strong> updated from <i>Created</i> to <i>In Progress</i></li>
+                <li><strong>Ethics Type</strong> updated from <i>Unassigned/other</i> to <i>Citation irregularities</i></li>
+            </ul>
+        </div>
+        
+        <div class="editor-note">
+            Comments for editors (will not be revealed to authors/reader)
+        </div>
+        
+        <div class="comment-box">
+            <div class="comment-header">
+                <span class="comment-author">Jenny Lin</span>
+                <span class="comment-date">2026-05-09 11:04:08</span>
+            </div>
+            <div class="comment-content">
+                <p>Edit Issue</p>
+            </div>
+            <a href="javascript:void(0);" class="edit-icon" title="Add Revised Comment">
+                <i class="ms ms-edit"></i>
+            </a>
+        </div>
+        
+        <!-- Add Comment Button -->
+        <div class="clearfix mb-2">
+            <button class="btn-primary">Add Comment</button>
+        </div>
+        
+        <!-- Hidden Dialogs -->
+        <div id="dialog-add-watcher" style="display: none;" title="Add Watcher">
+            <form>
+                <div style="margin-bottom: 15px;">
+                    <label><span style="color: #dc3545;">*</span> Email</label>
+                    <input type="text" id="watcher-email" placeholder="Add Watcher email" style="width: 100%; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; margin-top: 5px;">
+                </div>
+                <button type="submit" class="btn-primary" style="float: none;">Add</button>
+            </form>
+        </div>
+        
+        <div id="dialog-notes" style="display: none;" title="Ethics Issue Notes">
+            <p><strong>Note added by Admin User on 2026-01-22:</strong></p>
+            <p>Initial assessment completed. Case requires full investigation due to severity of allegations.</p>
+            <hr style="margin: 15px 0;">
+            <p><strong>Note added by Jenny Lin on 2026-01-25:</strong></p>
+            <p>Authors have been cooperative and provided requested documentation promptly.</p>
+        </div>
+        
+        <div id="dialog-feeds" style="display: none;" title="Issue Feed">
+            <div style="max-height: 400px; overflow-y: auto;">
+                <p><strong>2026-05-09 11:04:08</strong> - Jenny Lin updated Issue Status</p>
+                <p><strong>2026-05-09 11:04:08</strong> - Jenny Lin updated Ethics Type</p>
+                <p><strong>2026-05-09 11:04:08</strong> - Jenny Lin added comment</p>
+                <p><strong>2026-05-09 11:03:35</strong> - Jenny Lin created issue</p>
+            </div>
+        </div>
+        
+    </div>
+    
+    <!-- jQuery 3.x -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <!-- jQuery UI -->
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    
+    <script>
+        $(document).ready(function() {
+            
+            // Add Watcher Dialog
+            $('#dialog-add-watcher').dialog({
+                autoOpen: false,
+                width: 500,
+                modal: true
+            });
+            
+            $('#add-watcher').on('click', function() {
+                $('#dialog-add-watcher').dialog('open');
+            });
+            
+            $('#dialog-add-watcher form').on('submit', function(e) {
+                e.preventDefault();
+                var email = $('#watcher-email').val();
+                if (!email || email.trim() === '') {
+                    alert('Please enter an email address');
+                    return;
+                }
+                alert('Watcher added: ' + email);
+                $('#dialog-add-watcher').dialog('close');
+                $('#watcher-email').val('');
+            });
+            
+            // Notes Dialog
+            $('#dialog-notes').dialog({
+                autoOpen: false,
+                width: 600,
+                modal: true
+            });
+            
+            $('.manuscript-special-issue-notes').on('click', function(e) {
+                e.preventDefault();
+                $('#dialog-notes').dialog('open');
+            });
+            
+            // Feeds Dialog
+            $('#dialog-feeds').dialog({
+                autoOpen: false,
+                width: 700,
+                modal: true
+            });
+            
+            $('.display-feeds-btn').on('click', function(e) {
+                e.preventDefault();
+                $('#dialog-feeds').dialog('open');
+            });
+            
+            // Toggle Files
+            $('#toggle-files').on('click', function(e) {
+                e.preventDefault();
+                $('#files-list').toggle();
+                if ($('#files-list').is(':visible')) {
+                    $(this).text('Collapse [-]');
+                } else {
+                    $(this).text('Display Files [+]');
+                }
+            });
+            
+            // Edit Description
+            $('.change-desc-btn').on('click', function() {
+                $('#content-desc').hide();
+                $(this).hide();
+                $('#edit-desc').show();
+            });
+            
+            $('.cancel-desc').on('click', function(e) {
+                e.preventDefault();
+                $('#edit-desc').hide();
+                $('#content-desc').show();
+                $('.change-desc-btn').show();
+            });
+            
+            $('.submit-desc').on('click', function() {
+                alert('Description updated successfully!');
+                $('#edit-desc').hide();
+                $('#content-desc').show();
+                $('.change-desc-btn').show();
+            });
+            
+            // Upload Form
+            $('#upload-form').on('submit', function(e) {
+                e.preventDefault();
+                alert('File uploaded successfully!');
+            });
+            
+        });
+    </script>
+</body>
+</html>
