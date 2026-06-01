@@ -271,7 +271,7 @@ var editorDialogApp = new Vue({
     }
 });
 
-// Wire up "Choose another editor" click
-$(document).on('click', '#choose-editor-btn', function() {
+// Wire up "Choose another editor" click (使用 class 选择器，支持多个按钮)
+$(document).on('click', '.choose-editor-btn', function() {
     editorDialogApp.dialogVisible = true;
 });
