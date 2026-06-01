@@ -1,0 +1,431 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #212529;
+}
+
+#maincol {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Manuscript Information Box */
+.manuscript-info {
+    background: #fff;
+    padding: 10px 20px;
+    margin-bottom: 20px;
+}
+
+.manuscript-info h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    color: #172b4d;
+    border-bottom: 1px solid #ccc;
+}
+
+.manuscript-info fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* Grid System */
+.row {
+    margin-bottom: 0;
+}
+
+.grid-x {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.grid-padding-x {
+    margin-left: -0.625rem;
+    margin-right: -0.625rem;
+}
+
+.grid-padding-x > .cell {
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+}
+
+.grid-margin-y {
+    margin-top: -0.625rem;
+    padding-bottom: 0.225rem;
+}
+
+.grid-margin-y > .cell {
+    margin-top: 0.625rem;
+}
+
+.cell {
+    flex: 0 0 auto;
+    min-height: 0;
+    min-width: 0;
+    width: 100%;
+}
+
+.cell.small-12 {
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+.cell.large-2 {
+    flex: 0 0 auto;
+    width: 16.66667%;
+    text-align: right;
+    padding-right: 1rem;
+    font-size: 14px;
+    color: #0A0A0A;
+    font-weight: 450;
+}
+
+.cell.large-8 {
+    flex: 0 0 auto;
+    width: 66.66667%;
+    font-size: 14px;
+    color: #0A0A0A;
+    font-weight: 400;
+}
+
+.break-word {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Author Table */
+.general-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.general-table td {
+    padding: 0px 8px 2px 0;
+    vertical-align: top;
+    font-size: 14px;
+}
+
+.general-table img {
+    vertical-align: middle;
+    margin-left: 4px;
+}
+
+.morandiRed {
+    color: #ff0000;
+}
+
+/* Ethics Issue Box */
+.ethics-issue-box {
+    background: #fff;
+    padding: 10px 20px;
+    /* margin-bottom: 20px; */
+}
+
+/* Content sections container */
+.content-sections {
+    background: #fff;
+    margin-bottom: 20px;
+}
+
+.ethics-issue-box fieldset {
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ethics-issue-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+}
+
+.ethics-issue-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #172b4d;
+}
+
+.edit-issue-btn {
+    background: #0156ce;
+    color: #fff;
+    border: 1px solid #0156ce;
+    padding: 6px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.edit-issue-btn:hover {
+    background: #014bb5;
+    border-color: #014bb5;
+}
+
+/* Details Table */
+.details-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.details-table tr {
+    border-bottom: none;
+}
+
+.details-table tr:nth-child(odd) {
+    background-color: #fefefe;
+}
+
+.details-table tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
+
+.details-table tr:hover {
+    background-color: #ffffdd;
+}
+
+.details-table th {
+    width: 16.66667%;
+    text-align: left;
+    padding: 10px 0.625rem;
+    font-weight: 400;
+    font-size: 12px;
+    color: #000;
+    vertical-align: top;
+}
+
+.details-table td {
+    padding: 10px 0.625rem;
+    font-size: 12px;
+    color: #000;
+    vertical-align: top;
+}
+
+/* Content Box */
+.content-box {
+    background: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 0;
+    position: relative;
+}
+.upfile {
+    margin-left: 150px;
+}
+
+.content-box h4 {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.edit-icon {
+    position: absolute;
+    margin-top: 35px;
+    top: 20px;
+    right: 20px;
+    color: #4f5671;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.edit-icon:hover {
+    color: #3156a2;
+}
+
+/* Comment Box */
+.comment-box {
+    background: #fff;
+    border: none;
+    padding: 10px 20px 30px 20px;
+    margin-bottom: 0;
+    position: relative;
+    
+
+}
+
+.comment-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.comment-author {
+    font-weight: 700;
+}
+
+.comment-date {
+    color: #6c757d;
+}
+
+.change-history-box {
+    background: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 0;
+}
+
+.change-history-box strong {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.change-history-box ul {
+    margin-left: 20px;
+}
+
+.change-history-box li {
+    margin-bottom: 5px;
+}
+
+.editor-note {
+    background: #fff;
+    border: none;
+    padding: 10px 20px;
+    margin-bottom: 0;
+    font-weight: 700;
+}
+
+/* Separator */
+.separator {
+    border-bottom: 1px solid #dee2e6;
+    margin: 0 20px;
+}
+
+/* Links */
+a {
+    color: #3156a2;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.green-link {
+    color: #007f7f;
+    font-weight: 700;
+    /* margin-left: 150px; */
+}
+
+/* Icons */
+.ms {
+    font-family: "Material Symbols Outlined";
+    font-size: 18px;
+    vertical-align: middle;
+    color: #6c757d;
+    cursor: pointer;
+}
+
+.ms:hover {
+    color: #0d6efd;
+}
+
+.ms-note:before { content: "\e06f"; }
+.ms-edit:before { content: "\e3c9"; }
+
+.fa-plus-circle {
+    color: #48516d;
+    cursor: pointer;
+}
+
+.fa-trash {
+    color: #48516d;
+    font-size: 12px;
+}
+
+/* Buttons */
+.btn-primary {
+    background: #0156ce;
+    color: #fff;
+    border: 1px solid #0156ce;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    margin-top: 15px;
+
+}
+
+.btn-primary:hover {
+    background: #014bb5;
+}
+
+/* Textarea */
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 14px;
+    resize: vertical;
+}
+
+/* File input */
+input[type="file"] {
+    font-size: 14px;
+}
+
+/* Utility */
+.clearfix::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.clearfix {
+    display: flex;
+    justify-content: flex-end;
+}
+.mb-2 {
+    margin-bottom: 20px;
+}
+
+.text-muted {
+    color: #6c757d;
+}
+
+.text-italic {
+    font-style: italic;
+}
+
+.text-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.color-gray {
+    color: #6c757d;
+}
+
+.tooltip-info {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.popover-tooltip {
+    cursor: pointer;
+}
+
+.copy-clipboard-btn {
+    cursor: pointer;
+}
