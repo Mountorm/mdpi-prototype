@@ -236,7 +236,10 @@ export const detectionConfig = [
       description: "Detect the presence of specified keywords within the author’s information.",
       status: "error",
       results: [
-        { author: { name: "Dr. Lisa Wang", email: "lisa.wang@example.com" }, result: "Potential commercial interest detected in affiliation", detailsType: 'list', details: ["BioTech Ventures Lab"] }
+        { author: { name: "Dr. Lisa Wang", email: "lisa.wang@example.com" }, result: "Potential commercial interest detected in affiliation", detailsType: 'list', details: ["BioTech Ventures Lab"] },
+        { author: { name: "Another author", email: "another@example.com" }, result: "Potential commercial interest detected in affiliation（不同的作者，即使是同样的类别，也要用两个块来展示）", detailsType: 'list', details: ["BioTech Ventures Lab"] },
+        { author: { name: "Hongqiang Cui", email: "chq@example.com" }, result: "另一个类别 detected in affiliation", detailsType: 'list', details: ["keywords1","keywords2"] }
+
       ]
     },
     {
@@ -274,6 +277,14 @@ export const detectionConfig = [
       results: [
         { 
           result: "Harmful Topics detected in {{report}}.",
+          resultSlots: {
+            report: { type: 'link', content: 'Review Report',  href: '#' },
+           }, 
+          detailsType: 'list', 
+          details: ["incompetent analysis", "unprofessional conclusion"] 
+        },
+        { 
+          result: "另一个类别 detected in {{report}}.",
           resultSlots: {
             report: { type: 'link', content: 'Review Report',  href: '#' },
            }, 
