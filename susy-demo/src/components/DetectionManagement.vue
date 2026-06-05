@@ -293,7 +293,7 @@
       </template>
       <template v-else>
         <el-button size="small" @click="importStep = 1">Back</el-button>
-        <el-button size="small" @click="importDialogVisible = false">Discard</el-button>
+        <el-button size="small" @click="importDialogVisible = false">Cancel</el-button>
         <el-button type="primary" size="small" :disabled="importPreview.length === 0" @click="handleConfirmImport">
           Import {{ importPreview.length }} Keywords
         </el-button>
