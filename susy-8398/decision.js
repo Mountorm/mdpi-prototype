@@ -1,7 +1,10 @@
 $(document).ready(function() {
-    
+
+    // Max file size: 100 MB
+    var MAX_FILE_SIZE = 100 * 1024 * 1024;
+
     // Initialize Quill Editor
-    var quill = new Quill('#comment-editor', {
+    var quill = new Quill('#suggestion-editor', {
         theme: 'snow',
         modules: {
             toolbar: [
@@ -14,48 +17,70 @@ $(document).ready(function() {
                 ['clean']
             ]
         },
-        placeholder: 'Enter your comment here...'
+        placeholder: 'Enter your suggestion here...'
     });
-    
-    // Submit Decision
+
+    // File size validation
+    $('#issue-file').on('change', function() {
+        var file = this.files[0];
+        if (file && file.size > MAX_FILE_SIZE) {
+            alert('The selected file exceeds the 100 MB size limit. Please choose a smaller file.');
+            this.value = '';
+        }
+    });
+
+    // Submit
     $('#submit-decision').on('click', function() {
-        var decision = $('input[name="decision"]:checked').val();
-        var comment = quill.root.innerHTML;
-        var commentText = quill.getText().trim();
-        var file = $('#issue-file')[0].files[0];
-        
-        // Validation
-        if (!commentText || commentText === '') {
-            alert('Please add a comment');
+        var suggestionHtml = quill.root.innerHTML;
+        var suggestionText = quill.getText().trim();
+        var fileInput = $('#issue-file')[0];
+        var file = fileInput.files[0];
+
+        // Validation: suggestion must not be empty
+        if (!suggestionText) {
+            alert('Please add a suggestion before submitting.');
             return;
         }
-        
-        // Prepare data
-        var formData = {
-            decision: decision,
-            comment: comment,
-            hasFile: file ? true : false,
-            fileName: file ? file.name : null
-        };
-        
-        console.log('Submitting decision:', formData);
-        
-        // Show confirmation
-        var decisionText = decision === 'no_action' ? 'No Action Required' : 
-                          decision === 'correction' ? 'Correction' : 'Retraction';
-        alert('Decision submitted successfully!\n\nDecision: ' + decisionText + '\nComment length: ' + commentText.length + ' characters' + (file ? '\nFile: ' + file.name : ''));
-        
-        // In real implementation, this would be an AJAX call
+
+        // Validate file size (guard again in case onChange was bypassed)
+        if (file && file.size > MAX_FILE_SIZE) {
+            alert('The selected file exceeds the 100 MB size limit. Please choose a smaller file.');
+            return;
+        }
+
+        // Build submitted timestamp
+        var now = new Date();
+        var pad = function(n) { return n < 10 ? '0' + n : n; };
+        var dateStr = now.getFullYear() + '-' +
+                      pad(now.getMonth() + 1) + '-' +
+                      pad(now.getDate()) + ' ' +
+                      pad(now.getHours()) + ':' +
+                      pad(now.getMinutes()) + ':' +
+                      pad(now.getSeconds());
+
+        // Populate submitted view
+        $('#submitted-date').text(dateStr);
+        $('#submitted-content').html(suggestionHtml);
+
+        if (file) {
+            $('#submitted-file').html('<i class="fa fa-paperclip"></i> ' + $('<span>').text(file.name).html());
+        } else {
+            $('#submitted-file').empty();
+        }
+
+        // Swap form for the read-only submitted view
+        $('#suggestion-form-box').hide();
+        $('#suggestion-submitted-box').show();
+
+        // In real implementation, this would be an AJAX call:
         // $.ajax({
-        //     url: '/api/ethics-issue/decision',
+        //     url: '/api/ethics-issue/suggestion',
         //     method: 'POST',
         //     data: formData,
-        //     success: function(response) {
-        //         window.location.href = '/success';
-        //     }
+        //     success: function(response) { ... }
         // });
     });
-    
+
     // Cancel button
     $('.cancel-link').on('click', function(e) {
         e.preventDefault();
@@ -63,12 +88,5 @@ $(document).ready(function() {
             window.history.back();
         }
     });
-    
-    // Prevent form submission on Enter key in file input
-    $('#issue-file').on('keypress', function(e) {
-        if (e.which === 13) {
-            e.preventDefault();
-        }
-    });
-    
+
 });
