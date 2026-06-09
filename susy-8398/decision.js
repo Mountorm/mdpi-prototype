@@ -33,6 +33,7 @@ $(document).ready(function() {
     $('#submit-decision').on('click', function() {
         var suggestionHtml = quill.root.innerHTML;
         var suggestionText = quill.getText().trim();
+        var signature = $('#editor-signature').val().trim();
         var fileInput = $('#issue-file')[0];
         var file = fileInput.files[0];
 
@@ -61,11 +62,19 @@ $(document).ready(function() {
         // Populate submitted view
         $('#submitted-date').text(dateStr);
         $('#submitted-content').html(suggestionHtml);
+        $('#submitted-author').text("Academic Editor Suggestion");
 
         if (file) {
-            $('#submitted-file').html('<i class="fa fa-paperclip"></i> ' + $('<span>').text(file.name).html());
+            $('#submitted-file').html('<a href="#" class="green-link" title="Download ' + $('<span>').text(file.name).html() + '"><i class="fa fa-paperclip"></i> ' + $('<span>').text(file.name).html() + '</a>');
         } else {
             $('#submitted-file').empty();
+        }
+
+        // Display signature if provided
+        if (signature) {
+            $('#submitted-signature').html('<strong>Signature:</strong> ' + $('<span>').text(signature).html());
+        } else {
+            $('#submitted-signature').empty();
         }
 
         // Swap form for the read-only submitted view

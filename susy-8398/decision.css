@@ -113,8 +113,19 @@
 
 /* Notice shown after suggestion is submitted */
 .suggestion-notice {
-    margin-top: 14px;
-    font-size: 13px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #dee2e6;
+    font-size: 14px;
     color: #6c757d;
-    font-style: italic;
+}
+
+/* Submitted file attachment */
+#submitted-file {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#submitted-file .fa-paperclip {
+    margin-right: 4px;
 }
