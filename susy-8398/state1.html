@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- CSS 由 common-template.js 动态注入 -->
+</head>
+<body>
+    <!-- 页面内容由 common-template.js 动态渲染 -->
+
+    <!-- 公共模板 JS（必须在最前面加载） -->
+    <script src="common-template.js"></script>
+    <script>
+        CommonTemplate.initPage(1);
+    </script>
+
+    <!-- 依赖库 -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+    <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
+    <!-- 业务逻辑 -->
+    <script src="ethics-issue-view.js"></script>
+    <script src="editor-dialog.js"></script>
+    <script src="nav.js"></script>
+</body>
+</html>

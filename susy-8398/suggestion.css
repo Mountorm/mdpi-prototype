@@ -1,11 +1,11 @@
-/* Decision Page Specific Styles */
+/* Suggestion Page Specific Styles */
 
-/* Decision Form */
-.decision-form {
+/* Suggestion Form */
+.suggestion-form {
     padding: 20px;
 }
 
-.decision-options {
+.suggestion-options {
     display: flex;
     flex-direction: row;
     gap: 30px;
@@ -86,7 +86,7 @@
     text-decoration: underline;
 }
 
-/* Hide edit icon on decision page */
+/* Hide edit icon on suggestion page */
 .content-box .edit-icon {
     display: none;
 }

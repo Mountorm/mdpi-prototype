@@ -30,7 +30,7 @@ $(document).ready(function() {
     });
 
     // Submit
-    $('#submit-decision').on('click', function() {
+    $('#submit-suggestion').on('click', function() {
         var suggestionHtml = quill.root.innerHTML;
         var suggestionText = quill.getText().trim();
         var signature = $('#editor-signature').val().trim();
