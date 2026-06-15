@@ -9,11 +9,9 @@ flowchart TD
 
     State2 --> WaitResponse{等待回复}
     WaitResponse -->|接受邀请| State3[收到建议]
-    WaitResponse -->|Remind| SendReminder[发送提醒]
     WaitResponse -->|Uninvite| CancelInvite[取消邀请]
     WaitResponse -->|Choose another| ChooseEditor[选择其他编辑]
 
-    SendReminder --> State2
     CancelInvite --> State1
     ChooseEditor --> InviteAcE
 

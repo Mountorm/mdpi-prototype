@@ -165,7 +165,7 @@ var CommonTemplate = {
                 '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                 '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
                 '<a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height:18px;vertical-align:middle;"></a>' +
-                '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Comments</a></span>' +
+                '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Waiting Comments</a></span>' +
                 ' (<a href="#">click here to see invitation history</a><span>).</span>';
     },
 
@@ -228,7 +228,7 @@ var CommonTemplate = {
                     '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                     '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
                     '<a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height:18px;vertical-align:middle;"></a>' +
-                    '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Comments</a></span>' +
+                    '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Waiting Comments</a></span>' +
                     ' (<a href="#" class="invitation-history-link">click here to see invitation history</a><span>).</span>' +
                     '<div class="academic-editor-actions">' +
                         '<span class="ae-invite-btn">Invite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a comment' +
@@ -260,7 +260,7 @@ var CommonTemplate = {
                 '<p><strong>2026-05-09 11:04:08</strong> - Hongqiang Cui added comment</p>' +
                 '<p><strong>2026-05-09 11:03:35</strong> - Hongqiang Cui created issue</p>' +
             '</div></div>' +
-        '<div id="dialog-pending-comments" style="display:none;" title="Pending Comment Ethics Issues">' +
+        '<div id="dialog-pending-comments" style="display:none;" title="Waiting Comment Ethics Issues">' +
             '<table class="pending-comments-table" style="width:100%;border-collapse:collapse;">' +
             '<thead><tr><th>Ethics Issues ID</th><th>Invited Date</th></tr></thead>' +
             '<tbody>' +
@@ -274,10 +274,10 @@ var CommonTemplate = {
             '<table class="invitation-history-table" style="width:100%;border-collapse:collapse;">' +
             '<thead><tr><th>Ethics Issues ID</th><th>Status</th><th>Email Actions</th><th>Ethics Issues Status</th></tr></thead>' +
             '<tbody>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10088">Ethics Issue - 10088</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 25 February 2026 10:37:53</div><div><strong>Reminder:</strong> Last reminded on 1 March 2026 14:22:10, 1 time</div></td><td>In Progress</td></tr>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10087">Ethics Issue - 10087</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 10 January 2026 09:15:22</div><div><strong>Reminder:</strong> Last reminded on 20 January 2026 11:30:45, 2 times</div></td><td>Closed</td></tr>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10086">Ethics Issue - 10086</a></td><td>Uninvited</td><td><div><strong>Invitation:</strong> Invited on 5 December 2025 16:42:33</div></td><td>New</td></tr>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10085">Ethics Issue - 10085</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 28 November 2025 13:20:18</div><div><strong>Reminder:</strong> Last reminded on 10 December 2025 08:45:22, 3 times</div></td><td>In Progress</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10088">Ethics Issue - 10088</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 25 February 2026 10:37:53</div></td><td>In Progress</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10087">Ethics Issue - 10087</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 10 January 2026 09:15:22</div></td><td>Closed</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10086">Ethics Issue - 10086</a></td><td>Uninvited</td><td><div><strong>Invitation:</strong> Invited on 5 December 2025 16:42:33</div><div><strong>Uninvited:</strong> Uninvited on 15 December 2025 09:30:00</div></td><td>New</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10085">Ethics Issue - 10085</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 28 November 2025 13:20:18</div></td><td>In Progress</td></tr>' +
                 '<tr><td><a href="#" title="View Ethics Issue - 10084">Ethics Issue - 10084</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 15 October 2025 10:10:10</div></td><td>Closed</td></tr>' +
             '</tbody>' +
             '<tfoot><tr><td colspan="4" class="load-more-cell"><a href="#" class="load-more-link" title="Load more records"><i class="fa fa-refresh"></i> Load More</a></td></tr></tfoot>' +

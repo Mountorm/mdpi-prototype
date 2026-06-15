@@ -153,7 +153,7 @@ $(document).ready(function() {
                     '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                     '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
                     '<a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height:18px;vertical-align:middle;"></a>' +
-                    '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Comments</a></span>' +
+                    '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Waiting Comments</a></span>' +
                     ' (<a href="#" class="invitation-history-link">click here to see invitation history</a><span>).</span>' +
                     '<div class="academic-editor-actions ae-invitation-actions">' +
                         'Invited at: ' + dateStr + '<br>' +
