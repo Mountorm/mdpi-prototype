@@ -17,9 +17,9 @@ flowchart TD
     CancelInvite --> State1
     ChooseEditor --> InviteAcE
 
-    State3 --> ViewSuggestion[查看建议]
-    ViewSuggestion --> SendAck[发送确认邮件]
-    ViewSuggestion --> ReInvite{重新邀请?}
+    State3 --> ViewComment[查看建议]
+    ViewComment --> SendAck[发送确认邮件]
+    ViewComment --> ReInvite{重新邀请?}
     ReInvite -->|Same editor| InviteAcE
     ReInvite -->|Another editor| ChooseEditor
 

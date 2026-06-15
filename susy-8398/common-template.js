@@ -165,7 +165,7 @@ var CommonTemplate = {
                 '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                 '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
                 '<a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height:18px;vertical-align:middle;"></a>' +
-                '<span style="margin-left:10px;"><a href="#" class="pending-suggestions-link">5 Ethics Issue(s) Suggestions</a></span>' +
+                '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Comments</a></span>' +
                 ' (<a href="#">click here to see invitation history</a><span>).</span>';
     },
 
@@ -173,7 +173,7 @@ var CommonTemplate = {
     renderState1: function() {
         return this._aeHeader() +
             '<div class="academic-editor-actions">' +
-                '<span>Invite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a suggestion' +
+                '<span>Invite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a comment' +
             '</div></div></div>';
     },
 
@@ -182,7 +182,7 @@ var CommonTemplate = {
         return this._aeHeader() +
             '<div class="academic-editor-actions">' +
                 'Invited at: 2026-06-01 10:20:16<br>' +
-                '<span>Uninvite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a suggestion' +
+                '<span>Uninvite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a comment' +
             '</div></div></div>';
     },
 
@@ -191,8 +191,8 @@ var CommonTemplate = {
         return this._aeHeader() +
             '<div class="academic-editor-actions">' +
                 '<div class="comment-box" style="border:none;padding:0 0 2px 6px;margin-top:8px;">' +
-                    '<div class="suggestion-collapsible">' +
-                        '<div class="suggestion-body collapsed" id="suggestion-body-1">' +
+                    '<div class="comment-collapsible">' +
+                        '<div class="comment-body collapsed" id="comment-body-1">' +
                             '<div class="comment-content">' +
                                 '<p>After thorough review of the manuscript and the ethics complaint regarding citation irregularities, I have carefully examined all the evidence presented by both the complainant and the authors.</p>' +
                                 '<p>My assessment is as follows:</p>' +
@@ -204,7 +204,7 @@ var CommonTemplate = {
                                 '<p>I believe these steps will adequately address the concerns raised while maintaining the integrity of the published work.</p>' +
                             '</div>' +
                         '</div>' +
-                        '<a href="javascript:void(0);" class="suggestion-toggle" data-target="suggestion-body-1">' +
+                        '<a href="javascript:void(0);" class="comment-toggle" data-target="comment-body-1">' +
                             '<span class="toggle-label-more">Show more <i class="fa fa-angle-down"></i></span>' +
                             '<span class="toggle-label-less" style="display:none;">Show less <i class="fa fa-angle-up"></i></span>' +
                         '</a>' +
@@ -212,11 +212,29 @@ var CommonTemplate = {
                     '<div style="margin-top:6px;font-size:14px;">Signature: Dr. Kobe Bryant</div>' +
                     '<div style="margin-top:6px;"><a href="#" class="green-link"><i class="fa fa-paperclip"></i> supporting-document.pdf</a></div>' +
                 '</div>' +
-                '<div style="margin-top:8px;padding-top:8px;font-size:14px;color:#555;">(Suggestion IP: 192.168.1.15) (09 June 2026)</div>' +
-                '<div style="margin-top:2px;">' +
-                    '<span>Choose the same editor</span> or <span class="choose-editor-btn">Choose another editor</span> to make a suggestion' +
-                '</div>' +
+                '<div style="margin-top:8px;padding-top:8px;font-size:14px;color:#555;">(Comment IP: 192.168.1.15) (09 June 2026)</div>' +
             '</div></div></div>';
+    },
+
+    // 渲染 State 1 学编模块（持久化在页面底部，与 index.html 一致）
+    renderState1Module: function() {
+        return '<div id="ae-invitation-records"></div>' +
+            '<div class="separator"></div>' +
+            '<div id="ae-state1-module" style="padding:10px 20px;display:flex;align-items:flex-start;gap:12px;">' +
+                '<div class="academic-editor-info" style="flex:1;">' +
+                    '<span style="font-weight:700;">Academic Editor</span>' +
+                    '<span class="ae-editor-name" style="margin-left:10px;color:#148a14;">Kobe Bryant</span>' +
+                    '<a href="#" title="Send email"><span class="ms" style="font-size:18px;">mail</span></a>' +
+                    '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
+                    '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
+                    '<a href="#" title=""><img src="https://susy.mdpi.com/build/img/icon/clock-frame.png?eb182c3" alt="Clock" style="height:18px;vertical-align:middle;"></a>' +
+                    '<span style="margin-left:10px;"><a href="#" class="pending-comments-link">5 Ethics Issue(s) Comments</a></span>' +
+                    ' (<a href="#" class="invitation-history-link">click here to see invitation history</a><span>).</span>' +
+                    '<div class="academic-editor-actions">' +
+                        '<span class="ae-invite-btn">Invite</span> or <span class="choose-editor-btn">Choose another editor</span> to make a comment' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
     },
 
     // 渲染 Add Comment 按钮 + content-sections 关闭
@@ -242,8 +260,8 @@ var CommonTemplate = {
                 '<p><strong>2026-05-09 11:04:08</strong> - Hongqiang Cui added comment</p>' +
                 '<p><strong>2026-05-09 11:03:35</strong> - Hongqiang Cui created issue</p>' +
             '</div></div>' +
-        '<div id="dialog-pending-suggestions" style="display:none;" title="Pending Suggestion Ethics Issues">' +
-            '<table class="pending-suggestions-table" style="width:100%;border-collapse:collapse;">' +
+        '<div id="dialog-pending-comments" style="display:none;" title="Pending Comment Ethics Issues">' +
+            '<table class="pending-comments-table" style="width:100%;border-collapse:collapse;">' +
             '<thead><tr><th>Ethics Issues ID</th><th>Invited Date</th></tr></thead>' +
             '<tbody>' +
                 '<tr><td><a href="#" title="View Ethics Issue - 10085">Ethics Issue - 10085</a></td><td>2026-02-25 10:37:53</td></tr>' +
@@ -257,10 +275,10 @@ var CommonTemplate = {
             '<thead><tr><th>Ethics Issues ID</th><th>Status</th><th>Email Actions</th><th>Ethics Issues Status</th></tr></thead>' +
             '<tbody>' +
                 '<tr><td><a href="#" title="View Ethics Issue - 10088">Ethics Issue - 10088</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 25 February 2026 10:37:53</div><div><strong>Reminder:</strong> Last reminded on 1 March 2026 14:22:10, 1 time</div></td><td>In Progress</td></tr>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10087">Ethics Issue - 10087</a></td><td>Suggestion Received</td><td><div><strong>Invitation:</strong> Invited on 10 January 2026 09:15:22</div><div><strong>Reminder:</strong> Last reminded on 20 January 2026 11:30:45, 2 times</div></td><td>Closed</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10087">Ethics Issue - 10087</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 10 January 2026 09:15:22</div><div><strong>Reminder:</strong> Last reminded on 20 January 2026 11:30:45, 2 times</div></td><td>Closed</td></tr>' +
                 '<tr><td><a href="#" title="View Ethics Issue - 10086">Ethics Issue - 10086</a></td><td>Uninvited</td><td><div><strong>Invitation:</strong> Invited on 5 December 2025 16:42:33</div></td><td>New</td></tr>' +
                 '<tr><td><a href="#" title="View Ethics Issue - 10085">Ethics Issue - 10085</a></td><td>Invited</td><td><div><strong>Invitation:</strong> Invited on 28 November 2025 13:20:18</div><div><strong>Reminder:</strong> Last reminded on 10 December 2025 08:45:22, 3 times</div></td><td>In Progress</td></tr>' +
-                '<tr><td><a href="#" title="View Ethics Issue - 10084">Ethics Issue - 10084</a></td><td>Suggestion Received</td><td><div><strong>Invitation:</strong> Invited on 15 October 2025 10:10:10</div></td><td>Closed</td></tr>' +
+                '<tr><td><a href="#" title="View Ethics Issue - 10084">Ethics Issue - 10084</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 15 October 2025 10:10:10</div></td><td>Closed</td></tr>' +
             '</tbody>' +
             '<tfoot><tr><td colspan="4" class="load-more-cell"><a href="#" class="load-more-link" title="Load more records"><i class="fa fa-refresh"></i> Load More</a></td></tr></tfoot>' +
             '</table></div>';
@@ -299,11 +317,11 @@ var CommonTemplate = {
             '<div class="ae-note-body">' +
             '<p><strong>只新增了academic editor的部分，其余部分未做改动</strong></p>' +
             '<ul>' +
-                '<li>当状态不为closed且没有AcE给出建议时，在页面comment的最下方显示academic editor suggestion部分（state1），样式可参考manuscript AcE decision部分</li>' +
+                '<li>当状态不为closed且没有AcE给出建议时，在页面comment的最下方显示academic editor comment部分（state1），样式可参考manuscript AcE decision部分</li>' +
                 '<li>默认AcE的设定：与稿件最终decision为同一人，若absent或不再属于EBM或处于absent，顺延至期刊设定的默认EBM；若期刊默认EBM处于absent，顺延至EBM列表顺序第一人，以此类推。</li>' +
-                '<li>X Ethics Issue(s) Suggestions 为尚未给出建议的（且未被uninvited）issues数量</li>' +
-                '<li>invitation history 为所有参与ethics issues suggestion的记录；其中Status列值枚举为：Invited、Uninvited、Suggestion Received</li>' +
-                '<li>一旦AcE给出建议了，就生成了一条suggestion记录。（state3）</li>' +
+                '<li>X Ethics Issue(s) Comments 为尚未给出建议的（且未被uninvited）issues数量</li>' +
+                '<li>invitation history 为所有参与ethics issues comment的记录；其中Status列值枚举为：Invited、Uninvited、Comment Received</li>' +
+                '<li>一旦AcE给出建议了，就生成了一条comment记录。（state3）</li>' +
                 '<li>展示AcE建议的内容，超出5行时要折叠并允许展开；始终显示签名和附件。</li>' +
                 '<li>点击choose editor后，在comment最下方可重新显示待邀请的state1</li>' +
             '</ul></div></div>';
@@ -339,6 +357,7 @@ var CommonTemplate = {
             this.renderEthicsIssue() +
             this.renderContentSections() +
             stateRenderer +
+            (stateNumber === 3 ? this.renderState1Module() : '') +
             this.renderContentFooter() +
             this.renderDialogs() +
         '</div>' +

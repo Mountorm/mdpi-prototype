@@ -5,11 +5,9 @@
 $(document).ready(function() {
     // 页面映射
     var pages = [
-        { file: 'state1.html', label: 'State 1: Default' },
-        { file: 'state2.html', label: 'State 2: Invited' },
-        { file: 'state3.html', label: 'State 3: Suggestion Received' },
-        { file: 'index.html', label: 'All' },
-        { file: 'suggestion.html', label: 'Suggestion Page' }
+        { file: 'index.html', label: '默认' },
+        { file: 'state3.html', label: '收到建议的' },
+        { file: 'comment.html', label: '建议提交页面' }
     ];
 
     // 获取当前文件名

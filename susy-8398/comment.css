@@ -1,0 +1,131 @@
+/* Comment Page Specific Styles */
+
+/* Comment Form */
+.comment-form {
+    padding: 20px;
+}
+
+.comment-options {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    margin-top: 10px;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.radio-label input[type="radio"] {
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.radio-label span {
+    user-select: none;
+}
+
+/* Quill Editor Container */
+#comment-editor {
+    min-height: 200px;
+    background: #fff;
+}
+
+#comment-editor .ql-editor {
+    min-height: 200px;
+    font-size: 14px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+#comment-editor .ql-toolbar {
+    background: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-bottom: none;
+}
+
+#comment-editor .ql-container {
+    border: 1px solid #ced4da;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* File Upload Area */
+.file-upload-area {
+    margin-top: 10px;
+}
+
+.file-upload-area input[type="file"] {
+    font-size: 14px;
+    padding: 5px 0;
+}
+
+/* Button Group */
+.button-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.button-group .btn-primary {
+    float: none;
+    margin: 0;
+}
+
+.cancel-link {
+    color: #0d6efd;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.cancel-link:hover {
+    text-decoration: underline;
+}
+
+/* Hide edit icon on comment page */
+.content-box .edit-icon {
+    display: none;
+}
+
+/* Ethics Issue Header without Edit button */
+.ethics-issue-header {
+    display: block;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 15px;
+}
+
+.ethics-issue-header h3 {
+    margin: 0;
+}
+
+/* File size hint */
+.file-size-hint {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 12px;
+    color: #6c757d;
+}
+
+/* Notice shown after comment is submitted */
+.comment-notice {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #dee2e6;
+    font-size: 14px;
+    color: #6c757d;
+}
+
+/* Submitted file attachment */
+#submitted-file {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+#submitted-file .fa-paperclip {
+    margin-right: 4px;
+}

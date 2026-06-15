@@ -263,10 +263,15 @@ var editorDialogApp = new Vue({
             return re.test(text);
         },
         onInvite: function(row) {
+            // Update the state1 module's editor name
+            if (window.updateAcE) {
+                window.updateAcE(row.name);
+            }
             this.$message({
-                message: 'Invite: ' + row.name,
+                message: 'Invited: ' + row.name,
                 type: 'success'
             });
+            this.dialogVisible = false;
         }
     }
 });

@@ -547,22 +547,22 @@ input[type="file"] {
     display: none;
 }
 
-/* Suggestion Collapsible */
-.suggestion-body {
+/* Comment Collapsible */
+.comment-body {
     overflow: hidden;
     transition: max-height 0.3s ease;
 }
 
-.suggestion-body.collapsed {
+.comment-body.collapsed {
     max-height: calc(1.6em * 5);
     overflow: hidden;
 }
 
-.suggestion-body.expanded {
+.comment-body.expanded {
     max-height: none;
 }
 
-.suggestion-toggle {
+.comment-toggle {
     display: inline-block;
     margin-top: 4px;
     font-size: 13px;
@@ -570,7 +570,7 @@ input[type="file"] {
     text-decoration: none;
 }
 
-.suggestion-toggle:hover {
+.comment-toggle:hover {
     text-decoration: underline;
 }
 
@@ -601,6 +601,10 @@ input[type="file"] {
 
 .academic-editor-actions span:hover {
     text-decoration: underline;
+}
+
+.academic-editor-actions .ae-uninvite-btn {
+    color: #8b0000 !important;
 }
 
 /* =============================================
@@ -828,14 +832,14 @@ input[type="file"] {
     outline: none;
 }
 
-/* Pending Suggestions Table */
-.pending-suggestions-table {
+/* Pending Comments Table */
+.pending-comments-table {
     border: 1px solid #e0e0e0;
     border-collapse: collapse;
     margin-bottom: 40px;
 }
 
-.pending-suggestions-table thead th {
+.pending-comments-table thead th {
     background-color: #f8f8f8;
     color: #48516d;
     font-size: 13px;
@@ -845,30 +849,30 @@ input[type="file"] {
     border: none;
 }
 
-.pending-suggestions-table tbody td {
+.pending-comments-table tbody td {
     font-size: 12px;
     padding: 10px;
     border: none;
 }
 
-.pending-suggestions-table tbody tr:hover {
+.pending-comments-table tbody tr:hover {
     background-color: #ffffdd !important;
 }
 
-.pending-suggestions-table tbody tr:nth-child(odd) {
+.pending-comments-table tbody tr:nth-child(odd) {
     background-color: #fefefe;
 }
 
-.pending-suggestions-table tbody tr:nth-child(even) {
+.pending-comments-table tbody tr:nth-child(even) {
     background-color: #f1f1f1;
 }
 
-.pending-suggestions-table a {
+.pending-comments-table a {
     color: #3156a2;
     text-decoration: none;
 }
 
-.pending-suggestions-table a:hover {
+.pending-comments-table a:hover {
     text-decoration: underline;
 }
 
