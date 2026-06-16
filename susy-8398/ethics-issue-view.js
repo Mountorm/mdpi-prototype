@@ -6,20 +6,32 @@ $(document).ready(function() {
     var aeNames = ['Kobe Bryant', 'LeBron James', 'Stephen Curry', 'Kevin Durant', 'Giannis Antetokounmpo'];
     var aeNameIndex = 0; // starts at Kobe Bryant
 
+    // Always scoped to the persistent state1 module — never touch invitation records
+    var $state1Name = function() { return $('#ae-state1-module .ae-editor-name'); };
+
     function getCurrentAeName() {
-        return $('.ae-editor-name').text().trim();
+        return $state1Name().text().trim();
     }
 
     function rotateAeName() {
         aeNameIndex = (aeNameIndex + 1) % aeNames.length;
-        $('.ae-editor-name').text(aeNames[aeNameIndex]);
+        var newName = aeNames[aeNameIndex];
+        $state1Name().text(newName);
+        updateAeNameColor(newName);
     }
 
     // Global function so the editor dialog can update the state1 name
     window.updateAcE = function(name) {
-        $('.ae-editor-name').text(name);
+        $state1Name().text(name);
         var idx = aeNames.indexOf(name);
         if (idx >= 0) aeNameIndex = idx;
+        if (!aePercentages[name]) {
+            aePercentages[name] = Math.floor(Math.random() * 31) + 60;
+        }
+        if (!aeEmails[name]) {
+            aeEmails[name] = name.toLowerCase().replace(/\s+/g, '.') + '@scau.edu.cn';
+        }
+        updateAeNameColor(name);
     };
 
     function formatDateTime() {
@@ -31,6 +43,43 @@ $(document).ready(function() {
             pad(now.getHours()) + ':' +
             pad(now.getMinutes()) + ':' +
             pad(now.getSeconds());
+    }
+
+    // ==========================================
+    //  COI (Conflicts of Interests) percentage logic
+    // ==========================================
+    var aePercentages = {
+        'Kobe Bryant': 60,
+        'LeBron James': 85,
+        'Stephen Curry': 45,
+        'Kevin Durant': 72,
+        'Giannis Antetokounmpo': 92
+    };
+
+    var aeEmails = {
+        'Kobe Bryant': 'kobe.bryant@scau.edu.cn',
+        'LeBron James': 'lebron.james@scau.edu.cn',
+        'Stephen Curry': 'stephen.curry@scau.edu.cn',
+        'Kevin Durant': 'kevin.durant@scau.edu.cn',
+        'Giannis Antetokounmpo': 'giannis.antetokounmpo@scau.edu.cn'
+    };
+
+    function getPercentClass(pct) {
+        if (pct >= 80) return 'coi-green';
+        if (pct >= 50) return 'coi-orange';
+        return 'coi-red';
+    }
+
+    function getPercentColor(pct) {
+        if (pct >= 80) return '#148a14';
+        if (pct >= 50) return '#e67e22';
+        return '#dc3545';
+    }
+
+    function updateAeNameColor(name) {
+        var pct = aePercentages[name] || 60;
+        var color = getPercentColor(pct);
+        $state1Name().css('color', color);
     }
 
     // ==========================================
@@ -64,6 +113,12 @@ $(document).ready(function() {
         autoOpen: false,
         modal: true,
         width: 900
+    });
+
+    $('#dialog-coi').dialog({
+        autoOpen: false,
+        modal: true,
+        width: 550
     });
 
     // Dialog Event Handlers
@@ -113,6 +168,56 @@ $(document).ready(function() {
         $('#dialog-invitation-history').dialog('open');
     });
 
+    // COI click handler — open dialog when clicking editor name
+    $(document).on('click', '.ae-editor-name.coi-clickable', function() {
+        var name = $(this).text().trim();
+        var pct = aePercentages[name] || Math.floor(Math.random() * 31) + 60;
+        var colorClass = getPercentClass(pct);
+        var email = aeEmails[name] || name.toLowerCase().replace(/\s+/g, '.') + '@scau.edu.cn';
+        $('#coi-email').text(email);
+        $('#coi-percentage').text(pct + '% match')
+            .removeClass('coi-green coi-orange coi-red')
+            .addClass(colorClass);
+        $('#dialog-coi').dialog('open');
+    });
+
+    // COI refresh button (update percentage for current state1 editor)
+    $(document).on('click', '#coi-refresh', function() {
+        var name = getCurrentAeName();
+        var pct = aePercentages[name] || 60;
+        var colorClass = getPercentClass(pct);
+        var email = aeEmails[name] || name.toLowerCase().replace(/\s+/g, '.') + '@scau.edu.cn';
+        $('#coi-email').text(email);
+        $('#coi-percentage').text(pct + '% match')
+            .removeClass('coi-green coi-orange coi-red')
+            .addClass(colorClass);
+    });
+
+    // Copy email to clipboard
+    $(document).on('click', '#coi-email', function() {
+        var email = $(this).text().trim();
+        var $el = $(this);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(email).then(function() {
+                var origText = $el.text();
+                $el.text('✓ Copied!');
+                $el.addClass('coi-copied');
+                setTimeout(function() {
+                    $el.text(origText);
+                    $el.removeClass('coi-copied');
+                }, 1500);
+            });
+        } else {
+            // Fallback
+            var temp = $('<input>').val(email).appendTo('body').select();
+            document.execCommand('copy');
+            temp.remove();
+            var origText = $el.text();
+            $el.text('✓ Copied!');
+            setTimeout(function() { $el.text(origText); }, 1500);
+        }
+    });
+
     // Load more button
     $(document).on('click', '.load-more-link', function(e) {
         e.preventDefault();
@@ -143,12 +248,14 @@ $(document).ready(function() {
     $(document).on('click', '#ae-state1-module .ae-invite-btn', function() {
         var editorName = getCurrentAeName();
         var dateStr = formatDateTime();
+        var pct = aePercentages[editorName] || 60;
+        var color = getPercentColor(pct);
 
         var recordHtml =
             '<div class="ae-invitation-record" style="padding:10px 20px;display:flex;align-items:flex-start;gap:12px;">' +
                 '<div class="academic-editor-info" style="flex:1;">' +
                     '<span style="font-weight:700;">Academic Editor</span>' +
-                    '<span style="margin-left:10px;color:#148a14;">' + editorName + '</span>' +
+                    '<span class="ae-editor-name coi-clickable" style="margin-left:10px;color:' + color + ';cursor:pointer;">' + editorName + '</span>' +
                     '<a href="#" title="Send email"><span class="ms" style="font-size:18px;">mail</span></a>' +
                     '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                     '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
@@ -165,7 +272,7 @@ $(document).ready(function() {
 
         $('#ae-invitation-records').append(recordHtml);
 
-        // Rotate the state1 editor name
+        // Rotate name for next invite
         rotateAeName();
     });
 
@@ -243,5 +350,10 @@ $(document).ready(function() {
         e.preventDefault();
         alert('File uploaded successfully!');
     });
+
+    // ==========================================
+    //  Initial COI color setup (Kobe Bryant = 60% → orange)
+    // ==========================================
+    updateAeNameColor('Kobe Bryant');
 
 });

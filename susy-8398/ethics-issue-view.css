@@ -1038,6 +1038,119 @@ input[type="file"] {
     border: none !important;
 }
 
+/* =============================================
+   COI (Conflicts of Interests) Dialog
+   ============================================= */
+#dialog-coi {
+    font-size: 14px;
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.coi-match-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.coi-email {
+    color: #3156a2;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: all;
+}
+
+.coi-email:hover {
+    text-decoration: underline;
+}
+
+.coi-email.coi-copied {
+    color: #148a14;
+}
+
+.coi-arrow {
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.coi-percentage {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.coi-percentage.coi-green {
+    color: #148a14;
+}
+
+.coi-percentage.coi-orange {
+    color: #e67e22;
+}
+
+.coi-percentage.coi-red {
+    color: #dc3545;
+}
+
+.coi-refresh {
+    color: #a8d8ea !important;
+    cursor: pointer;
+    font-size: 20px !important;
+}
+
+.coi-refresh:hover {
+    color: #7ec8e3 !important;
+}
+
+.coi-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+}
+
+.coi-table thead th {
+    background: #fafafa;
+    color: #555;
+    font-weight: 500;
+    font-size: 13px;
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.coi-table tbody td {
+    padding: 10px 12px;
+    font-size: 13px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.coi-table tbody tr:hover {
+    background-color: #ffffdd;
+}
+
+.coi-table a {
+    color: #3156a2;
+    text-decoration: none;
+}
+
+.coi-table a:hover {
+    text-decoration: underline;
+}
+
+.coi-scilit-icon {
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    vertical-align: middle;
+    cursor: pointer;
+}
+
+/* Clickable editor name */
+.ae-editor-name.coi-clickable:hover {
+    text-decoration: underline;
+}
+
 .ui-dialog .ui-dialog-titlebar-close:hover .ui-icon:before {
     color: #3156a2;
 }

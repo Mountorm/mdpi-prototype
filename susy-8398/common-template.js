@@ -160,7 +160,7 @@ var CommonTemplate = {
         return '<div style="padding:10px 20px;display:flex;align-items:flex-start;gap:12px;">' +
             '<div class="academic-editor-info" style="flex:1;">' +
                 '<span style="font-weight:700;">Academic Editor</span>' +
-                '<span style="margin-left:10px;color:#148a14;">Kobe Bryant</span>' +
+                '<span class="ae-editor-name coi-clickable" style="margin-left:10px;color:#148a14;cursor:pointer;">Kobe Bryant</span>' +
                 '<a href="#" title="Send email"><span class="ms" style="font-size:18px;">mail</span></a>' +
                 '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                 '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
@@ -223,7 +223,7 @@ var CommonTemplate = {
             '<div id="ae-state1-module" style="padding:10px 20px;display:flex;align-items:flex-start;gap:12px;">' +
                 '<div class="academic-editor-info" style="flex:1;">' +
                     '<span style="font-weight:700;">Academic Editor</span>' +
-                    '<span class="ae-editor-name" style="margin-left:10px;color:#148a14;">Kobe Bryant</span>' +
+                    '<span class="ae-editor-name coi-clickable" style="margin-left:10px;color:#148a14;cursor:pointer;">Kobe Bryant</span>' +
                     '<a href="#" title="Send email"><span class="ms" style="font-size:18px;">mail</span></a>' +
                     '<a href="#" title="View Information"><span class="ms ms-filled" style="font-size:18px;">person</span></a>' +
                     '<a href="#" title="Note"><span class="ms" style="font-size:18px;">add_notes</span></a>' +
@@ -281,7 +281,26 @@ var CommonTemplate = {
                 '<tr><td><a href="#" title="View Ethics Issue - 10084">Ethics Issue - 10084</a></td><td>Comment Received</td><td><div><strong>Invitation:</strong> Invited on 15 October 2025 10:10:10</div></td><td>Closed</td></tr>' +
             '</tbody>' +
             '<tfoot><tr><td colspan="4" class="load-more-cell"><a href="#" class="load-more-link" title="Load more records"><i class="fa fa-refresh"></i> Load More</a></td></tr></tfoot>' +
-            '</table></div>';
+            '</table></div>' +
+        '<div id="dialog-coi" style="display:none;" title="Conflicts of Interests">' +
+            '<div class="coi-match-info">' +
+                '<span class="coi-email" id="coi-email">xjzou@scau.edu.cn</span>' +
+                '<span class="coi-arrow">⇒</span>' +
+                '<span class="coi-percentage coi-orange" id="coi-percentage">60% match</span>' +
+                '<span class="ms coi-refresh" id="coi-refresh" title="Refresh">refresh</span>' +
+            '</div>' +
+            '<table class="coi-table">' +
+                '<thead><tr><th>DOI</th><th>Journal</th><th>Publication Date</th></tr></thead>' +
+                '<tbody>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>11 March 2025</td></tr>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>10 March 2025</td></tr>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>9 March 2025</td></tr>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>8 March 2025</td></tr>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>7 March 2025</td></tr>' +
+                    '<tr><td><a  target="_blank">10.1016/j.nima.2009.12.050</a> <img src="https://www.scilit.com/favicon.ico" class="coi-scilit-icon" title="Scilit"></td><td>Acoustics</td><td>6 March 2025</td></tr>' +
+                '</tbody>' +
+            '</table>' +
+        '</div>';
     },
 
     // 渲染 Editor Selection Dialog
