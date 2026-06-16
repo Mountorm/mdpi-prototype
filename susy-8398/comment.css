@@ -1,5 +1,63 @@
 /* Comment Page Specific Styles */
 
+/* Content Box Header (matches manuscript-info h3 style) */
+.content-box-header {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    color: #172b4d;
+    border-bottom: 1px solid #ccc;
+}
+
+/* Required star */
+.required-star {
+    color: #e74c3c;
+    font-weight: bold;
+}
+
+/* Comment field row — label left, input right */
+.comment-field {
+    display: flex;
+    gap: 15px;
+    margin-top: 12px;
+    align-items: flex-start;
+}
+
+.comment-field .field-label {
+    width: 110px;
+    flex-shrink: 0;
+    font-weight: 500;
+    padding-top: 6px;
+    color: #172b4d;
+    font-size: 14px;
+}
+
+.comment-field .field-input {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Instruction text above signature field */
+.field-instruction {
+    margin: 0 0 8px 0;
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+/* Signature input */
+.signature-input {
+    max-width: 300px;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Comment Form */
+
 /* Comment Form */
 .comment-form {
     padding: 20px;

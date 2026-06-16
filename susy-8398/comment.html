@@ -52,11 +52,6 @@
                 </div>
                 
                 <div class="row grid-x grid-padding-x grid-margin-y">
-                    <div class="cell small-12 medium-6 large-2">Manuscript Status</div>
-                    <div class="cell small-12 medium-6 large-8 break-word">Website online</div>
-                </div>
-                
-                <div class="row grid-x grid-padding-x grid-margin-y">
                     <div class="cell small-12 medium-6 large-2">Title</div>
                     <div class="cell small-12 medium-6 large-8 break-word">
                         <a href="#" title="View the published paper" target="_blank">Test for susy-8398</a>
@@ -66,62 +61,10 @@
                 <div class="row grid-x grid-padding-x grid-margin-y">
                     <div class="cell small-12 medium-6 large-2">Authors</div>
                     <div class="cell small-12 medium-6 large-8 break-word">
-                        <table class="general-table">
-                            <tbody>
-                                <tr>
-                                    <td>Dr.</td>
-                                    <td style="max-width: 200px;">
-                                        Author <b>One</b> <b>*</b>
-                                    </td>
-                                    <td style="max-width: 200px;">
-                                        <a href="javascript:void(0);" class="tooltip-info" title="Display the author's email">authorone@uhu.edu.cn</a>
-                                    </td>
-                                    <td><span class="tooltip-info" title="China">CN</span></td>
-                                    <td style="max-width: 100px;">
-                                        <div class="text-truncate">Department of SuSy</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Mr.</td>
-                                    <td style="max-width: 200px;">
-                                        Author <b>Two</b>
-                                    </td>
-                                    <td style="max-width: 200px;">
-                                        <a href="javascript:void(0);" class="tooltip-info color-gray" title="Don't display the author's email">authortwo@math.uol.edu.pk</a>
-                                    </td>
-                                    <td><span class="tooltip-info" title="Pakistan">PK</span></td>
-                                    <td style="max-width: 100px;">
-                                        <div class="text-truncate">Department of SuSy</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Mr.</td>
-                                    <td style="max-width: 200px;">
-                                        Author <b>Three</b>
-                                    </td>
-                                    <td style="max-width: 200px;">
-                                        <a href="javascript:void(0);" class="tooltip-info color-gray" title="Don't display the author's email">authorthree@cmt.edu.pk</a>
-                                    </td>
-                                    <td><span class="tooltip-info" title="Pakistan">PK</span></td>
-                                    <td style="max-width: 100px;">
-                                        <div class="text-truncate">Department of Shenzhen</div>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>Dr.</td>
-                                    <td style="max-width: 200px;">
-                                        Author <b>Four</b>
-                                    </td>
-                                    <td style="max-width: 200px;">
-                                        <a href="javascript:void(0);" class="tooltip-info color-gray" title="Don't display the author's email">authorfour@uoradea.ro</a>
-                                    </td>
-                                    <td><span class="tooltip-info" title="Romania">RO</span></td>
-                                    <td style="max-width: 100px;">
-                                        <div class="text-truncate">Department of Information</div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div>Author One <b>*</b></div>
+                        <div>Author Two</div>
+                        <div>Author Three</div>
+                        <div>Author Four</div>
                     </div>
                 </div>
                 
@@ -160,31 +103,46 @@
         <!-- Content Sections -->
         <div class="content-sections">
 
-            <!-- Add Comment -->
+            <!-- Comment -->
             <div class="content-box" id="comment-form-box">
-                <h4>Add Comment:</h4>
-                <div id="comment-editor"></div>
-                
-                <!-- Signature -->
-                <div style="margin-top: 20px; display: flex; align-items: center;">
-                    <label for="editor-signature" style=" font-weight: 500; margin-right: 10px;">Signature:</label>
-                    <input type="text" id="editor-signature" name="editor_signature" style="max-width: 150px;  flex: 1; padding: 8px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px;">
-                </div>
-                
-                <!-- Issue File -->
-                <div style="margin-top: 20px;">
-                    <h4>Issue File:</h4>
-                    <div class="file-upload-area">
-                        <input type="file" id="issue-file" name="issue_file">
-                        <span class="file-size-hint">Maximum file size: 100 MB</span>
+                <div class="content-box-header">Comment</div>
+
+                <div class="comment-field">
+                    <div class="field-label"><span class="required-star">*</span> Add Comment:</div>
+                    <div class="field-input">
+                        <div id="comment-editor"></div>
                     </div>
                 </div>
-                
-                <!-- Submit Buttons -->
-                <div style="margin-top: 20px;">
-                    <div class="button-group">
-                        <button type="button" class="btn-primary" id="submit-comment">Submit</button>
-                        <a href="#" class="cancel-link">Cancel</a>
+
+                <p class="field-instruction" style="margin: 10px 0 0 130px;">
+                    I confirm the comment by typing my name in the box below.<br>
+                    (Please separate by comma if multiple editors make the comment.)
+                </p>
+
+                <div class="comment-field">
+                    <div class="field-label"><span class="required-star">*</span> Signature:</div>
+                    <div class="field-input">
+                        <input type="text" id="editor-signature" name="editor_signature" class="signature-input">
+                    </div>
+                </div>
+
+                <div class="comment-field">
+                    <div class="field-label">Attachment:</div>
+                    <div class="field-input">
+                        <div class="file-upload-area">
+                            <input type="file" id="issue-file" name="issue_file">
+                            <span class="file-size-hint">Maximum file size: 100 MB</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-field">
+                    <div class="field-label"></div>
+                    <div class="field-input">
+                        <div class="button-group">
+                            <button type="button" class="btn-primary" id="submit-comment">Submit</button>
+                            <a href="#" class="cancel-link">Cancel</a>
+                        </div>
                     </div>
                 </div>
             </div>

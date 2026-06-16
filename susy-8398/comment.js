@@ -43,6 +43,12 @@ $(document).ready(function() {
             return;
         }
 
+        // Validation: signature is required
+        if (!signature) {
+            alert('Please type your name in the signature box to confirm the comment.');
+            return;
+        }
+
         // Validate file size (guard again in case onChange was bypassed)
         if (file && file.size > MAX_FILE_SIZE) {
             alert('The selected file exceeds the 100 MB size limit. Please choose a smaller file.');
