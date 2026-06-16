@@ -1154,3 +1154,9 @@ input[type="file"] {
 .ui-dialog .ui-dialog-titlebar-close:hover .ui-icon:before {
     color: #3156a2;
 }
+
+/* Invitation History Dialog - ensure it appears above Element UI dialogs */
+.invitation-history-dialog {
+    z-index: 10000 !important;
+}
+

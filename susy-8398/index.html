@@ -516,7 +516,7 @@
                             <div v-if="scope.$index === 0">
                                 <el-input v-model="filters.name" size="mini" clearable></el-input>
                             </div>
-                            <a v-else href="javascript:void(0);" class="editor-table-link" title="click here to see invitation history">{{ scope.row.name }}</a>
+                            <a v-else href="javascript:void(0);" class="editor-table-link" title="click here to see invitation history" @click="openInvitationHistory">{{ scope.row.name }}</a>
                         </template>
                     </el-table-column>
 
@@ -533,10 +533,35 @@
                         <template slot-scope="scope">
                             <div v-if="scope.$index === 0">
                                 <el-select v-model="filters.role" size="mini" clearable placeholder="Select">
+                                    <el-option label="Editor-in-Chief" value="Editor-in-Chief"></el-option>
+                                    <el-option label="Associate Editor" value="Associate Editor"></el-option>
+                                    <el-option label="Section Editor-in-Chief" value="Section Editor-in-Chief"></el-option>
                                     <el-option label="Section Board Member" value="Section Board Member"></el-option>
                                     <el-option label="Editorial Board Member" value="Editorial Board Member"></el-option>
+                                    <el-option label="Advisory Board Member" value="Advisory Board Member"></el-option>
                                     <el-option label="Guest Editor" value="Guest Editor"></el-option>
+                                    <el-option label="Leading Guest Editor" value="Leading Guest Editor"></el-option>
+                                    <el-option label="Co-Guest Editor" value="Co-Guest Editor"></el-option>
+                                    <el-option label="Deputy Editor-in-Chief" value="Deputy Editor-in-Chief"></el-option>
+                                    <el-option label="Associate Editor-in-Chief" value="Associate Editor-in-Chief"></el-option>
+                                    <el-option label="Collection Editor" value="Collection Editor"></el-option>
+                                    <el-option label="Associate Guest Editor" value="Associate Guest Editor"></el-option>
+                                    <el-option label="Senior Associate Editor" value="Senior Associate Editor"></el-option>
+                                    <el-option label="Honorary Associate Editor" value="Honorary Associate Editor"></el-option>
+                                    <el-option label="Section Associate Editor" value="Section Associate Editor"></el-option>
+                                    <el-option label="Co-Editor-in-Chief" value="Co-Editor-in-Chief"></el-option>
+                                    <el-option label="Associate Section Editor-in-Chief" value="Associate Section Editor-in-Chief"></el-option>
+                                    <el-option label="Chief Guest Editor" value="Chief Guest Editor"></el-option>
+                                    <el-option label="Section Editor-in-Chief Assistant" value="Section Editor-in-Chief Assistant"></el-option>
+                                    <el-option label="Topic Editor-in-Chief" value="Topic Editor-in-Chief"></el-option>
                                     <el-option label="Topic Associate Editor-in-Chief" value="Topic Associate Editor-in-Chief"></el-option>
+                                    <el-option label="Topic Editor" value="Topic Editor"></el-option>
+                                    <el-option label="Deputy Editor" value="Deputy Editor"></el-option>
+                                    <el-option label="Regional Editor" value="Regional Editor"></el-option>
+                                    <el-option label="Statistical Editor" value="Statistical Editor"></el-option>
+                                    <el-option label="Social Media Editor" value="Social Media Editor"></el-option>
+                                    <el-option label="Innovators Editor" value="Innovators Editor"></el-option>
+                                    <el-option label="Co-Section Editor-in-Chief" value="Co-Section Editor-in-Chief"></el-option>
                                 </el-select>
                             </div>
                             <div v-else class="multi-line" v-html="scope.row.role"></div>
@@ -599,7 +624,7 @@
                                     <a href="#" title="Copy"><span class="ms" style="font-size: 18px;">add_notes</span></a>
                                 </el-tooltip>
                                 <el-tooltip content="Invitation History" placement="top">
-                                    <img src="https://susy.mdpi.com/build/img/icon/notebooks.png?a5ce4b8" alt="History" style="width: 16px; height: 16px; margin-left: 8px; cursor: pointer; vertical-align: middle;" />
+                                    <img src="https://susy.mdpi.com/build/img/icon/notebooks.png?a5ce4b8" alt="History" style="width: 16px; height: 16px; margin-left: 8px; cursor: pointer; vertical-align: middle;" @click="openInvitationHistory" />
                                 </el-tooltip>
                             </div>
                         </template>
@@ -677,13 +702,12 @@
         <div class="ae-note-body">
             <p><strong>只新增了academic editor的部分，其余部分未做改动</strong></p>
             <ul>
-                <li>当状态不为closed且没有AcE给出建议时，在页面comment的最下方显示academic editor comment部分（state1），样式可参考manuscript AcE decision部分</li>
-                <li>默认AcE的设定：与稿件最终decision为同一人，若absent或不再属于EBM或处于absent，顺延至期刊设定的默认EBM；若期刊默认EBM处于absent，顺延至EBM列表顺序第一人，以此类推。
-                <li>X Ethics Issue(s) Comments 为尚未给出建议的（且未被uninvited）issues数量
-                <li>invitation hitstory 为所有参与ethics issues comment的记录；其中Status列值枚举为：Invited、Uninvited、Comment Received
-                <li>一旦AcE给出建议了，就生成了一条comment记录。（state3）</li>
-                <li>展示AcE建议的内容，超出5行时要折叠并允许展开；始终显示签名和附件。
-                <li>点击choose editor后，在comment最下方可重新显示待邀请的state1</li>
+                <li>当状态不为closed时，在页面comment的最下方始终显示academic editor comment部分，样式可参考manuscript AcE decision部分</li>
+                <li>默认AcE的设定：与稿件最终decision为同一人，若不再属于EBM或处于absent，顺延至期刊设定的默认EBM；若期刊默认EBM处于absent，顺延至EBM列表顺序第一人，以此类推。</li>
+                <li>X Ethics Issue(s) Waiting Comments 为尚未给出建议的（且未被uninvited）issues数量</li>
+                <li>invitation hitstory 为所有参与ethics issues comment的记录；其中Status列值枚举为：Invited、Uninvited、Comment Received</li>
+                <li>一旦对学编发出invite，就生成了一条comment记录。</li>
+                <li>展示AcE建议的内容，超出5行时要折叠并允许展开；始终显示签名和附件。</li>
             </ul>
         </div>
     </div>

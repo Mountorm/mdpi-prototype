@@ -112,7 +112,8 @@ $(document).ready(function() {
     $('#dialog-invitation-history').dialog({
         autoOpen: false,
         modal: true,
-        width: 900
+        width: 900,
+        dialogClass: 'invitation-history-dialog'
     });
 
     $('#dialog-coi').dialog({

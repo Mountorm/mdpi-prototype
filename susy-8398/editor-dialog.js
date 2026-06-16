@@ -6,7 +6,7 @@ var baseEditors = [
     {
         name: 'Ariando',
         email: 'phyarian@nus.edu.sg',
-        role: 'Section Board Member',
+        role: 'Editor-in-Chief<br>Section Board Member',
         section: 'section1',
         lastInviteDate: '4 Mar 2024',
         researchInterests: 'strongly correlated electron systems; complex oxide thin films; interfaces; heterostructures and superlattices; superconductivity; condensed matter physics',
@@ -15,7 +15,7 @@ var baseEditors = [
     {
         name: 'Abdeltif Amrane',
         email: 'abdeltif.amrane@univ-rennes1.fr',
-        role: 'Section Board Member<br>Editorial Board Member',
+        role: 'Associate Editor<br>Editorial Board Member<br>Guest Editor',
         section: 'section2',
         lastInviteDate: '30 Nov 2023',
         researchInterests: 'environmental engineering; combined processes; biological treatment; advanced (electrochemical) oxidation processes',
@@ -24,7 +24,7 @@ var baseEditors = [
     {
         name: 'Abílio Manuel Pinho de Jesus',
         email: 'ajesus@fe.up.pt',
-        role: 'Guest Editor<br>Section Board Member<br>Topic Associate Editor-in-Chief',
+        role: 'Topic Editor-in-Chief<br>Topic Associate Editor-in-Chief<br>Topic Editor',
         section: 'section1',
         lastInviteDate: '18 Oct 2022',
         researchInterests: 'manufacturing processes; machining; additive manufacturing; fatigue; fracture; structural integrity; numerical simulation; experimental validation',
@@ -33,7 +33,7 @@ var baseEditors = [
     {
         name: 'Adel Razek',
         email: 'adel.razek@centralesupelec.fr',
-        role: 'Section Board Member',
+        role: 'Co-Editor-in-Chief<br>Section Associate Editor',
         section: 'section2',
         lastInviteDate: '12 Oct 2022',
         researchInterests: 'computational electromagnetics; coupled multi-physics modeling; design of electromagnetic systems; exposure assessment in electric vehicle; electromagnetic compatibility; nondestructive testing; smart material actuation; robotics; biomedicine',
@@ -272,6 +272,9 @@ var editorDialogApp = new Vue({
                 type: 'success'
             });
             this.dialogVisible = false;
+        },
+        openInvitationHistory: function() {
+            $('#dialog-invitation-history').dialog('open');
         }
     }
 });
