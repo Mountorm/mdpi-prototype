@@ -25,6 +25,10 @@
           <el-switch v-model="showOnlyIssues" size="small" />
           <span>Only issues</span>
         </div>
+        <el-button size="small" @click="handleGenerateReport">
+          <span class="material-symbols-outlined" style="font-size:14px;">description</span>
+          Generate Report
+        </el-button>
         <el-button type="primary" class="susy-btn" size="small" :loading="loading" @click="handleRedetectAll">
           Re-detect All
         </el-button>
@@ -615,9 +619,12 @@ The detection will run in the background. Please refresh the page later to view 
 
 <script setup>
 import { computed, reactive, ref, onMounted, onUnmounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { detectionConfig } from '../migrated-detection/detection-config.js'
 import AiWritingDonut from './AiWritingDonut.vue'
 import './DetectionAssistant.css'
+
+const router = useRouter()
 
 const statusMap = {
   healthy:  { icon: 'check_circle',  color: 'text-green-500',  label: 'Passed',   tagType: 'success' },
@@ -997,6 +1004,10 @@ function handleDownload(item) {
   a.click()
   document.body.removeChild(a)
   URL.revokeObjectURL(url)
+}
+
+function handleGenerateReport() {
+  router.push('/report-builder')
 }
 
 
