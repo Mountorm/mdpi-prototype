@@ -20,24 +20,14 @@
 
         <!-- ORCID 提示条（仅 published 页签且未连接时显示） -->
         <div v-if="activeTab === 'published' && !orcidConnected" class="orcid-banner mb-3">
-          <a href="#" class="orcid-banner__link" @click.prevent="handleConnectOrcid">Create or connect your ORCID ID</a>
-          <div 
-            class="orcid-banner__info-wrapper"
-            @mouseenter="handleOrcidInfoEnter"
-            @mouseleave="handleOrcidInfoLeave"
+          We've noticed that you haven't attached your ORCID account just yet.  <a href="#" class="orcid-banner__link" @click.prevent="handleConnectOrcid">Create or connect your ORCID ID</a>
+          <span
+            class="orcid-banner__info material-symbols-outlined"
+            title="what's this?"
+            @click.prevent="openOrcidHelp"
           >
-            <span class="orcid-banner__info material-symbols-outlined">
-              help
-            </span>
-            <div v-show="showOrcidInfoPanel" class="orcid-info-panel">
-              <p class="orcid-info-text">
-                ORCID provides a persistent digital identifier that distinguishes you from other researchers and supports automated links between you and your professional activities.
-              </p>
-              <a href="https://support.orcid.org/hc/en-us/articles/360006897334-What-is-an-ORCID-iD-and-how-do-I-use-it" target="_blank" class="orcid-info-link">
-                View Details
-              </a>
-            </div>
-          </div>
+            help
+          </span>
         </div>
 
         <!-- 表格容器 -->
@@ -179,20 +169,8 @@ const activeTab = ref('incomplete')
 const orcidConnected = ref(false)
 const showOrcidModal = ref(false)
 const selectedManuscript = ref(null)
-const showOrcidInfoPanel = ref(false)
-let orcidInfoPanelTimer = null
-
-const handleOrcidInfoEnter = () => {
-  if (orcidInfoPanelTimer) {
-    clearTimeout(orcidInfoPanelTimer)
-  }
-  showOrcidInfoPanel.value = true
-}
-
-const handleOrcidInfoLeave = () => {
-  orcidInfoPanelTimer = setTimeout(() => {
-    showOrcidInfoPanel.value = false
-  }, 200)
+const openOrcidHelp = () => {
+  window.open('https://support.orcid.org/hc/en-us/articles/360006897334-What-is-an-ORCID-iD-and-how-do-I-use-it', '_blank')
 }
 
 const handleConnectOrcid = () => {
@@ -427,51 +405,15 @@ const getPublishedIcon = (id) => {
 }
 .orcid-banner__link:hover { color: #014bb5; }
 
-.orcid-banner__info-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
 .orcid-banner__info {
   display: inline-flex;
   align-items: center;
   color: #9ca3af;
-  cursor: help;
+  cursor: pointer;
   flex-shrink: 0;
   font-size: 16px;
 }
 .orcid-banner__info:hover { color: #6b7280; }
-
-.orcid-info-panel {
-  position: absolute;
-  top: calc(100% + 4px);
-  left: 0;
-  background: white;
-  border: 1px solid #e5e7eb;
-  border-radius: 4px;
-  padding: 12px;
-  width: 410px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  z-index: 100;
-}
-
-.orcid-info-text {
-  font-size: 13px;
-  color: #374151;
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
-
-.orcid-info-link {
-  font-size: 13px;
-  color: #0156ce;
-  text-decoration: none;
-  font-weight: 500;
-}
-.orcid-info-link:hover {
-  text-decoration: underline;
-}
 
 /* Action 列通用 */
 .action-cell {
