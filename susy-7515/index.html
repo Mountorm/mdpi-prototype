@@ -8,7 +8,7 @@
     <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <script src="https://unpkg.com/element-ui/lib/umd/locale/en.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=add_notes,info" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=block" />
 
     <style>
         /* Material Symbols Outlined 字体样式 */
@@ -22,6 +22,7 @@
             direction: ltr;
             font-feature-settings: "liga";
             -webkit-font-feature-settings: "liga";
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
             -webkit-font-smoothing: antialiased;
             cursor: pointer;
             color: #606266;
@@ -29,6 +30,24 @@
 
         .ms:hover {
             color: #4f5671;
+        }
+
+        .ms-green {
+            display: inline-block;
+            font: normal normal normal 1.125rem/1 Material Symbols Outlined;
+            letter-spacing: normal;
+            text-transform: none;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            font-feature-settings: "liga";
+            -webkit-font-feature-settings: "liga";
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            -webkit-font-smoothing: antialiased;
+            cursor: default;
+            color: #4caf50;
+            vertical-align: middle;
+            margin-left: 2px;
         }
 
         body {
@@ -322,7 +341,7 @@
         class="editor-dialog"
         title="Select Editor"
         :visible.sync="dialogVisible"
-        width="1320px"
+        width="1420px"
         top="5vh"
         :close-on-click-modal="false"
     >
@@ -342,7 +361,7 @@
                 <el-table-column
                     prop="name"
                     label="Name"
-                    width="110"
+                    width="120"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
@@ -352,20 +371,25 @@
                                 clearable
                             ></el-input>
                         </div>
-                        <a v-else
-                            href="javascript:void(0);"
-                            class="editor-table-link"
-                            :title="'click here to see invitation history'"
-                        >
-                            {{ scope.row.name }}
-                        </a>
+                        <span v-else>
+                            <a
+                                href="javascript:void(0);"
+                                class="editor-table-link"
+                                :title="'click here to see invitation history'"
+                            >
+                                {{ scope.row.name }}
+                            </a>
+                            <el-tooltip v-if="isNewEditor(scope.row)" placement="top" effect="dark" content="New editor — joined within one year">
+                                <span class="ms-green">new_releases</span>
+                            </el-tooltip>
+                        </span>
                     </template>
                 </el-table-column>
 
                 <el-table-column
                     prop="email"
                     label="Email"
-                    width="160"
+                    width="150"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
@@ -384,7 +408,7 @@
                 <el-table-column
                     prop="role"
                     label="Role"
-                    width="200"
+                    width="180"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
@@ -402,7 +426,7 @@
                 <el-table-column
                     prop="section"
                     label="Section"
-                    width="180"
+                    width="170"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
@@ -419,13 +443,32 @@
                     prop="lastInviteDate"
                     label="Last Invite Date"
                     sortable
-                    width="150"
+                    width="130"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
                         </div>
                         <div v-else>
                             {{ scope.row.lastInviteDate }}
+                        </div>
+                    </template>
+                </el-table-column>
+
+                <el-table-column
+                    prop="ebmJoinDate"
+                    label="EBM Join Date"
+                    width="140"
+                >
+                    <template slot-scope="scope">
+                        <div v-if="scope.$index === 0">
+                            <el-input
+                                v-model="filters.ebmJoinDate"
+                                size="mini"
+                                clearable
+                            ></el-input>
+                        </div>
+                        <div v-else>
+                            {{ scope.row.ebmJoinDate || '-' }}
                         </div>
                     </template>
                 </el-table-column>
@@ -459,7 +502,7 @@
                 <el-table-column
                     prop="absenceDate"
                     label="Absence Date"
-                    width="110"
+                    width="100"
                 >
                     <template slot-scope="scope">
                         <div v-if="scope.$index === 0">
@@ -477,7 +520,7 @@
 
                 <el-table-column
                     label="Action"
-                    width="110"
+                    width="120"
                     align="center"
                 >
                     <template slot-scope="scope">
@@ -555,6 +598,7 @@
                     role: 'Section Board Member',
                     section: 'section1',
                     lastInviteDate: '4 Mar 2024',
+                    ebmJoinDate: '15 Jan 2026',
                     researchInterests: 'strongly correlated electron systems; complex oxide thin films; interfaces; heterostructures and superlattices; superconductivity; condensed matter physics',
                     absenceDate: ''
                 },
@@ -564,6 +608,7 @@
                     role: 'Section Board Member<br>Editorial Board Member',
                     section: 'section2',
                     lastInviteDate: '30 Nov 2023',
+                    ebmJoinDate: '10 Mar 2020',
                     researchInterests: 'environmental engineering; combined processes; biological treatment; advanced (electrochemical) oxidation processes',
                     absenceDate: ''
                 },
@@ -573,6 +618,7 @@
                     role: 'Guest Editor<br>Section Board Member<br>Topic Associate Editor-in-Chief',
                     section: 'section1',
                     lastInviteDate: '18 Oct 2022',
+                    ebmJoinDate: '',
                     researchInterests: 'manufacturing processes; machining; additive manufacturing; fatigue; fracture; structural integrity; numerical simulation; experimental validation',
                     absenceDate: ''
                 },
@@ -582,6 +628,7 @@
                     role: 'Section Board Member',
                     section: 'section2',
                     lastInviteDate: '12 Oct 2022',
+                    ebmJoinDate: '3 Sep 2025',
                     researchInterests: 'computational electromagnetics; coupled multi-physics modeling; design of electromagnetic systems; exposure assessment in electric vehicle; electromagnetic compatibility; nondestructive testing; smart material actuation; robotics; biomedicine',
                     absenceDate: ''
                 }
@@ -596,6 +643,7 @@
                     role: base.role,
                     section: (i % 2 === 0) ? 'section1' : 'section2',
                     lastInviteDate: base.lastInviteDate,
+                    ebmJoinDate: base.ebmJoinDate,
                     researchInterests: base.researchInterests,
                     absenceDate: base.absenceDate
                 });
@@ -609,6 +657,7 @@
                     role: '',
                     section: '',
                     lastInviteDate: '',
+                    ebmJoinDate: '',
                     researchInterests: '',
                     absenceDate: ''
                 },
@@ -618,6 +667,7 @@
                     role: '',
                     section: '',
                     lastInviteDate: '',
+                    ebmJoinDate: '',
                     researchInterests: '',
                     absenceDate: ''
                 },
@@ -662,8 +712,9 @@
                             return re.test(text);
                         }
                     })();
+                    var ebmJoinDateMatch = self.filters.ebmJoinDate === '' || (item.ebmJoinDate && item.ebmJoinDate.toLowerCase().indexOf(self.filters.ebmJoinDate.toLowerCase()) !== -1);
                     var absenceMatch = self.filters.absenceDate === '' || item.absenceDate.toLowerCase().indexOf(self.filters.absenceDate.toLowerCase()) !== -1;
-                    return nameMatch && emailMatch && roleMatch && sectionMatch && researchMatch && absenceMatch;
+                    return nameMatch && emailMatch && roleMatch && sectionMatch && researchMatch && ebmJoinDateMatch && absenceMatch;
                 });
             },
             filteredTotal: function () {
@@ -794,6 +845,7 @@
                     role: '',
                     section: '',
                     lastInviteDate: '',
+                    ebmJoinDate: '',
                     researchInterests: '',
                     absenceDate: ''
                 };
@@ -822,6 +874,20 @@
                 var escaped = this.escapeRe(prefix);
                 var re = new RegExp('(?:^|[\\s;,])' + escaped);
                 return re.test(text);
+            },
+            isNewEditor: function (row) {
+                if (!row.ebmJoinDate) return false;
+                var parts = row.ebmJoinDate.split(' ');
+                if (parts.length !== 3) return false;
+                var months = { Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5, Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11 };
+                var day = parseInt(parts[0], 10);
+                var month = months[parts[1]];
+                var year = parseInt(parts[2], 10);
+                if (isNaN(day) || month === undefined || isNaN(year)) return false;
+                var joinDate = new Date(year, month, day);
+                var oneYearAgo = new Date();
+                oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+                return joinDate > oneYearAgo;
             },
             onInvite: function (row) {
                 this.$message({
