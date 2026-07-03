@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>系统菜单图标方案 · 含预览</title>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" />
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;background:#eef2f7;min-height:100vh}
+    .app{display:flex;min-height:100vh}
+
+    /* ===== Sidebar ===== */
+    .sidebar{
+      width:250px;background:#fff;color:#333;display:flex;flex-direction:column;
+      transition:width .25s ease;overflow:hidden;flex-shrink:0;position:sticky;top:0;height:100vh;z-index:100;
+      border-right:1px solid #e4e8ef;--icon-color:#4a7ad8
+    }
+    .sidebar.collapsed{width:54px}
+    .sidebar-header{
+      display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid #e4e8ef;flex-shrink:0
+    }
+    .sidebar-toggle{
+      background:none;border:none;color:#777;font-size:20px;cursor:pointer;padding:4px 6px;border-radius:6px;flex-shrink:0;line-height:1
+    }
+    .sidebar-toggle:hover{background:#f0f2f5;color:#333}
+    .sidebar-title{font-size:14px;font-weight:600;color:#1a2332;white-space:nowrap;overflow:hidden}
+    .sidebar.collapsed .sidebar-title{display:none}
+    .sidebar-menu{flex:1;overflow-y:auto;padding:6px 0}
+    .sidebar-menu::-webkit-scrollbar{width:3px}
+    .sidebar-menu::-webkit-scrollbar-thumb{background:#d0d4dc;border-radius:4px}
+
+    .menu-group{border-bottom:1px solid #f0f1f4}
+    .menu-header{
+      display:flex;align-items:center;gap:8px;padding:9px 12px;cursor:pointer;
+      transition:background .12s;user-select:none;white-space:nowrap
+    }
+    .menu-header:hover{background:#f5f7fa}
+    .menu-header.active{background:#e8f0fe}
+    .menu-icon-wrap{width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;position:relative;color:var(--icon-color);border-radius:4px;transition:background .12s}
+    .menu-icon-wrap:hover{background:rgba(74,122,216,.1)}
+    .menu-icon-wrap .material-icons{font-size:20px!important}
+    .menu-icon-wrap .fa-solid,.menu-icon-wrap .fa-regular{font-size:18px}
+    .menu-icon-wrap [class^="ri-"]{font-size:19px}
+    .menu-icon-wrap .bi{font-size:19px}
+    .sidebar-palette{padding:8px 12px 10px;border-top:1px solid #e4e8ef;flex-shrink:0}
+    .sidebar-palette .plabel{font-size:10px;color:#999;margin-bottom:5px;letter-spacing:.3px}
+    .sidebar-palette .picker-row{display:flex;align-items:center;gap:8px}
+    .sidebar-palette .color-swatch{width:32px;height:32px;border-radius:6px;cursor:pointer;border:2px solid #ddd;flex-shrink:0;position:relative;overflow:hidden;transition:border-color .12s}
+    .sidebar-palette .color-swatch:hover{border-color:#aaa}
+    .sidebar-palette .color-swatch input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .sidebar-palette .hex-input{flex:1;font-family:'SF Mono',monospace;font-size:12px;padding:5px 8px;border:1px solid #ddd;border-radius:5px;outline:none;color:#333;min-width:0}
+    .sidebar-palette .hex-input:focus{border-color:#4a7ad8;box-shadow:0 0 0 2px rgba(74,122,216,.15)}
+    .sidebar-palette .hex-input::placeholder{color:#bbb}
+    .sidebar.collapsed .sidebar-palette{display:none}
+    .modal-custom{background:#fff;border-radius:16px;width:460px;max-width:92vw;max-height:85vh;display:flex;flex-direction:column;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.18)}
+    .modal-custom-header{display:flex;justify-content:space-between;align-items:center;padding:16px 20px 0}
+    .modal-custom-header h3{font-size:16px;color:#1a2332}
+    .modal-custom-body{padding:14px 20px 10px;overflow-y:auto;flex:1}
+    .modal-custom-footer{display:flex;justify-content:flex-end;gap:8px;padding:12px 20px 16px;border-top:1px solid #f0f0f0}
+    .field{margin-bottom:12px}
+    .field label{display:block;font-size:12px;font-weight:600;color:#555;margin-bottom:4px}
+    .field select,.field textarea,.field input[type="text"]{width:100%;padding:7px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;font-family:inherit;outline:none}
+    .field select:focus,.field textarea:focus,.field input[type="text"]:focus{border-color:#4a7ad8;box-shadow:0 0 0 2px rgba(74,122,216,.12)}
+    .field textarea{resize:vertical;font-family:'SF Mono',monospace;font-size:12px}
+    .tab-row{display:flex;gap:4px;background:#f0f2f5;padding:3px;border-radius:8px}
+    .tab-row .tab{padding:5px 14px;font-size:12px;border:none;border-radius:6px;cursor:pointer;background:transparent;color:#666;flex:1;transition:all .12s;font-weight:500}
+    .tab-row .tab.on{background:#fff;color:#1a2332;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+    .tab-row .tab:hover:not(.on){color:#333}
+    .custom-preview{background:#f8f9fb;border-radius:8px;min-height:60px;display:flex;align-items:center;justify-content:center;border:1px dashed #ddd}
+    .custom-preview .cp-svg svg{width:36px;height:36px;display:block}
+    .custom-preview .cp-svg svg *{fill:currentColor}
+    .custom-preview .cp-svg svg *[fill="none"]{fill:none}
+    .custom-preview .cp-img{width:36px;height:36px;object-fit:contain}
+    .custom-preview .cp-emoji{font-size:32px;line-height:1}
+    .btn{padding:7px 20px;font-size:13px;border-radius:7px;border:none;cursor:pointer;font-weight:500;transition:all .12s}
+    .btn--primary{background:#4a7ad8;color:#fff}
+    .btn--primary:hover{background:#3a6ac8}
+    .btn--outline{background:transparent;border:1px solid #ddd;color:#888}
+    .btn--outline:hover{border-color:#ccc;color:#555}
+    .ci-svg svg{width:20px;height:20px;display:block}
+    .ci-svg svg *{fill:currentColor!important}
+    .ci-svg svg *[fill="none"]{fill:none!important}
+    .ci-img{width:20px;height:20px;object-fit:contain;display:block}
+    .ci-emoji{font-size:18px;line-height:20px;display:block;text-align:center}
+    .menu-name{flex:1;font-size:13px;font-weight:500;color:#1a2332;overflow:hidden;text-overflow:ellipsis}
+    .menu-arrow{font-size:10px;color:#aab;transition:transform .2s;flex-shrink:0}
+    .menu-header.expanded .menu-arrow{transform:rotate(90deg)}
+
+    .menu-items{overflow:hidden;max-height:0;transition:max-height .25s ease;background:#f8f9fb}
+    .menu-items.open{max-height:600px}
+    .menu-item{
+      padding:6px 12px 6px 48px;font-size:12px;color:#666;white-space:nowrap;overflow:hidden;text-overflow:ellipsis
+    }
+    .menu-item:hover{color:#1a73e8;background:rgba(26,115,232,.04)}
+
+    .sidebar.collapsed .menu-name,.sidebar.collapsed .menu-arrow,.sidebar.collapsed .menu-items{display:none}
+    .sidebar.collapsed .menu-header{justify-content:center;padding:11px 0}
+    .sidebar.collapsed .menu-icon-wrap{width:auto}
+
+    .icon-item.selected{background:#e8f0fe;outline:2px solid #1a73e8;outline-offset:-2px;border-radius:8px;position:relative}
+    .icon-item.selected::after{content:'✓';position:absolute;top:-4px;right:-4px;font-size:10px;background:#1a73e8;color:#fff;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+
+    /* ===== Main ===== */
+    .main{flex:1;min-width:0;padding:28px 20px}
+    .container{background:#fff;border-radius:18px;box-shadow:0 4px 28px rgba(0,20,40,.06);padding:24px 22px}
+
+    .header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:20px}
+    .header h1{font-size:20px;font-weight:700;color:#1a2332;display:flex;align-items:center;gap:8px}
+    .header h1 small{font-size:12px;font-weight:400;color:#8a9aae}
+    .badges{display:flex;gap:6px;flex-wrap:wrap}
+    .badge{padding:3px 11px;border-radius:14px;font-size:11px;font-weight:600}
+    .badge--g{background:#e8f0fe;color:#1a73e8}.badge--f{background:#e6f7ee;color:#1d9b5e}.badge--r{background:#ede7f6;color:#6a1b9a}.badge--b{background:#e6f2ff;color:#0d6efd}
+
+    .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid #eee}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    thead{background:#1a2332}
+    thead th{color:#fff;font-weight:600;padding:11px 9px;text-align:center;white-space:nowrap}
+    thead th:first-child{text-align:left;padding-left:14px}
+    tbody td{padding:9px 7px;border-bottom:1px solid #f0f0f0;vertical-align:middle}
+    tbody tr:nth-child(even){background:#f8faff}
+    tbody tr:hover{background:#edf3fe}
+
+    .group-cell{font-weight:600;color:#1a2332;padding-left:3px}
+    .group-cell .num{font-size:10px;font-weight:400;color:#8a9aa8;display:block;margin-bottom:1px}
+    .icon-cell{text-align:center}
+    .icon-grid{display:flex;align-items:center;justify-content:center;gap:8px;padding:3px 0}
+
+    .icon-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:5px 7px;border-radius:7px;transition:background .12s;user-select:none}
+    .icon-item:hover{background:rgba(0,0,0,.04)}
+    .icon-item .material-icons{font-size:20px;color:#1a73e8;display:block}
+    .icon-item .fa-solid,.icon-item .fa-regular{font-size:18px;color:#1d9b5e;display:block}
+    .icon-item [class^="ri-"]{font-size:19px;color:#6a1b9a;display:block}
+    .icon-item .bi{font-size:19px;color:#0d6efd;display:block}
+    .icon-item .lbl{font-size:9px;color:#6a7a8e;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .icon-div{width:1px;height:26px;background:#e0e0e0;flex-shrink:0}
+
+    .modal-overlay{display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,.45);justify-content:center;align-items:center}
+    .modal-overlay.active{display:flex}
+    .modal{background:#fff;border-radius:20px;padding:40px 48px 32px;min-width:260px;text-align:center;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+    .modal-close{position:absolute;top:12px;right:16px;font-size:24px;color:#999;cursor:pointer;border:none;background:none;padding:4px 8px;border-radius:4px}
+    .modal-close:hover{background:#f0f0f0;color:#333}
+    .modal-icon{display:flex;justify-content:center;align-items:center;min-height:80px;margin-bottom:12px}
+    .modal-icon .material-icons{font-size:72px!important;color:#1a73e8}
+    .modal-icon .fa-solid,.modal-icon .fa-regular{font-size:64px!important;color:#1d9b5e}
+    .modal-icon [class^="ri-"]{font-size:68px!important;color:#6a1b9a}
+    .modal-icon .bi{font-size:68px!important;color:#0d6efd}
+    .modal-lib{display:inline-block;padding:2px 12px;border-radius:12px;font-size:11px;font-weight:600;margin-bottom:8px}
+    .modal-lib--g{background:#e8f0fe;color:#1a73e8}.modal-lib--f{background:#e6f7ee;color:#1d9b5e}.modal-lib--r{background:#ede7f6;color:#6a1b9a}.modal-lib--b{background:#e6f2ff;color:#0d6efd}
+    .modal-name{font-size:14px;font-weight:600;color:#1a2332;font-family:'SF Mono',monospace;background:#f5f6f8;padding:4px 14px;border-radius:6px;display:inline-block}
+    .modal-hint{font-size:12px;color:#999;margin-top:12px}
+
+    .footer-note{margin-top:14px;font-size:12px;color:#8a9aae;text-align:center}
+
+    @media(max-width:1000px){
+      .sidebar{width:200px}
+      .sidebar.collapsed{width:48px}
+      .main{padding:16px 10px}
+      .icon-item .material-icons{font-size:16px}
+      .icon-grid{gap:5px}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== Sidebar ===== -->
+  <div class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <button class="sidebar-toggle" id="sidebarToggle" title="折叠侧栏">☰</button>
+      <span class="sidebar-title">Menu Preview</span>
+    </div>
+    <div class="sidebar-menu" id="sidebarMenu"></div>
+    <div class="sidebar-palette">
+      <div class="plabel">ICON COLOR</div>
+      <div class="picker-row">
+        <div class="color-swatch" id="swatch" style="background:#4a7ad8">
+          <input type="color" id="colorPicker" value="#4a7ad8" />
+        </div>
+        <input type="text" class="hex-input" id="hexInput" value="#4a7ad8" placeholder="#hex" maxlength="7" />
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Main ===== -->
+  <div class="main">
+    <div class="container">
+      <div class="header">
+        <h1>📋 系统菜单图标方案 <small>18 组 · 4 库</small></h1>
+        <div class="badges">
+          <span class="badge badge--g">🔵 Google</span>
+          <span class="badge badge--f">🟢 FontAwesome</span>
+          <span class="badge badge--r">🟣 Remix Icon</span>
+          <span class="badge badge--b">🔷 Bootstrap</span>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr>
+            <th style="width:11%">Menu Group</th>
+            <th style="width:22.25%">Google Material Icons</th>
+            <th style="width:22.25%">Font Awesome 6</th>
+            <th style="width:22.25%">Remix Icon</th>
+            <th style="width:22.25%">Bootstrap Icons</th>
+          </tr></thead>
+          <tbody>
+            <!-- 1 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">01</span>Account</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="account_circle" data-l="Google Material Icons"><span class="material-icons">account_circle</span><span class="lbl">account_circle</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="person" data-l="Google Material Icons"><span class="material-icons">person</span><span class="lbl">person</span></div>
+                <div class="icon-item" data-d="g" data-n="manage_accounts" data-l="Google Material Icons"><span class="material-icons">manage_accounts</span><span class="lbl">manage_accounts</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="user-circle" data-l="Font Awesome 6"><i class="fa-solid fa-user-circle"></i><span class="lbl">fa-user-circle</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="user" data-l="Font Awesome 6"><i class="fa-solid fa-user"></i><span class="lbl">fa-user</span></div>
+                <div class="icon-item" data-d="f" data-n="id-card" data-l="Font Awesome 6"><i class="fa-solid fa-id-card"></i><span class="lbl">fa-id-card</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="user-fill" data-l="Remix Icon"><i class="ri-user-fill"></i><span class="lbl">ri-user-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="user-line" data-l="Remix Icon"><i class="ri-user-line"></i><span class="lbl">ri-user-line</span></div>
+                <div class="icon-item" data-d="r" data-n="user-settings-line" data-l="Remix Icon"><i class="ri-user-settings-line"></i><span class="lbl">ri-user-settings-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="person-circle" data-l="Bootstrap Icons"><i class="bi bi-person-circle"></i><span class="lbl">bi-person-circle</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="person" data-l="Bootstrap Icons"><i class="bi bi-person"></i><span class="lbl">bi-person</span></div>
+                <div class="icon-item" data-d="b" data-n="person-gear" data-l="Bootstrap Icons"><i class="bi bi-person-gear"></i><span class="lbl">bi-person-gear</span></div>
+              </div></td>
+            </tr>
+            <!-- 2 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">02</span>Editorial Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="edit_note" data-l="Google Material Icons"><span class="material-icons">edit_note</span><span class="lbl">edit_note</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="feed" data-l="Google Material Icons"><span class="material-icons">feed</span><span class="lbl">feed</span></div>
+                <div class="icon-item" data-d="g" data-n="description" data-l="Google Material Icons"><span class="material-icons">description</span><span class="lbl">description</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="file-edit" data-l="Font Awesome 6"><i class="fa-solid fa-file-edit"></i><span class="lbl">fa-file-edit</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="newspaper" data-l="Font Awesome 6"><i class="fa-solid fa-newspaper"></i><span class="lbl">fa-newspaper</span></div>
+                <div class="icon-item" data-d="f" data-n="file-alt" data-l="Font Awesome 6"><i class="fa-solid fa-file-alt"></i><span class="lbl">fa-file-alt</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="edit-fill" data-l="Remix Icon"><i class="ri-edit-fill"></i><span class="lbl">ri-edit-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="edit-line" data-l="Remix Icon"><i class="ri-edit-line"></i><span class="lbl">ri-edit-line</span></div>
+                <div class="icon-item" data-d="r" data-n="file-edit-line" data-l="Remix Icon"><i class="ri-file-edit-line"></i><span class="lbl">ri-file-edit-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="pencil-square" data-l="Bootstrap Icons"><i class="bi bi-pencil-square"></i><span class="lbl">bi-pencil-square</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="file-earmark-text" data-l="Bootstrap Icons"><i class="bi bi-file-earmark-text"></i><span class="lbl">bi-file-earmark-text</span></div>
+                <div class="icon-item" data-d="b" data-n="journal-text" data-l="Bootstrap Icons"><i class="bi bi-journal-text"></i><span class="lbl">bi-journal-text</span></div>
+              </div></td>
+            </tr>
+            <!-- 3 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">03</span>Production Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="fact_check" data-l="Google Material Icons"><span class="material-icons">fact_check</span><span class="lbl">fact_check</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="assignment_turned_in" data-l="Google Material Icons"><span class="material-icons">assignment_turned_in</span><span class="lbl">assignment_turned_in</span></div>
+                <div class="icon-item" data-d="g" data-n="checklist" data-l="Google Material Icons"><span class="material-icons">checklist</span><span class="lbl">checklist</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="check-double" data-l="Font Awesome 6"><i class="fa-solid fa-check-double"></i><span class="lbl">fa-check-double</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="clipboard-check" data-l="Font Awesome 6"><i class="fa-solid fa-clipboard-check"></i><span class="lbl">fa-clipboard-check</span></div>
+                <div class="icon-item" data-d="f" data-n="file-signature" data-l="Font Awesome 6"><i class="fa-solid fa-file-signature"></i><span class="lbl">fa-file-signature</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="check-double-fill" data-l="Remix Icon"><i class="ri-check-double-fill"></i><span class="lbl">ri-check-double-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="check-double-line" data-l="Remix Icon"><i class="ri-check-double-line"></i><span class="lbl">ri-check-double-line</span></div>
+                <div class="icon-item" data-d="r" data-n="task-line" data-l="Remix Icon"><i class="ri-task-line"></i><span class="lbl">ri-task-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="check2-square" data-l="Bootstrap Icons"><i class="bi bi-check2-square"></i><span class="lbl">bi-check2-square</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="clipboard-check" data-l="Bootstrap Icons"><i class="bi bi-clipboard-check"></i><span class="lbl">bi-clipboard-check</span></div>
+                <div class="icon-item" data-d="b" data-n="check-all" data-l="Bootstrap Icons"><i class="bi bi-check-all"></i><span class="lbl">bi-check-all</span></div>
+              </div></td>
+            </tr>
+            <!-- 4 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">04</span>IOAP Participant View</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="account_balance" data-l="Google Material Icons"><span class="material-icons">account_balance</span><span class="lbl">account_balance</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="school" data-l="Google Material Icons"><span class="material-icons">school</span><span class="lbl">school</span></div>
+                <div class="icon-item" data-d="g" data-n="business" data-l="Google Material Icons"><span class="material-icons">business</span><span class="lbl">business</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="university" data-l="Font Awesome 6"><i class="fa-solid fa-university"></i><span class="lbl">fa-university</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="building-columns" data-l="Font Awesome 6"><i class="fa-solid fa-building-columns"></i><span class="lbl">fa-building-columns</span></div>
+                <div class="icon-item" data-d="f" data-n="landmark" data-l="Font Awesome 6"><i class="fa-solid fa-landmark"></i><span class="lbl">fa-landmark</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="bank-fill" data-l="Remix Icon"><i class="ri-bank-fill"></i><span class="lbl">ri-bank-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="bank-line" data-l="Remix Icon"><i class="ri-bank-line"></i><span class="lbl">ri-bank-line</span></div>
+                <div class="icon-item" data-d="r" data-n="building-fill" data-l="Remix Icon"><i class="ri-building-fill"></i><span class="lbl">ri-building-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="bank2" data-l="Bootstrap Icons"><i class="bi bi-bank2"></i><span class="lbl">bi-bank2</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="building" data-l="Bootstrap Icons"><i class="bi bi-building"></i><span class="lbl">bi-building</span></div>
+                <div class="icon-item" data-d="b" data-n="buildings" data-l="Bootstrap Icons"><i class="bi bi-buildings"></i><span class="lbl">bi-buildings</span></div>
+              </div></td>
+            </tr>
+            <!-- 5 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">05</span>Society Participant View</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="groups" data-l="Google Material Icons"><span class="material-icons">groups</span><span class="lbl">groups</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="diversity_3" data-l="Google Material Icons"><span class="material-icons">diversity_3</span><span class="lbl">diversity_3</span></div>
+                <div class="icon-item" data-d="g" data-n="people" data-l="Google Material Icons"><span class="material-icons">people</span><span class="lbl">people</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="users" data-l="Font Awesome 6"><i class="fa-solid fa-users"></i><span class="lbl">fa-users</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="user-friends" data-l="Font Awesome 6"><i class="fa-solid fa-user-friends"></i><span class="lbl">fa-user-friends</span></div>
+                <div class="icon-item" data-d="f" data-n="handshake" data-l="Font Awesome 6"><i class="fa-solid fa-handshake"></i><span class="lbl">fa-handshake</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="group-fill" data-l="Remix Icon"><i class="ri-group-fill"></i><span class="lbl">ri-group-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="group-line" data-l="Remix Icon"><i class="ri-group-line"></i><span class="lbl">ri-group-line</span></div>
+                <div class="icon-item" data-d="r" data-n="team-line" data-l="Remix Icon"><i class="ri-team-line"></i><span class="lbl">ri-team-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="people-fill" data-l="Bootstrap Icons"><i class="bi bi-people-fill"></i><span class="lbl">bi-people-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="people" data-l="Bootstrap Icons"><i class="bi bi-people"></i><span class="lbl">bi-people</span></div>
+                <div class="icon-item" data-d="b" data-n="person-check-fill" data-l="Bootstrap Icons"><i class="bi bi-person-check-fill"></i><span class="lbl">bi-person-check-fill</span></div>
+              </div></td>
+            </tr>
+            <!-- 6 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">06</span>Submissions</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="publish" data-l="Google Material Icons"><span class="material-icons">publish</span><span class="lbl">publish</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="post_add" data-l="Google Material Icons"><span class="material-icons">post_add</span><span class="lbl">post_add</span></div>
+                <div class="icon-item" data-d="g" data-n="note_add" data-l="Google Material Icons"><span class="material-icons">note_add</span><span class="lbl">note_add</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="upload" data-l="Font Awesome 6"><i class="fa-solid fa-upload"></i><span class="lbl">fa-upload</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="paper-plane" data-l="Font Awesome 6"><i class="fa-solid fa-paper-plane"></i><span class="lbl">fa-paper-plane</span></div>
+                <div class="icon-item" data-d="f" data-n="feather-alt" data-l="Font Awesome 6"><i class="fa-solid fa-feather-alt"></i><span class="lbl">fa-feather-alt</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="upload-2-fill" data-l="Remix Icon"><i class="ri-upload-2-fill"></i><span class="lbl">ri-upload-2-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="upload-2-line" data-l="Remix Icon"><i class="ri-upload-2-line"></i><span class="lbl">ri-upload-2-line</span></div>
+                <div class="icon-item" data-d="r" data-n="send-plane-fill" data-l="Remix Icon"><i class="ri-send-plane-fill"></i><span class="lbl">ri-send-plane-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="upload" data-l="Bootstrap Icons"><i class="bi bi-upload"></i><span class="lbl">bi-upload</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="send" data-l="Bootstrap Icons"><i class="bi bi-send"></i><span class="lbl">bi-send</span></div>
+                <div class="icon-item" data-d="b" data-n="file-earmark-arrow-up" data-l="Bootstrap Icons"><i class="bi bi-file-earmark-arrow-up"></i><span class="lbl">bi-file-earmark-arrow-up</span></div>
+              </div></td>
+            </tr>
+            <!-- 7 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">07</span>Ethics Issue</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="gavel" data-l="Google Material Icons"><span class="material-icons">gavel</span><span class="lbl">gavel</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="balance" data-l="Google Material Icons"><span class="material-icons">balance</span><span class="lbl">balance</span></div>
+                <div class="icon-item" data-d="g" data-n="verified" data-l="Google Material Icons"><span class="material-icons">verified</span><span class="lbl">verified</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="gavel" data-l="Font Awesome 6"><i class="fa-solid fa-gavel"></i><span class="lbl">fa-gavel</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="scale-balanced" data-l="Font Awesome 6"><i class="fa-solid fa-scale-balanced"></i><span class="lbl">fa-scale-balanced</span></div>
+                <div class="icon-item" data-d="f" data-n="shield" data-l="Font Awesome 6"><i class="fa-solid fa-shield"></i><span class="lbl">fa-shield</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="scales-fill" data-l="Remix Icon"><i class="ri-scales-fill"></i><span class="lbl">ri-scales-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="scales-line" data-l="Remix Icon"><i class="ri-scales-line"></i><span class="lbl">ri-scales-line</span></div>
+                <div class="icon-item" data-d="r" data-n="shield-fill" data-l="Remix Icon"><i class="ri-shield-fill"></i><span class="lbl">ri-shield-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="shield-check" data-l="Bootstrap Icons"><i class="bi bi-shield-check"></i><span class="lbl">bi-shield-check</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="patch-check-fill" data-l="Bootstrap Icons"><i class="bi bi-patch-check-fill"></i><span class="lbl">bi-patch-check-fill</span></div>
+                <div class="icon-item" data-d="b" data-n="shield-exclamation" data-l="Bootstrap Icons"><i class="bi bi-shield-exclamation"></i><span class="lbl">bi-shield-exclamation</span></div>
+              </div></td>
+            </tr>
+            <!-- 8 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">08</span>Reviewer</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="rate_review" data-l="Google Material Icons"><span class="material-icons">rate_review</span><span class="lbl">rate_review</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="reviews" data-l="Google Material Icons"><span class="material-icons">reviews</span><span class="lbl">reviews</span></div>
+                <div class="icon-item" data-d="g" data-n="visibility" data-l="Google Material Icons"><span class="material-icons">visibility</span><span class="lbl">visibility</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="star" data-l="Font Awesome 6"><i class="fa-solid fa-star"></i><span class="lbl">fa-star</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="eye" data-l="Font Awesome 6"><i class="fa-solid fa-eye"></i><span class="lbl">fa-eye</span></div>
+                <div class="icon-item" data-d="f" data-n="search" data-l="Font Awesome 6"><i class="fa-solid fa-search"></i><span class="lbl">fa-search</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="star-fill" data-l="Remix Icon"><i class="ri-star-fill"></i><span class="lbl">ri-star-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="star-line" data-l="Remix Icon"><i class="ri-star-line"></i><span class="lbl">ri-star-line</span></div>
+                <div class="icon-item" data-d="r" data-n="eye-fill" data-l="Remix Icon"><i class="ri-eye-fill"></i><span class="lbl">ri-eye-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="star-fill" data-l="Bootstrap Icons"><i class="bi bi-star-fill"></i><span class="lbl">bi-star-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="eye" data-l="Bootstrap Icons"><i class="bi bi-eye"></i><span class="lbl">bi-eye</span></div>
+                <div class="icon-item" data-d="b" data-n="search" data-l="Bootstrap Icons"><i class="bi bi-search"></i><span class="lbl">bi-search</span></div>
+              </div></td>
+            </tr>
+            <!-- 9 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">09</span>Tools Menu</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="build" data-l="Google Material Icons"><span class="material-icons">build</span><span class="lbl">build</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="handyman" data-l="Google Material Icons"><span class="material-icons">handyman</span><span class="lbl">handyman</span></div>
+                <div class="icon-item" data-d="g" data-n="construction" data-l="Google Material Icons"><span class="material-icons">construction</span><span class="lbl">construction</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="tools" data-l="Font Awesome 6"><i class="fa-solid fa-tools"></i><span class="lbl">fa-tools</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="wrench" data-l="Font Awesome 6"><i class="fa-solid fa-wrench"></i><span class="lbl">fa-wrench</span></div>
+                <div class="icon-item" data-d="f" data-n="screwdriver" data-l="Font Awesome 6"><i class="fa-solid fa-screwdriver"></i><span class="lbl">fa-screwdriver</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="tools-fill" data-l="Remix Icon"><i class="ri-tools-fill"></i><span class="lbl">ri-tools-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="tools-line" data-l="Remix Icon"><i class="ri-tools-line"></i><span class="lbl">ri-tools-line</span></div>
+                <div class="icon-item" data-d="r" data-n="settings-line" data-l="Remix Icon"><i class="ri-settings-line"></i><span class="lbl">ri-settings-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="tools" data-l="Bootstrap Icons"><i class="bi bi-tools"></i><span class="lbl">bi-tools</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="wrench-adjustable" data-l="Bootstrap Icons"><i class="bi bi-wrench-adjustable"></i><span class="lbl">bi-wrench-adjustable</span></div>
+                <div class="icon-item" data-d="b" data-n="gear" data-l="Bootstrap Icons"><i class="bi bi-gear"></i><span class="lbl">bi-gear</span></div>
+              </div></td>
+            </tr>
+            <!-- 10 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">10</span>Academic Editor</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="school" data-l="Google Material Icons"><span class="material-icons">school</span><span class="lbl">school</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="auto_stories" data-l="Google Material Icons"><span class="material-icons">auto_stories</span><span class="lbl">auto_stories</span></div>
+                <div class="icon-item" data-d="g" data-n="menu_book" data-l="Google Material Icons"><span class="material-icons">menu_book</span><span class="lbl">menu_book</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="user-graduate" data-l="Font Awesome 6"><i class="fa-solid fa-user-graduate"></i><span class="lbl">fa-user-graduate</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="chalkboard-user" data-l="Font Awesome 6"><i class="fa-solid fa-chalkboard-user"></i><span class="lbl">fa-chalkboard-user</span></div>
+                <div class="icon-item" data-d="f" data-n="user-tie" data-l="Font Awesome 6"><i class="fa-solid fa-user-tie"></i><span class="lbl">fa-user-tie</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="graduation-cap-fill" data-l="Remix Icon"><i class="ri-graduation-cap-fill"></i><span class="lbl">ri-graduation-cap-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="graduation-cap-line" data-l="Remix Icon"><i class="ri-graduation-cap-line"></i><span class="lbl">ri-graduation-cap-line</span></div>
+                <div class="icon-item" data-d="r" data-n="book-open-line" data-l="Remix Icon"><i class="ri-book-open-line"></i><span class="lbl">ri-book-open-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="mortarboard-fill" data-l="Bootstrap Icons"><i class="bi bi-mortarboard-fill"></i><span class="lbl">bi-mortarboard-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="mortarboard" data-l="Bootstrap Icons"><i class="bi bi-mortarboard"></i><span class="lbl">bi-mortarboard</span></div>
+                <div class="icon-item" data-d="b" data-n="book" data-l="Bootstrap Icons"><i class="bi bi-book"></i><span class="lbl">bi-book</span></div>
+              </div></td>
+            </tr>
+            <!-- 11 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">11</span>Batch Submissions</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="inventory_2" data-l="Google Material Icons"><span class="material-icons">inventory_2</span><span class="lbl">inventory_2</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="content_copy" data-l="Google Material Icons"><span class="material-icons">content_copy</span><span class="lbl">content_copy</span></div>
+                <div class="icon-item" data-d="g" data-n="layers" data-l="Google Material Icons"><span class="material-icons">layers</span><span class="lbl">layers</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="layer-group" data-l="Font Awesome 6"><i class="fa-solid fa-layer-group"></i><span class="lbl">fa-layer-group</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="copy" data-l="Font Awesome 6"><i class="fa-solid fa-copy"></i><span class="lbl">fa-copy</span></div>
+                <div class="icon-item" data-d="f" data-n="paste" data-l="Font Awesome 6"><i class="fa-solid fa-paste"></i><span class="lbl">fa-paste</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="stack-fill" data-l="Remix Icon"><i class="ri-stack-fill"></i><span class="lbl">ri-stack-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="stack-line" data-l="Remix Icon"><i class="ri-stack-line"></i><span class="lbl">ri-stack-line</span></div>
+                <div class="icon-item" data-d="r" data-n="file-copy-line" data-l="Remix Icon"><i class="ri-file-copy-line"></i><span class="lbl">ri-file-copy-line</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="layers-fill" data-l="Bootstrap Icons"><i class="bi bi-layers-fill"></i><span class="lbl">bi-layers-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="layers" data-l="Bootstrap Icons"><i class="bi bi-layers"></i><span class="lbl">bi-layers</span></div>
+                <div class="icon-item" data-d="b" data-n="files" data-l="Bootstrap Icons"><i class="bi bi-files"></i><span class="lbl">bi-files</span></div>
+              </div></td>
+            </tr>
+            <!-- 12 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">12</span>English Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="spellcheck" data-l="Google Material Icons"><span class="material-icons">spellcheck</span><span class="lbl">spellcheck</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="border_color" data-l="Google Material Icons"><span class="material-icons">border_color</span><span class="lbl">border_color</span></div>
+                <div class="icon-item" data-d="g" data-n="rate_review" data-l="Google Material Icons"><span class="material-icons">rate_review</span><span class="lbl">rate_review</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="pen-fancy" data-l="Font Awesome 6"><i class="fa-solid fa-pen-fancy"></i><span class="lbl">fa-pen-fancy</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="file-pen" data-l="Font Awesome 6"><i class="fa-solid fa-file-pen"></i><span class="lbl">fa-file-pen</span></div>
+                <div class="icon-item" data-d="f" data-n="highlighter" data-l="Font Awesome 6"><i class="fa-solid fa-highlighter"></i><span class="lbl">fa-highlighter</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="edit-box-fill" data-l="Remix Icon"><i class="ri-edit-box-fill"></i><span class="lbl">ri-edit-box-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="pencil-fill" data-l="Remix Icon"><i class="ri-pencil-fill"></i><span class="lbl">ri-pencil-fill</span></div>
+                <div class="icon-item" data-d="r" data-n="file-edit-fill" data-l="Remix Icon"><i class="ri-file-edit-fill"></i><span class="lbl">ri-file-edit-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="pen-fill" data-l="Bootstrap Icons"><i class="bi bi-pen-fill"></i><span class="lbl">bi-pen-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="highlighter" data-l="Bootstrap Icons"><i class="bi bi-highlighter"></i><span class="lbl">bi-highlighter</span></div>
+                <div class="icon-item" data-d="b" data-n="file-earmark-richtext" data-l="Bootstrap Icons"><i class="bi bi-file-earmark-richtext"></i><span class="lbl">bi-file-earmark-richtext</span></div>
+              </div></td>
+            </tr>
+            <!-- 13 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">13</span>Website Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="web_asset" data-l="Google Material Icons"><span class="material-icons">web_asset</span><span class="lbl">web_asset</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="web" data-l="Google Material Icons"><span class="material-icons">web</span><span class="lbl">web</span></div>
+                <div class="icon-item" data-d="g" data-n="laptop" data-l="Google Material Icons"><span class="material-icons">laptop</span><span class="lbl">laptop</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="globe" data-l="Font Awesome 6"><i class="fa-solid fa-globe"></i><span class="lbl">fa-globe</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="laptop-code" data-l="Font Awesome 6"><i class="fa-solid fa-laptop-code"></i><span class="lbl">fa-laptop-code</span></div>
+                <div class="icon-item" data-d="f" data-n="code" data-l="Font Awesome 6"><i class="fa-solid fa-code"></i><span class="lbl">fa-code</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="global-fill" data-l="Remix Icon"><i class="ri-global-fill"></i><span class="lbl">ri-global-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="global-line" data-l="Remix Icon"><i class="ri-global-line"></i><span class="lbl">ri-global-line</span></div>
+                <div class="icon-item" data-d="r" data-n="window-fill" data-l="Remix Icon"><i class="ri-window-fill"></i><span class="lbl">ri-window-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="globe" data-l="Bootstrap Icons"><i class="bi bi-globe"></i><span class="lbl">bi-globe</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="laptop" data-l="Bootstrap Icons"><i class="bi bi-laptop"></i><span class="lbl">bi-laptop</span></div>
+                <div class="icon-item" data-d="b" data-n="code-slash" data-l="Bootstrap Icons"><i class="bi bi-code-slash"></i><span class="lbl">bi-code-slash</span></div>
+              </div></td>
+            </tr>
+            <!-- 14 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">14</span>Billing Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="receipt_long" data-l="Google Material Icons"><span class="material-icons">receipt_long</span><span class="lbl">receipt_long</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="payments" data-l="Google Material Icons"><span class="material-icons">payments</span><span class="lbl">payments</span></div>
+                <div class="icon-item" data-d="g" data-n="account_balance_wallet" data-l="Google Material Icons"><span class="material-icons">account_balance_wallet</span><span class="lbl">account_balance_wallet</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="file-invoice-dollar" data-l="Font Awesome 6"><i class="fa-solid fa-file-invoice-dollar"></i><span class="lbl">fa-file-invoice-dollar</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="credit-card" data-l="Font Awesome 6"><i class="fa-solid fa-credit-card"></i><span class="lbl">fa-credit-card</span></div>
+                <div class="icon-item" data-d="f" data-n="calculator" data-l="Font Awesome 6"><i class="fa-solid fa-calculator"></i><span class="lbl">fa-calculator</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="receipt-fill" data-l="Remix Icon"><i class="ri-receipt-fill"></i><span class="lbl">ri-receipt-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="receipt-line" data-l="Remix Icon"><i class="ri-receipt-line"></i><span class="lbl">ri-receipt-line</span></div>
+                <div class="icon-item" data-d="r" data-n="bank-card-fill" data-l="Remix Icon"><i class="ri-bank-card-fill"></i><span class="lbl">ri-bank-card-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="receipt" data-l="Bootstrap Icons"><i class="bi bi-receipt"></i><span class="lbl">bi-receipt</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="credit-card" data-l="Bootstrap Icons"><i class="bi bi-credit-card"></i><span class="lbl">bi-credit-card</span></div>
+                <div class="icon-item" data-d="b" data-n="wallet2" data-l="Bootstrap Icons"><i class="bi bi-wallet2"></i><span class="lbl">bi-wallet2</span></div>
+              </div></td>
+            </tr>
+            <!-- 15 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">15</span>Publisher Office</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="business_center" data-l="Google Material Icons"><span class="material-icons">business_center</span><span class="lbl">business_center</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="domain" data-l="Google Material Icons"><span class="material-icons">domain</span><span class="lbl">domain</span></div>
+                <div class="icon-item" data-d="g" data-n="store" data-l="Google Material Icons"><span class="material-icons">store</span><span class="lbl">store</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="building" data-l="Font Awesome 6"><i class="fa-solid fa-building"></i><span class="lbl">fa-building</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="briefcase" data-l="Font Awesome 6"><i class="fa-solid fa-briefcase"></i><span class="lbl">fa-briefcase</span></div>
+                <div class="icon-item" data-d="f" data-n="store-alt" data-l="Font Awesome 6"><i class="fa-solid fa-store-alt"></i><span class="lbl">fa-store-alt</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="building-4-fill" data-l="Remix Icon"><i class="ri-building-4-fill"></i><span class="lbl">ri-building-4-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="building-4-line" data-l="Remix Icon"><i class="ri-building-4-line"></i><span class="lbl">ri-building-4-line</span></div>
+                <div class="icon-item" data-d="r" data-n="briefcase-fill" data-l="Remix Icon"><i class="ri-briefcase-fill"></i><span class="lbl">ri-briefcase-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="building" data-l="Bootstrap Icons"><i class="bi bi-building"></i><span class="lbl">bi-building</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="briefcase" data-l="Bootstrap Icons"><i class="bi bi-briefcase"></i><span class="lbl">bi-briefcase</span></div>
+                <div class="icon-item" data-d="b" data-n="shop" data-l="Bootstrap Icons"><i class="bi bi-shop"></i><span class="lbl">bi-shop</span></div>
+              </div></td>
+            </tr>
+            <!-- 16 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">16</span>Comms &amp; Marketing</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="campaign" data-l="Google Material Icons"><span class="material-icons">campaign</span><span class="lbl">campaign</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="notifications" data-l="Google Material Icons"><span class="material-icons">notifications</span><span class="lbl">notifications</span></div>
+                <div class="icon-item" data-d="g" data-n="trending_up" data-l="Google Material Icons"><span class="material-icons">trending_up</span><span class="lbl">trending_up</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="bullhorn" data-l="Font Awesome 6"><i class="fa-solid fa-bullhorn"></i><span class="lbl">fa-bullhorn</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="chart-line" data-l="Font Awesome 6"><i class="fa-solid fa-chart-line"></i><span class="lbl">fa-chart-line</span></div>
+                <div class="icon-item" data-d="f" data-n="volume-high" data-l="Font Awesome 6"><i class="fa-solid fa-volume-high"></i><span class="lbl">fa-volume-high</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="megaphone-fill" data-l="Remix Icon"><i class="ri-megaphone-fill"></i><span class="lbl">ri-megaphone-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="megaphone-line" data-l="Remix Icon"><i class="ri-megaphone-line"></i><span class="lbl">ri-megaphone-line</span></div>
+                <div class="icon-item" data-d="r" data-n="line-chart-fill" data-l="Remix Icon"><i class="ri-line-chart-fill"></i><span class="lbl">ri-line-chart-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="megaphone-fill" data-l="Bootstrap Icons"><i class="bi bi-megaphone-fill"></i><span class="lbl">bi-megaphone-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="graph-up-arrow" data-l="Bootstrap Icons"><i class="bi bi-graph-up-arrow"></i><span class="lbl">bi-graph-up-arrow</span></div>
+                <div class="icon-item" data-d="b" data-n="megaphone" data-l="Bootstrap Icons"><i class="bi bi-megaphone"></i><span class="lbl">bi-megaphone</span></div>
+              </div></td>
+            </tr>
+            <!-- 17 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">17</span>Admin Area</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="admin_panel_settings" data-l="Google Material Icons"><span class="material-icons">admin_panel_settings</span><span class="lbl">admin_panel_settings</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="manage_accounts" data-l="Google Material Icons"><span class="material-icons">manage_accounts</span><span class="lbl">manage_accounts</span></div>
+                <div class="icon-item" data-d="g" data-n="security" data-l="Google Material Icons"><span class="material-icons">security</span><span class="lbl">security</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="shield-alt" data-l="Font Awesome 6"><i class="fa-solid fa-shield-alt"></i><span class="lbl">fa-shield-alt</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="user-shield" data-l="Font Awesome 6"><i class="fa-solid fa-user-shield"></i><span class="lbl">fa-user-shield</span></div>
+                <div class="icon-item" data-d="f" data-n="cog" data-l="Font Awesome 6"><i class="fa-solid fa-cog"></i><span class="lbl">fa-cog</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="shield-fill" data-l="Remix Icon"><i class="ri-shield-fill"></i><span class="lbl">ri-shield-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="shield-line" data-l="Remix Icon"><i class="ri-shield-line"></i><span class="lbl">ri-shield-line</span></div>
+                <div class="icon-item" data-d="r" data-n="settings-fill" data-l="Remix Icon"><i class="ri-settings-fill"></i><span class="lbl">ri-settings-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="shield-fill-check" data-l="Bootstrap Icons"><i class="bi bi-shield-fill-check"></i><span class="lbl">bi-shield-fill-check</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="gear-wide-connected" data-l="Bootstrap Icons"><i class="bi bi-gear-wide-connected"></i><span class="lbl">bi-gear-wide-connected</span></div>
+                <div class="icon-item" data-d="b" data-n="person-lock" data-l="Bootstrap Icons"><i class="bi bi-person-lock"></i><span class="lbl">bi-person-lock</span></div>
+              </div></td>
+            </tr>
+            <!-- 18 -->
+            <tr>
+              <td><div class="group-cell"><span class="num">18</span>Super User</div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="g" data-n="verified_user" data-l="Google Material Icons"><span class="material-icons">verified_user</span><span class="lbl">verified_user</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="g" data-n="admin_panel_settings" data-l="Google Material Icons"><span class="material-icons">admin_panel_settings</span><span class="lbl">admin_panel_settings</span></div>
+                <div class="icon-item" data-d="g" data-n="star" data-l="Google Material Icons"><span class="material-icons">star</span><span class="lbl">star</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="f" data-n="crown" data-l="Font Awesome 6"><i class="fa-solid fa-crown"></i><span class="lbl">fa-crown</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="f" data-n="star" data-l="Font Awesome 6"><i class="fa-solid fa-star"></i><span class="lbl">fa-star</span></div>
+                <div class="icon-item" data-d="f" data-n="key" data-l="Font Awesome 6"><i class="fa-solid fa-key"></i><span class="lbl">fa-key</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="r" data-n="vip-crown-fill" data-l="Remix Icon"><i class="ri-vip-crown-fill"></i><span class="lbl">ri-vip-crown-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="r" data-n="vip-crown-line" data-l="Remix Icon"><i class="ri-vip-crown-line"></i><span class="lbl">ri-vip-crown-line</span></div>
+                <div class="icon-item" data-d="r" data-n="star-fill" data-l="Remix Icon"><i class="ri-star-fill"></i><span class="lbl">ri-star-fill</span></div>
+              </div></td>
+              <td class="icon-cell"><div class="icon-grid">
+                <div class="icon-item" data-d="b" data-n="award-fill" data-l="Bootstrap Icons"><i class="bi bi-award-fill"></i><span class="lbl">bi-award-fill</span></div>
+                <div class="icon-div"></div>
+                <div class="icon-item" data-d="b" data-n="award" data-l="Bootstrap Icons"><i class="bi bi-award"></i><span class="lbl">bi-award</span></div>
+                <div class="icon-item" data-d="b" data-n="key-fill" data-l="Bootstrap Icons"><i class="bi bi-key-fill"></i><span class="lbl">bi-key-fill</span></div>
+              </div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="footer-note">点击图标查看大图 · 侧栏可折叠</p>
+    </div>
+  </div>
+</div>
+
+<!-- Custom Icon Modal -->
+<div class="modal-overlay" id="customModal">
+  <div class="modal-custom">
+    <div class="modal-custom-header">
+      <h3>Custom Icon</h3>
+      <button class="modal-close" id="customModalClose">&times;</button>
+    </div>
+    <div class="modal-custom-body">
+      <div class="field">
+        <label>Icon Type</label>
+        <div class="tab-row">
+          <button class="tab on" data-m="svg">SVG Code</button>
+          <button class="tab" data-m="img">Image URL</button>
+        </div>
+      </div>
+      <div class="field">
+        <label id="customInputLabel">Paste SVG code</label>
+        <textarea id="customInput" rows="5" placeholder='<svg viewBox="0 0 24 24">...</svg>'></textarea>
+      </div>
+      <div class="field">
+        <label>Preview</label>
+        <div class="custom-preview" id="customPreview"><span style="color:#ccc">—</span></div>
+      </div>
+    </div>
+    <div class="modal-custom-footer">
+      <button class="btn btn--outline" id="customRemove">Remove Custom</button>
+      <button class="btn btn--primary" id="customApply">✓ Apply</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <button class="modal-close" id="modalClose">&times;</button>
+    <div class="modal-icon" id="modalIcon"></div>
+    <div id="modalLib" class="modal-lib"></div>
+    <div id="modalName" class="modal-name"></div>
+    <div class="modal-hint">点击空白关闭</div>
+  </div>
+</div>
+
+<script>
+// ===== Menu Data =====
+var menuData = [
+  {name:'Account',items:['Dashboard','Manage Accounts','Change Password','Profile','Logout','My Approval']},
+  {name:'Editorial Office',items:['Journal Management','Managing Assignment','Manage Manuscripts','Manage Planned Papers','Process Manuscripts','Related Manuscripts','Quality Check','Manage Volunteers','Manage Denylist','Manage Special Issues','Manage SI Proposals','Manage Topics','Manage Topic Proposals','Paper Recommendation','Manage Academic Editors','Manage EBM','Manage Reviewers','Manage RB','Manage Vouchers','Search Discount Voucher','Proceedings Invoices','EiC Honorarium','Manage Approvals','Manage Scholars','Manuscript Owner','Search Registry']},
+  {name:'Production Office',items:['Proofread Manuscripts','Managing Assignment','Manage Approvals']},
+  {name:'IOAP Participant View',items:['Overview of Articles','Account Information','Prepayments','Flat Fee','Credit Payments','Manage Your Automated Email Alerts','Affiliated Editors','Articles Published','Performance','Invoices','Emails to Receive Notifications','IP Ranges','COUNTER Reports','Manage Admins']},
+  {name:'Society Participant View',items:['Overview of Articles','Account Information','Prepayments','Flat Fee','Credit Payments','Manage Your Automated Email Alerts','Affiliated Editors','Articles Published','Performance','Invoices','Emails to Receive Notifications','IP Ranges','Manage Admins']},
+  {name:'Submissions',items:['Submit','Submitted Manuscripts','Co-Authored Manuscripts','Author Services','Discount Vouchers','Invoices','LaTex Word Count']},
+  {name:'Ethics Issue',items:['Ethics Issue','Keywords']},
+  {name:'Reviewer',items:['Reviews','Volunteer Preferences','Recruiting Reviewers','Recommend Reviews','Reviewer Preferences']},
+  {name:'Tools Menu',items:['Tools']},
+  {name:'Academic Editor',items:['Editor Profile','Decisions','Special Issues','Topics']},
+  {name:'Batch Submissions',items:['Batch Upload','Display Manuscripts','OJS Upload']},
+  {name:'English Office',items:['English Edit','Partial Edit Request','English Edit Double Request','English Pre-edit','Pre-edit Double Request','English Editing Invoices','English Editors','Quality Control Assessment','Work Report','My Information','Freelancer Invoices','English Editing Configurations','Author Services Voucher']},
+  {name:'Website Office',items:['Website Editor','Special Issues','Topics','PP Checker','Manage Assignment']},
+  {name:'Billing Office',items:['Journal Invoices','Collective Invoices','Institute Prepayments','Institute Credit Accounts','Institute Invoices','Proceedings Invoices','Billing Report','EiC Honorarium','APC Exchange Currency','EiC Travel Grants','English Editing Invoices','Invoice Feed','Reprints Invoices','Reprints Report','Journal Sponsorships','Abacus Report','Voucher Audit','Accounting Write-Off']},
+  {name:'Publisher Office',items:['Check Published Papers','Publisher Sponsorships','Manage Sponsorships','Manage Vouchers','Manuscript Approvals','Manage Scholars','Special Issue Approval','EiC Honorarium','Journal Management']},
+  {name:'Comms & Marketing',items:['EiC Travel Grants','Sponsorship Journal Budget','Waiver Journal Budget','Journal Awards','Manage Awards Request','Manage Conferences','Manage Sponsorships','Manage Organizations','EiC Honorarium','Corporate Title Story','Journal Title Story','Issue Cover','Published Papers']},
+  {name:'Admin Area',items:['Teams','Groups','Employees','Users','Relations']},
+  {name:'Super User',items:['All Manuscripts','All Special Issues','All Topics','Recently Accepted Manuscripts','Manage Email Templates','Configurations','Discount Vouchers','Infected Files','Feed','API Access Logs','API Request Logs']}
+];
+
+// ===== Selection State =====
+var selectedIcons = [];
+
+function renderIconHTML(type, name, size) {
+  var s = size || 20;
+  return type==='g' ? '<span class="material-icons" style="font-size:'+s+'px">'+name+'</span>' :
+         type==='f' ? '<i class="fa-solid fa-'+name+'" style="font-size:'+(s-2)+'px"></i>' :
+         type==='r' ? '<i class="ri-'+name+'" style="font-size:'+(s-1)+'px"></i>' :
+         type==='b' ? '<i class="bi bi-'+name+'" style="font-size:'+(s-1)+'px"></i>' : '';
+}
+
+// ===== Sidebar Render =====
+function renderSidebar() {
+  var sb = document.getElementById('sidebarMenu');
+  sb.innerHTML = '';
+  menuData.forEach(function(g,i){
+    var grp = document.createElement('div'); grp.className = 'menu-group';
+    var hdr = document.createElement('div'); hdr.className = 'menu-header';
+    var wrap = document.createElement('span'); wrap.className = 'menu-icon-wrap'; wrap.id = 'sicon-'+i;
+    (function(idx){ wrap.addEventListener('click',function(e){
+      openCustomModal(idx); cModal.classList.add('active'); e.stopPropagation();
+    }); })(i);
+    hdr.appendChild(wrap);
+    var ns = document.createElement('span'); ns.className = 'menu-name'; ns.textContent = g.name;
+    hdr.appendChild(ns);
+    var ar = document.createElement('span'); ar.className = 'menu-arrow'; ar.textContent = '▶';
+    hdr.appendChild(ar);
+    var itemsDiv = document.createElement('div'); itemsDiv.className = 'menu-items';
+    g.items.forEach(function(it){
+      var itDiv = document.createElement('div'); itDiv.className = 'menu-item'; itDiv.textContent = it;
+      itemsDiv.appendChild(itDiv);
+    });
+    hdr.addEventListener('click',function(){
+      var expanded = hdr.classList.toggle('expanded');
+      itemsDiv.classList.toggle('open');
+      document.querySelectorAll('.menu-header').forEach(function(h){if(h!==hdr)h.classList.remove('expanded')});
+      document.querySelectorAll('.menu-items').forEach(function(m){if(m!==itemsDiv)m.classList.remove('open')});
+    });
+    grp.appendChild(hdr); grp.appendChild(itemsDiv); sb.appendChild(grp);
+  });
+  updateAllSidebarIcons();
+}
+
+function updateSidebarIcon(idx, type, name) {
+  var wrap = document.getElementById('sicon-'+idx);
+  if (wrap) wrap.innerHTML = renderIconHTML(type, name, 20);
+}
+
+function updateAllSidebarIcons() {
+  selectedIcons.forEach(function(sel, i) {
+    if (sel) updateSidebarIcon(i, sel.type, sel.name);
+  });
+}
+
+// ===== Init: assign group indexes & defaults =====
+var rows = document.querySelectorAll('tbody tr');
+rows.forEach(function(row, idx) {
+  row.setAttribute('data-gidx', idx);
+  // Default: select first Google icon in the row
+  var first = row.querySelector('.icon-item[data-d="g"]');
+  if (first) {
+    var type = first.getAttribute('data-d');
+    var name = first.getAttribute('data-n');
+    selectedIcons[idx] = { type: type, name: name };
+    first.classList.add('selected');
+  }
+});
+
+// ===== Icon Click: select + modal =====
+var render = {g:function(n){return '<span class="material-icons" style="font-size:72px!important">'+n+'</span>'},f:function(n){return '<i class="fa-solid fa-'+n+'" style="font-size:64px!important"></i>'},r:function(n){return '<i class="ri-'+n+'" style="font-size:68px!important"></i>'},b:function(n){return '<i class="bi bi-'+n+'" style="font-size:68px!important"></i>'}};
+var lc={g:'modal-lib--g',f:'modal-lib--f',r:'modal-lib--r',b:'modal-lib--b'};
+
+document.querySelectorAll('.icon-item').forEach(function(el){
+  var _t=null;
+  el.addEventListener('click',function(e){
+    var t=el.getAttribute('data-d'),n=el.getAttribute('data-n');
+    var row=el.closest('tr'),gidx=row?parseInt(row.getAttribute('data-gidx')):-1;
+    if(_t){clearTimeout(_t);_t=null;return;} // waiting for dblclick
+    _t=setTimeout(function(){
+      _t=null;
+      if(gidx>=0){
+        selectedIcons[gidx]={type:t,name:n};
+        row.querySelectorAll('.icon-item').forEach(function(it){it.classList.remove('selected')});
+        el.classList.add('selected');
+        updateSidebarIcon(gidx,t,n);
+      }
+    },260);
+  });
+  el.addEventListener('dblclick',function(e){
+    if(_t){clearTimeout(_t);_t=null;}
+    var t=el.getAttribute('data-d'),n=el.getAttribute('data-n'),lb=el.getAttribute('data-l');
+    document.getElementById('modalIcon').innerHTML=render[t](n);
+    var ml=document.getElementById('modalLib');ml.textContent=lb;ml.className='modal-lib '+(lc[t]||'');
+    document.getElementById('modalName').textContent=({g:'',f:'fa-',r:'ri-',b:'bi-'})[t]+n;
+    document.getElementById('modal').classList.add('active');
+  });
+});
+
+function cm(){document.getElementById('modal').classList.remove('active')}
+document.getElementById('modalClose').addEventListener('click',cm);
+document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)cm()});
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') {
+    if (cModal.classList.contains('active')) closeCustomModal();
+    else cm();
+  }
+});
+
+// ===== Sidebar Toggle =====
+document.getElementById('sidebarToggle').addEventListener('click',function(){
+  document.getElementById('sidebar').classList.toggle('collapsed');
+});
+
+// ===== Custom Icons =====
+var customIcons = {};
+var currentMethod = 'svg';
+
+function processSVG(str) {
+  // Replace fill attribute values (preserve none/currentColor/transparent)
+  str = str.replace(/\s+fill="[^"]*"/gi, function(m){
+    var v=m.replace(/^[^"]*"/,'').replace(/"$/,'');
+    return (v==='none'||v==='currentColor'||v==='transparent')?m:' fill="currentColor"';
+  });
+  str = str.replace(/\s+fill='[^']*'/gi, function(m){
+    var v=m.replace(/^[^']*'/,"").replace(/'$/,"");
+    return (v==='none'||v==='currentColor'||v==='transparent')?m:" fill='currentColor'";
+  });
+  // Remove stroke color attributes
+  str = str.replace(/\s+stroke="#[^"]*"/gi, '');
+  str = str.replace(/\s+stroke='#[^']*'/gi, '');
+  str = str.replace(/\s+stroke="[a-z]+"/gi, function(m){
+    var v=m.replace(/^[^"]*"/,'').replace(/"$/,'');
+    return (v==='none'||v==='currentColor')?m:'';
+  });
+  // Clean fill/stroke from inline styles
+  str = str.replace(/style="([^"]*)"/gi, function(m,inner){
+    inner=inner.replace(/\bfill\s*:\s*[^;"]+;?\s*/gi,'');
+    inner=inner.replace(/\bstroke\s*:\s*[^;"]+;?\s*/gi,'');
+    return inner.trim()?'style="'+inner.trim()+'"':'';
+  });
+  // Ensure SVG root has fill="currentColor" for cascading
+  if (/<svg/i.test(str) && !str.match(/<svg[^>]*\bfill\s*=/i))
+    str = str.replace(/<svg/i, '<svg fill="currentColor"');
+  // Ensure viewBox
+  if (!/viewBox/i.test(str) && /<svg/i.test(str))
+    str = str.replace(/<svg/i, '<svg viewBox="0 0 24 24"');
+  return str;
+}
+
+function renderCustomSidebar(idx, custom) {
+  var wrap = document.getElementById('sicon-'+idx);
+  if (!wrap) return;
+  if (custom.type === 'svg') { wrap.innerHTML = '<span class="ci-svg">'+custom.content+'</span>'; }
+  else { wrap.innerHTML = '<img src="'+custom.content.replace(/"/g,'&quot;')+'" class="ci-img" />'; }
+}
+
+// Patch updateSidebarIcon to check custom icons
+var origUpdate = updateSidebarIcon;
+updateSidebarIcon = function(idx, type, name) {
+  if (customIcons[idx]) { renderCustomSidebar(idx, customIcons[idx]); return; }
+  if (origUpdate) origUpdate(idx, type, name);
+};
+
+// Custom modal
+var cModal = document.getElementById('customModal');
+var cInput = document.getElementById('customInput');
+var cPreview = document.getElementById('customPreview');
+var cInputLabel = document.getElementById('customInputLabel');
+var customGroupIdx = -1;
+
+document.querySelectorAll('#customModal .tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    document.querySelectorAll('#customModal .tab').forEach(function(x){x.classList.remove('on')});
+    t.classList.add('on'); currentMethod=t.getAttribute('data-m'); updateCustomField(); updCustomPreview();
+  });
+});
+
+function updateCustomField() {
+  if (currentMethod==='svg') { cInput.rows=5; cInput.placeholder='<svg viewBox="0 0 24 24">...</svg>'; cInputLabel.textContent='Paste SVG code'; }
+  else { cInput.rows=1; cInput.placeholder='https://example.com/icon.svg'; cInputLabel.textContent='Image URL'; }
+  cInput.value=''; updCustomPreview();
+}
+
+function updCustomPreview() {
+  var v=cInput.value.trim();
+  if (!v) { cPreview.innerHTML='<span style="color:#ccc">—</span>'; return; }
+  try {
+    if (currentMethod==='svg') {
+      var p = processSVG(v);
+      cPreview.innerHTML='<div class="cp-svg" style="color:var(--icon-color,#4a7ad8)">'+p+'</div>';
+    } else {
+      cPreview.innerHTML='<img src="'+v.replace(/"/g,'&quot;')+'" class="cp-img" onerror="this.parentNode.innerHTML=\'<span style=color:red>✗</span>\'" />';
+    }
+  } catch(e){cPreview.innerHTML='<span style="color:red">Error</span>';}
+}
+cInput.addEventListener('input',updCustomPreview);
+
+function openCustomModal(idx){
+  customGroupIdx = idx;
+  var gName = menuData[idx] ? menuData[idx].name : 'Group '+idx;
+  // Update title
+  cModal.querySelector('h3').textContent = 'Custom Icon · ' + gName;
+
+  if (customIcons[idx]) {
+    var c=customIcons[idx];
+    cInput.value=c.content;
+    document.querySelectorAll('#customModal .tab').forEach(function(t){
+      t.classList[t.getAttribute('data-m')===c.type?'add':'remove']('on');
+    });
+    currentMethod=c.type;
+    updateCustomField();
+  } else {
+    document.querySelectorAll('#customModal .tab').forEach(function(t){t.classList.remove('on')});
+    document.querySelector('#customModal .tab[data-m="svg"]').classList.add('on');
+    currentMethod='svg'; updateCustomField();
+  }
+  cModal.classList.add('active');
+}
+function closeCustomModal(){cModal.classList.remove('active')}
+
+document.getElementById('customModalClose').addEventListener('click',closeCustomModal);
+cModal.addEventListener('click',function(e){if(e.target===this)closeCustomModal()});
+
+document.getElementById('customApply').addEventListener('click',function(){
+  var idx=customGroupIdx; if (idx<0) return;
+  var v=cInput.value.trim();
+  if (!v) return;
+  var content = currentMethod==='svg' ? processSVG(v) : v;
+  customIcons[idx]={type:currentMethod,content:content};
+  updateSidebarIcon(idx,null,null);
+  closeCustomModal();
+});
+
+document.getElementById('customRemove').addEventListener('click',function(){
+  var idx=customGroupIdx; if (idx<0) return;
+  delete customIcons[idx];
+  var row=document.querySelector('tr[data-gidx="'+idx+'"]');
+  var first=row?row.querySelector('.icon-item[data-d="g"]'):null;
+  if(first) {
+    var t=first.getAttribute('data-d'),n=first.getAttribute('data-n');
+    selectedIcons[idx]={type:t,name:n};
+    row.querySelectorAll('.icon-item').forEach(function(x){x.classList.remove('selected')});
+    first.classList.add('selected');
+    origUpdate(idx,t,n);
+  }
+  closeCustomModal();
+});
+
+// ===== Color Picker =====
+var sbEl = document.getElementById('sidebar');
+var swatch = document.getElementById('swatch');
+var colorPicker = document.getElementById('colorPicker');
+var hexInput = document.getElementById('hexInput');
+
+function setColor(hex) {
+  if (!/^#[0-9a-f]{6}$/i.test(hex)) return;
+  swatch.style.background = hex;
+  hexInput.value = hex;
+  colorPicker.value = hex;
+  sbEl.style.setProperty('--icon-color', hex);
+}
+
+colorPicker.addEventListener('input', function() { setColor(this.value); });
+hexInput.addEventListener('change', function() {
+  var v = this.value.trim();
+  if (/^[0-9a-f]{6}$/i.test(v)) v = '#' + v;
+  setColor(v);
+});
+hexInput.addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') { this.dispatchEvent(new Event('change')); this.blur(); }
+});
+
+// ===== Init =====
+renderSidebar();
+</script>
+</body>
+</html>
