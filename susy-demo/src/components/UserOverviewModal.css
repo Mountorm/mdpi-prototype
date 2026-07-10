@@ -124,9 +124,8 @@
   font-size: 13px;
   color: #44546f;
   text-decoration: none;
-  border-left: 3px solid transparent;
   background: transparent;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  transition: background 0.15s, color 0.15s;
   outline: none;
   cursor: pointer;
 }
@@ -136,14 +135,12 @@
 .anchor-link:focus-visible {
   background: #ebecf0;
   color: #172b4d;
-  border-left-color: #b3bac5;
 }
 
 /* active */
 .anchor-link.active {
   background: #e9f2ff;
   color: #0c66e4;
-  border-left-color: #0c66e4;
   font-weight: 600;
 }
 
@@ -151,7 +148,6 @@
 .anchor-link.active:focus-visible {
   background: #e9f2ff;
   color: #0c66e4;
-  border-left-color: #0c66e4;
 }
 
 /* Modal Body */
