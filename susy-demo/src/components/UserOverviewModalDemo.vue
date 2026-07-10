@@ -21,8 +21,8 @@
       </div>
 
       <div class="modal-content">
-        <!-- Anchor Nav：有可见 section 时才显示 -->
-        <nav v-if="!isEmpty" class="anchor-nav">
+        <!-- Anchor Nav -->
+        <nav class="anchor-nav">
           <div class="anchor-nav-title">Sections</div>
           <a
             v-for="item in visibleNavItems"
@@ -35,15 +35,8 @@
 
         <div ref="bodyRef" class="modal-body">
 
-          <!-- 无任何 section 可见 → Empty State -->
-          <div v-if="isEmpty" id="section-empty-state" class="no-info-block">
-            <h3>No Information Found</h3>
-            <p>No information found for <strong>{{ activeTab }}</strong>.</p>
-          </div>
-
-          <template v-else>
-            <!-- 1. Account Info -->
-            <div v-if="sectionVisible.accountInfo" id="section-account-info">
+            <!-- 1. Account Info：始终展示（未注册仅邮箱行 + 退订） -->
+            <div id="section-account-info">
               <UoSection title="Account Info" :defaultOpen="true">
                 <div class="ov-item" style="padding:4px 0">
                   <div class="ov-row">
@@ -180,23 +173,27 @@
                     </div>
                   </div>
                   <div v-if="editor.recentDecisions?.length" class="sub-section">
-                    <div class="sub-section-title">
-                      made decisions of {{ editor.recentDecisions.length }} manuscripts:
-                    </div>
+                    made decisions of
+                    <span class="number">{{ editorDecisionCount(editor.recentDecisions) }}</span>
+                    manuscripts:
                     <UoManuscriptTable
                       :manuscripts="editor.recentDecisions"
                       :toggleable="true"
-                      :defaultExpanded="false"
+                      :default-expanded="false"
+                      :show-invoice="viewerFlags.showInvoice"
+                      :show-apt="viewerFlags.showApt"
                     />
                   </div>
                   <div v-if="editor.historyDecisions?.length" class="sub-section">
-                    <div class="sub-section-title">
-                      made history decisions of {{ editor.historyDecisions.length }} manuscripts:
-                    </div>
+                    made history decisions of
+                    <span class="number">{{ editorDecisionCount(editor.historyDecisions) }}</span>
+                    manuscripts:
                     <UoManuscriptTable
                       :manuscripts="editor.historyDecisions"
                       :toggleable="true"
-                      :defaultExpanded="false"
+                      :default-expanded="false"
+                      :show-invoice="viewerFlags.showInvoice"
+                      :show-apt="viewerFlags.showApt"
                     />
                   </div>
                 </div>
@@ -237,31 +234,36 @@
               </UoSection>
             </div>
 
-            <!-- 6. Reviewer Profile -->
-            <div v-if="sectionVisible.reviewerProfile" id="section-reviewer-profile">
+            <!-- 6. Reviewer Profile：始终展示；无档案时为 Add as Reviewer -->
+            <div id="section-reviewer-profile">
               <UoSection title="Reviewer Profile" :defaultOpen="true">
-                <div v-for="(reviewer, ri) in data.reviewers" :key="ri" class="reviewer-block">
-                  <div class="reviewer-header">
-                    <strong>{{ reviewer.name }}</strong>
-                    <span class="meta">{{ reviewer.email }}</span>
-                    <a v-if="!reviewer.onBoard" href="#" class="link-btn">Edit Reviewer</a>
-                  </div>
-                  <div v-if="reviewer.boards?.length" class="sub-section">
-                    <div class="sub-section-title">Reviewer Board Journals:</div>
-                    <div v-for="(b, bi) in reviewer.boards" :key="bi" class="sub-item">
-                      <a :href="b.url" target="_blank" class="link">{{ b.journalName }}</a>
+                <template v-if="data.reviewers.length">
+                  <div v-for="(reviewer, ri) in data.reviewers" :key="ri" class="reviewer-block">
+                    <div class="reviewer-header">
+                      <strong>{{ reviewer.name }}</strong>
+                      <span class="meta">{{ reviewer.email }}</span>
+                      <a v-if="!reviewer.onBoard" href="#" class="link-btn">Edit Reviewer</a>
                     </div>
+                    <div v-if="reviewer.boards?.length" class="sub-section">
+                      <div class="sub-section-title">Reviewer Board Journals:</div>
+                      <div v-for="(b, bi) in reviewer.boards" :key="bi" class="sub-item">
+                        <a :href="b.url" target="_blank" class="link">{{ b.journalName }}</a>
+                      </div>
+                    </div>
+                    <table class="info-table">
+                      <tr><td class="field-label">Telephone</td><td>{{ reviewer.telephone }}</td></tr>
+                      <tr><td class="field-label">Title</td><td>{{ reviewer.title }}</td></tr>
+                      <tr><td class="field-label">Affiliation</td><td>{{ reviewer.affiliation }}</td></tr>
+                      <tr><td class="field-label">Website URL</td><td><a :href="reviewer.websiteUrl" target="_blank" class="link">{{ reviewer.websiteUrl }}</a></td></tr>
+                      <tr><td class="field-label">Scilit H-index</td><td>{{ reviewer.scilitHIndex }} <a :href="reviewer.scilitHIndexUrl" target="_blank" class="link">View</a></td></tr>
+                      <tr><td class="field-label">H-index</td><td>{{ reviewer.hIndex }} <a :href="reviewer.hIndexUrl" target="_blank" class="link">View</a></td></tr>
+                      <tr><td class="field-label">Country</td><td>{{ reviewer.country }}</td></tr>
+                      <tr><td class="field-label">Research Keywords</td><td>{{ reviewer.keywords }}</td></tr>
+                    </table>
                   </div>
-                  <table class="info-table">
-                    <tr><td class="field-label">Telephone</td><td>{{ reviewer.telephone }}</td></tr>
-                    <tr><td class="field-label">Title</td><td>{{ reviewer.title }}</td></tr>
-                    <tr><td class="field-label">Affiliation</td><td>{{ reviewer.affiliation }}</td></tr>
-                    <tr><td class="field-label">Website URL</td><td><a :href="reviewer.websiteUrl" target="_blank" class="link">{{ reviewer.websiteUrl }}</a></td></tr>
-                    <tr><td class="field-label">Scilit H-index</td><td>{{ reviewer.scilitHIndex }} <a :href="reviewer.scilitHIndexUrl" target="_blank" class="link">View</a></td></tr>
-                    <tr><td class="field-label">H-index</td><td>{{ reviewer.hIndex }} <a :href="reviewer.hIndexUrl" target="_blank" class="link">View</a></td></tr>
-                    <tr><td class="field-label">Country</td><td>{{ reviewer.country }}</td></tr>
-                    <tr><td class="field-label">Research Keywords</td><td>{{ reviewer.keywords }}</td></tr>
-                  </table>
+                </template>
+                <div v-else class="reviewer-empty">
+                  <a href="#" target="_blank" class="link" rel="noopener noreferrer">Add as Reviewer</a>
                 </div>
               </UoSection>
             </div>
@@ -297,7 +299,11 @@
                     <a v-if="author.orcid" :href="author.orcidLink" target="_blank" class="link">ORCID: {{ author.orcid }}</a>
                     <span class="meta"> | Manuscripts: {{ author.manuscripts.length }}</span>
                   </div>
-                  <UoManuscriptTable :manuscripts="author.manuscripts" />
+                  <UoManuscriptTable
+                    :manuscripts="author.manuscripts"
+                    :show-invoice="viewerFlags.showInvoice"
+                    :show-apt="viewerFlags.showApt"
+                  />
                 </div>
               </UoSection>
             </div>
@@ -312,7 +318,12 @@
                       <span class="meta">{{ reviewer.email }}</span>
                       <span class="meta">Reviewed: {{ reviewer.reviewedManuscripts.length }}</span>
                     </div>
-                    <UoManuscriptTable :manuscripts="reviewer.reviewedManuscripts" :showReviewReport="true" :showScore="true" />
+                    <UoManuscriptTable
+                      :manuscripts="reviewer.reviewedManuscripts"
+                      :show-review-report="true"
+                      :show-invoice="viewerFlags.showInvoice"
+                      :show-apt="viewerFlags.showApt"
+                    />
                   </template>
                 </div>
               </UoSection>
@@ -339,7 +350,6 @@
                 </div>
               </UoSection>
             </div>
-          </template>
 
         </div>
       </div>
@@ -366,11 +376,39 @@ const tabs = [
   { email: 'user2@example.com', registered: false }
 ]
 
+/** Demo 默认按内部员工 + 开 APC 信息（User Overview 典型视角） */
+const viewerFlags = {
+  isEmployee: true,
+  showScholarApcInfo: true,
+  get showInvoice() { return this.isEmployee && this.showScholarApcInfo },
+  get showApt() { return this.isEmployee }
+}
+
+function editorDecisionCount(list) {
+  const n = list?.length || 0
+  return n >= 50 ? '50+' : String(n)
+}
+
+/**
+ * ManuscriptRow — 对齐 show_manuscripts macro 字段
+ * titleUrl: 已发表文章官网；无则用 msidUrl（有权限时）
+ */
 const mockManuscripts = [
-  { title: 'Symmetry Best Paper Award', msid: 'symmetry-89457', link: '#', summaryLink: '#', journal: 'Symmetry', journalUrl: '#', status: 'Website online', submissionDate: '05 Jun 2015', invoice: 'No invoice', apt: 3, retracted: false, reviewReportLink: '#', score: 8.5 },
-  { title: 'Molecules after 20 Years', msid: 'molecules-74916', link: '#', summaryLink: '#', journal: 'Molecules', journalUrl: '#', status: 'Website online', submissionDate: '05 Jan 2015', invoice: '1800 CHF, Paid', apt: 1, retracted: false, reviewReportLink: null, score: null },
-  { title: 'A non-enzymatic PSA assay', msid: 'molecules-433119', link: '#', summaryLink: '#', journal: 'Molecules', journalUrl: '#', status: 'Website online', submissionDate: '09 Jan 2019', invoice: '1800 CHF, Paid', apt: 48, retracted: true, reviewReportLink: '#', score: 7.0 },
-  { title: 'Geospatial Ozone Mapping', msid: 'ijerph-35940', link: '#', summaryLink: '#', journal: 'IJERPH', journalUrl: '#', status: 'Website online', submissionDate: '23 May 2013', invoice: 'No invoice', apt: 232, retracted: false, reviewReportLink: '#', score: 9.0 }
+  { title: 'Symmetry Best Paper Award', titleUrl: '#', msid: 'symmetry-89457', msidUrl: null, summaryUrl: '#', journal: 'Symmetry', journalUrl: '#', status: 'Website online', submissionDate: '5 Jun 2015', invoiceHtml: 'No invoice', apt: 3, retracted: false, reviewReportUrl: '#', score: '8.5' },
+  { title: 'Molecules after 20 Years', titleUrl: '#', msid: 'molecules-74916', msidUrl: null, summaryUrl: '#', journal: 'Molecules', journalUrl: '#', status: 'Website online', submissionDate: '5 Jan 2015', invoiceHtml: '1800 CHF, Paid', apt: 1, retracted: false, reviewReportUrl: null, score: null },
+  { title: 'A non-enzymatic PSA assay', titleUrl: null, msid: 'molecules-433119', msidUrl: '#', summaryUrl: '#', journal: 'Molecules', journalUrl: '#', status: 'Website online', submissionDate: '9 Jan 2019', invoiceHtml: '1800 CHF, Paid', apt: 48, retracted: true, reviewReportUrl: '#', score: '7.0' },
+  { title: 'Geospatial Ozone Mapping', titleUrl: '#', msid: 'ijerph-35940', msidUrl: null, summaryUrl: '#', journal: 'IJERPH', journalUrl: '#', status: 'Website online', submissionDate: '23 May 2013', invoiceHtml: 'No invoice', apt: 232, retracted: false, reviewReportUrl: '#', score: '9.0' },
+  { title: 'Catalytic Oxidation of Alcohols', titleUrl: '#', msid: 'catalysts-11201', msidUrl: null, summaryUrl: '#', journal: 'Catalysts', journalUrl: '#', status: 'Published', submissionDate: '12 Mar 2018', invoiceHtml: '1600 CHF, Paid', apt: 41, retracted: false, reviewReportUrl: '#', score: '8.0' },
+  { title: 'Machine Learning for Drug Discovery', titleUrl: null, msid: 'pharmaceuticals-22045', msidUrl: '#', summaryUrl: '#', journal: 'Pharmaceuticals', journalUrl: '#', status: 'Under review', submissionDate: '3 Feb 2024', invoiceHtml: 'No invoice', apt: 18, retracted: false, reviewReportUrl: null, score: null },
+  { title: 'Urban Heat Island Mitigation', titleUrl: '#', msid: 'sustainability-33102', msidUrl: null, summaryUrl: '#', journal: 'Sustainability', journalUrl: '#', status: 'Website online', submissionDate: '19 Jul 2020', invoiceHtml: '2000 CHF, Paid', apt: 67, retracted: false, reviewReportUrl: '#', score: '7.5' },
+  { title: 'Nanoparticle Delivery Systems', titleUrl: null, msid: 'nanomaterials-44118', msidUrl: '#', summaryUrl: '#', journal: 'Nanomaterials', journalUrl: '#', status: 'Accepted', submissionDate: '28 Nov 2023', invoiceHtml: '2200 CHF, Unpaid', apt: 29, retracted: false, reviewReportUrl: '#', score: '8.2' },
+  { title: 'Soil Microbiome Diversity', titleUrl: '#', msid: 'microorganisms-55003', msidUrl: null, summaryUrl: '#', journal: 'Microorganisms', journalUrl: '#', status: 'Website online', submissionDate: '14 Apr 2021', invoiceHtml: 'No invoice', apt: 55, retracted: false, reviewReportUrl: '#', score: '6.8' },
+  { title: 'Photovoltaic Efficiency Models', titleUrl: null, msid: 'energies-66077', msidUrl: '#', summaryUrl: '#', journal: 'Energies', journalUrl: '#', status: 'Major revision', submissionDate: '8 Sep 2024', invoiceHtml: 'No invoice', apt: 12, retracted: false, reviewReportUrl: null, score: null },
+  { title: 'Coastal Erosion Monitoring', titleUrl: '#', msid: 'water-77091', msidUrl: null, summaryUrl: '#', journal: 'Water', journalUrl: '#', status: 'Website online', submissionDate: '21 Jan 2019', invoiceHtml: '1400 CHF, Paid', apt: 88, retracted: false, reviewReportUrl: '#', score: '7.9' },
+  { title: 'Graphene Composite Sensors', titleUrl: '#', msid: 'sensors-88014', msidUrl: null, summaryUrl: '#', journal: 'Sensors', journalUrl: '#', status: 'Website online', submissionDate: '2 Jun 2022', invoiceHtml: '1900 CHF, Paid', apt: 36, retracted: false, reviewReportUrl: '#', score: '8.7' },
+  { title: 'Pediatric Vaccine Hesitancy', titleUrl: null, msid: 'vaccines-99028', msidUrl: '#', summaryUrl: '#', journal: 'Vaccines', journalUrl: '#', status: 'Rejected', submissionDate: '16 Oct 2023', invoiceHtml: 'No invoice', apt: 22, retracted: false, reviewReportUrl: '#', score: '4.5' },
+  { title: 'Forest Carbon Sequestration', titleUrl: '#', msid: 'forests-10133', msidUrl: null, summaryUrl: '#', journal: 'Forests', journalUrl: '#', status: 'Website online', submissionDate: '30 May 2017', invoiceHtml: 'No invoice', apt: 104, retracted: false, reviewReportUrl: '#', score: '8.1' },
+  { title: 'Antibiotic Resistance Patterns', titleUrl: '#', msid: 'antibiotics-11244', msidUrl: null, summaryUrl: '#', journal: 'Antibiotics', journalUrl: '#', status: 'Website online', submissionDate: '11 Dec 2020', invoiceHtml: '1700 CHF, Paid', apt: 45, retracted: false, reviewReportUrl: '#', score: '7.2' }
 ]
 
 function createEmptyData(email) {
@@ -489,7 +527,7 @@ const dataByEmail = reactive({
       { content: 'Legal team requested full data export', author: 'Legal', createdAt: '2024-02-12' }
     ]
   },
-  // user2：完全无信息 → 触发 Empty State
+  // user2：无业务数据 → Account Info + Reviewer Profile（Add as Reviewer）+ Comments
   'user2@example.com': createEmptyData('user2@example.com')
 })
 
@@ -500,32 +538,17 @@ const sectionVisible = computed(() => {
   const d = data.value
   const hasReviewed = d.reviewers.some(r => r.reviewedManuscripts?.length)
   return {
-    accountInfo: d.registeredUsers.length > 0,
+    accountInfo: true, // Overview 邮箱头始终有（未注册仅邮箱 + 退订）
     paidInvoices: d.paidInvoices.length > 0,
     submissionScholars: d.submissionScholars.length > 0,
     editors: d.editors.length > 0,
     vouchers: d.vouchers.length > 0,
-    reviewerProfile: d.reviewers.length > 0,
+    reviewerProfile: true, // 无档案时为 Add as Reviewer
     volunteers: d.volunteers.length > 0,
     submittedManuscripts: d.authors.some(a => a.manuscripts?.length),
     reviewedManuscripts: hasReviewed,
-    comments: true // Comments 始终可写，有内容或可添加都算可见
+    comments: true
   }
-})
-
-/**
- * 空状态：没有任何业务 section 有数据。
- * Comments 的「可添加」不单独撑起非空态——若其余全空且 comments 也为空，则视为空。
- */
-const isEmpty = computed(() => {
-  const v = sectionVisible.value
-  const d = data.value
-  const hasBusinessSection =
-    v.accountInfo || v.paidInvoices || v.submissionScholars || v.editors ||
-    v.vouchers || v.reviewerProfile || v.volunteers ||
-    v.submittedManuscripts || v.reviewedManuscripts
-  // 仅有空 Comments 表单不算有信息
-  return !hasBusinessSection && d.comments.length === 0
 })
 
 const navDefs = [
@@ -542,12 +565,8 @@ const navDefs = [
 ]
 
 const visibleNavItems = computed(() => {
-  if (isEmpty.value) return []
   const v = sectionVisible.value
-  return navDefs.filter(item => {
-    if (item.key === 'comments') return true
-    return v[item.key]
-  })
+  return navDefs.filter(item => v[item.key])
 })
 
 const bodyRef = ref(null)

@@ -481,28 +481,10 @@
   font-weight: 500;
 }
 
-/* No Info */
-.no-info-block {
-  padding: 60px 24px;
-  text-align: center;
-  color: #666;
-  font-size: 14px;
-  background: #fafafa;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  margin: 20px 0;
-}
-
-.no-info-block h3 {
-  font-size: 16px;
-  color: #333;
-  margin: 0 0 12px 0;
-  font-weight: 600;
-}
-
-.no-info-block p {
-  margin: 8px 0;
-  line-height: 1.6;
+/* Reviewer Profile empty CTA */
+.reviewer-empty {
+  padding: 4px 0;
+  font-size: 13px;
 }
 
 /* Comments */

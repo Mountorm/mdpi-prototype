@@ -18,7 +18,7 @@
       </div>
 
       <div class="modal-content">
-        <nav v-if="!isEmpty" class="anchor-nav">
+        <nav class="anchor-nav">
           <div class="anchor-nav-title">Sections</div>
           <a
             v-for="item in sections"
@@ -30,35 +30,23 @@
         </nav>
 
         <div ref="bodyRef" class="modal-body">
-          <div v-if="isEmpty" id="section-empty-state" class="empty-state-direct">
-            <CodeRef
-              :file="emptyStateRef.file"
-              :start="emptyStateRef.start"
-              :end="emptyStateRef.end"
-              :first-lines="emptyStateRef.firstLines"
-              :last-lines="emptyStateRef.lastLines"
-            />
+          <div
+            v-for="item in sections"
+            :id="item.id"
+            :key="item.id"
+          >
+            <UoSection :title="item.title" :defaultOpen="true">
+              <CodeRef
+                v-for="(ref, ri) in item.refs"
+                :key="ri"
+                :file="ref.file"
+                :start="ref.start"
+                :end="ref.end"
+                :first-lines="ref.firstLines"
+                :last-lines="ref.lastLines"
+              />
+            </UoSection>
           </div>
-
-          <template v-else>
-            <div
-              v-for="item in sections"
-              :id="item.id"
-              :key="item.id"
-            >
-              <UoSection :title="item.title" :defaultOpen="true">
-                <CodeRef
-                  v-for="(ref, ri) in item.refs"
-                  :key="ri"
-                  :file="ref.file"
-                  :start="ref.start"
-                  :end="ref.end"
-                  :first-lines="ref.firstLines"
-                  :last-lines="ref.lastLines"
-                />
-              </UoSection>
-            </div>
-          </template>
         </div>
       </div>
     </div>
@@ -66,7 +54,7 @@
 </template>
 
 <script setup>
-import { ref, computed, defineComponent, h, watch, nextTick } from 'vue'
+import { ref, defineComponent, h, watch, nextTick } from 'vue'
 import UoSection from './UoSection.vue'
 import { useSectionScrollSpy } from '../composables/useSectionScrollSpy'
 import './UserOverviewModal.css'
@@ -133,21 +121,6 @@ const tabs = [
   { email: 'user1@example.com' },
   { email: 'user2@example.com' }
 ]
-
-const isEmpty = computed(() => activeTab.value === 'user2@example.com')
-
-const emptyStateRef = {
-  file: 'templates/UserInfo/show.html.twig',
-  start: 523,
-  end: 525,
-  firstLines: [
-    { n: 523, text: '{% if not has_info %}' },
-    { n: 524, text: "    No information found for {{ emails|join(', ') }}" }
-  ],
-  lastLines: [
-    { n: 525, text: '{% endif %}' }
-  ]
-}
 
 const sections = [
   {
@@ -262,8 +235,8 @@ const sections = [
         { n: 393, text: '    <div class="user-info-section">' }
       ],
       lastLines: [
-        { n: 468, text: '    </div>' },
-        { n: 469, text: '{% endif %}' }
+        { n: 465, text: '{% else %}' },
+        { n: 467, text: '        <a href="{{ create_reviewer_path() }}" ...>Add as Reviewer</a>' }
       ]
     }]
   },
@@ -354,7 +327,7 @@ const sections = [
 
 const bodyRef = ref(null)
 const { activeSectionId, scrollToSection, updateActive } = useSectionScrollSpy(
-  () => (isEmpty.value ? [] : sections.map(s => s.id)),
+  () => sections.map(s => s.id),
   bodyRef
 )
 
@@ -414,9 +387,5 @@ watch(activeTab, () => nextTick(updateActive))
 }
 :deep(.code-ref-ellipsis) {
   color: #6b778c;
-}
-.empty-state-direct {
-  width: 100%;
-  padding: 8px 0;
 }
 </style>
