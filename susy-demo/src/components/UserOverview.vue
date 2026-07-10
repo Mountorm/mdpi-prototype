@@ -2,23 +2,28 @@
   <div class="user-overview-page">
     <div class="search-card">
       <h3>User Overview</h3>
-      <p class="hint">Enter an email address to look up user information.</p>
       <div class="search-row">
         <input
           v-model="emailInput"
           type="email"
           placeholder="e.g. user@example.com"
           class="email-input"
-          @keyup.enter="openModal"
+          @keyup.enter="openDev"
         />
-        <button class="confirm-btn" @click="openModal">Confirm</button>
+        <button class="confirm-btn" @click="openDev">Confirm</button>
+        <button class="demo-btn" @click="openDemo">Demo</button>
       </div>
     </div>
 
     <UserOverviewModal
-      v-if="showModal"
+      v-if="showDevModal"
       :email-input="emailInput"
-      @close="showModal = false"
+      @close="showDevModal = false"
+    />
+    <UserOverviewModalDemo
+      v-if="showDemoModal"
+      :email-input="emailInput"
+      @close="showDemoModal = false"
     />
   </div>
 </template>
@@ -26,12 +31,20 @@
 <script setup>
 import { ref } from 'vue'
 import UserOverviewModal from './UserOverviewModal.vue'
+import UserOverviewModalDemo from './UserOverviewModalDemo.vue'
 
 const emailInput = ref('')
-const showModal = ref(false)
+const showDevModal = ref(false)
+const showDemoModal = ref(false)
 
-const openModal = () => {
-  showModal.value = true
+const openDev = () => {
+  showDemoModal.value = false
+  showDevModal.value = true
+}
+
+const openDemo = () => {
+  showDevModal.value = false
+  showDemoModal.value = true
 }
 </script>
 
@@ -48,19 +61,14 @@ const openModal = () => {
   border-radius: 8px;
   padding: 32px 40px;
   width: 100%;
-  max-width: 480px;
+  max-width: 560px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 .search-card h3 {
-  margin: 0 0 8px;
+  margin: 0 0 20px;
   font-size: 18px;
   font-weight: 700;
   color: #172b4d;
-}
-.hint {
-  font-size: 13px;
-  color: #6b7280;
-  margin: 0 0 20px;
 }
 .search-row {
   display: flex;
@@ -91,5 +99,19 @@ const openModal = () => {
 }
 .confirm-btn:hover {
   background: #1d4ed8;
+}
+.demo-btn {
+  background: #fff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 8px 20px;
+  font-size: 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.demo-btn:hover {
+  background: #f3f4f6;
 }
 </style>

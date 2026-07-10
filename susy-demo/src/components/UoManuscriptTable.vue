@@ -1,9 +1,9 @@
 <template>
   <div>
-    <button class="link-btn" @click="expanded = !expanded">
-      {{ expanded ? 'Collapse' : 'Expand' }} ({{ manuscripts.length }})
+    <button v-if="toggleable" class="link-btn" @click="expanded = !expanded">
+      Show/Hide ({{ manuscripts.length }})
     </button>
-    <div v-if="expanded" style="overflow-x:auto">
+    <div v-if="!toggleable || expanded" style="overflow-x:auto">
       <table class="data-table">
         <thead>
           <tr>
@@ -39,12 +39,15 @@
 
 <script setup>
 import { ref } from 'vue'
-defineProps({
+const props = defineProps({
   manuscripts: { type: Array, default: () => [] },
   showReviewReport: { type: Boolean, default: false },
-  showScore: { type: Boolean, default: false }
+  showScore: { type: Boolean, default: false },
+  /** Editors 决策表默认折叠；Submitted/Reviewed 默认展开 */
+  toggleable: { type: Boolean, default: false },
+  defaultExpanded: { type: Boolean, default: true }
 })
-const expanded = ref(true)
+const expanded = ref(props.defaultExpanded)
 </script>
 
 <style scoped>
