@@ -90,10 +90,6 @@
   margin-left: 4px;
 }
 
-.tab-status-error {
-  color: #ae2a19;
-}
-
 /* Load error（统一态：查询失败 + 链接触发重试） */
 .uo-load-error {
   display: flex;

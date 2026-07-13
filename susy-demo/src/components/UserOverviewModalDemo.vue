@@ -17,7 +17,6 @@
         >
           {{ tab.email }}
           <span v-if="!tab.registered && !tab.isError" class="tab-status">(Unregistered)</span>
-          <span v-if="tab.isError" class="tab-status tab-status-error">(Error)</span>
         </button>
       </div>
 

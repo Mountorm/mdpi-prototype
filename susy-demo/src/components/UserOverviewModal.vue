@@ -18,7 +18,7 @@
       </div>
 
       <div class="modal-content">
-        <nav class="anchor-nav">
+        <nav v-if="!isLoadError" class="anchor-nav">
           <div class="anchor-nav-title">Sections</div>
           <a
             v-for="item in sections"
@@ -30,23 +30,42 @@
         </nav>
 
         <div ref="bodyRef" class="modal-body">
-          <div
-            v-for="item in sections"
-            :id="item.id"
-            :key="item.id"
-          >
-            <UoSection :title="item.title" :defaultOpen="true">
-              <CodeRef
-                v-for="(ref, ri) in item.refs"
-                :key="ri"
-                :file="ref.file"
-                :start="ref.start"
-                :end="ref.end"
-                :first-lines="ref.firstLines"
-                :last-lines="ref.lastLines"
-              />
-            </UoSection>
+          <div v-if="isLoadError" class="uo-load-error">
+            <div class="uo-load-error-card">
+              <p class="uo-load-error-desc">
+                Failed to load user information.
+                <a
+                  href="#"
+                  class="uo-load-error-retry"
+                  :class="{ 'is-busy': isRetrying }"
+                  @click.prevent="retryLoad"
+                >
+                  {{ isRetrying ? 'Trying again…' : 'Try again' }}
+                  <RefreshCw :size="14" :class="{ 'uo-load-error-spin': isRetrying }" />
+                </a>
+              </p>
+            </div>
           </div>
+
+          <template v-else>
+            <div
+              v-for="item in sections"
+              :id="item.id"
+              :key="item.id"
+            >
+              <UoSection :title="item.title" :defaultOpen="true">
+                <CodeRef
+                  v-for="(ref, ri) in item.refs"
+                  :key="ri"
+                  :file="ref.file"
+                  :start="ref.start"
+                  :end="ref.end"
+                  :first-lines="ref.firstLines"
+                  :last-lines="ref.lastLines"
+                />
+              </UoSection>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -54,8 +73,9 @@
 </template>
 
 <script setup>
-import { ref, defineComponent, h, watch, nextTick } from 'vue'
+import { ref, computed, defineComponent, h, watch, nextTick } from 'vue'
 import UoSection from './UoSection.vue'
+import { RefreshCw } from 'lucide-vue-next'
 import { useSectionScrollSpy } from '../composables/useSectionScrollSpy'
 import './UserOverviewModal.css'
 
@@ -116,11 +136,22 @@ const CodeRef = defineComponent({
 })
 
 const activeTab = ref('user1@example.com')
+const isRetrying = ref(false)
 
 const tabs = [
   { email: 'user1@example.com' },
-  { email: 'user2@example.com' }
+  { email: 'user2@example.com' },
+  { email: 'error@example.com' }
 ]
+
+const isLoadError = computed(() => activeTab.value === 'error@example.com')
+
+async function retryLoad() {
+  if (isRetrying.value) return
+  isRetrying.value = true
+  await new Promise(r => setTimeout(r, 800))
+  isRetrying.value = false
+}
 
 const sections = [
   {
@@ -327,7 +358,7 @@ const sections = [
 
 const bodyRef = ref(null)
 const { activeSectionId, scrollToSection, updateActive } = useSectionScrollSpy(
-  () => sections.map(s => s.id),
+  () => (isLoadError.value ? [] : sections.map(s => s.id)),
   bodyRef
 )
 
