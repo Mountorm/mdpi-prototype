@@ -16,13 +16,14 @@
           @click="activeTab = tab.email"
         >
           {{ tab.email }}
-          <span v-if="!tab.registered" class="tab-status">(Unregistered)</span>
+          <span v-if="!tab.registered && !tab.isError" class="tab-status">(Unregistered)</span>
+          <span v-if="tab.isError" class="tab-status tab-status-error">(Error)</span>
         </button>
       </div>
 
       <div class="modal-content">
-        <!-- Anchor Nav -->
-        <nav class="anchor-nav">
+        <!-- Anchor Nav：加载失败时不展示 -->
+        <nav v-if="!isLoadError" class="anchor-nav">
           <div class="anchor-nav-title">Sections</div>
           <a
             v-for="item in visibleNavItems"
@@ -34,7 +35,25 @@
         </nav>
 
         <div ref="bodyRef" class="modal-body">
+          <!-- 接口失败 / 超时无响应（统一文案） -->
+          <div v-if="isLoadError" class="uo-load-error">
+            <div class="uo-load-error-card">
+              <p class="uo-load-error-desc">
+                Failed to load user information. 
+                <a
+                  href="#"
+                  class="uo-load-error-retry"
+                  :class="{ 'is-busy': isRetrying }"
+                  @click.prevent="retryLoad"
+                >
+                 
+                  {{ isRetrying ? 'Trying again…' : 'Try again' }} <RefreshCw :size="14" :class="{ 'uo-load-error-spin': isRetrying }" />
+                </a>
+              </p>
+            </div>
+          </div>
 
+          <template v-else>
             <!-- 1. Account Info：始终展示（未注册仅邮箱行 + 退订） -->
             <div id="section-account-info">
               <UoSection title="Account Info" :defaultOpen="true">
@@ -350,6 +369,7 @@
                 </div>
               </UoSection>
             </div>
+          </template>
 
         </div>
       </div>
@@ -362,7 +382,7 @@ import { ref, reactive, computed, watch, nextTick } from 'vue'
 import UoSection from './UoSection.vue'
 import UoInfoTooltip from './UoInfoTooltip.vue'
 import UoManuscriptTable from './UoManuscriptTable.vue'
-import { BellOff } from 'lucide-vue-next'
+import { BellOff, RefreshCw } from 'lucide-vue-next'
 import { useSectionScrollSpy } from '../composables/useSectionScrollSpy'
 import './UserOverviewModal.css'
 
@@ -370,11 +390,23 @@ defineProps({ emailInput: { type: String, default: '' } })
 defineEmits(['close'])
 
 const activeTab = ref('user1@example.com')
+const isRetrying = ref(false)
 
 const tabs = [
   { email: 'user1@example.com', registered: true },
-  { email: 'user2@example.com', registered: false }
+  { email: 'user2@example.com', registered: false },
+  { email: 'error@example.com', registered: false, isError: true }
 ]
+
+/** 接口失败 / 超时无响应（统一错误态） */
+const isLoadError = computed(() => activeTab.value === 'error@example.com')
+
+async function retryLoad() {
+  if (isRetrying.value) return
+  isRetrying.value = true
+  await new Promise(r => setTimeout(r, 800))
+  isRetrying.value = false
+}
 
 /** Demo 默认按内部员工 + 开 APC 信息（User Overview 典型视角） */
 const viewerFlags = {
@@ -565,13 +597,14 @@ const navDefs = [
 ]
 
 const visibleNavItems = computed(() => {
+  if (isLoadError.value) return []
   const v = sectionVisible.value
   return navDefs.filter(item => v[item.key])
 })
 
 const bodyRef = ref(null)
 const { activeSectionId, scrollToSection, updateActive } = useSectionScrollSpy(
-  () => visibleNavItems.value.map(i => i.id),
+  () => (isLoadError.value ? [] : visibleNavItems.value.map(i => i.id)),
   bodyRef
 )
 
