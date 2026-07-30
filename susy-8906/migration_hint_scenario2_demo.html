@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SuSy</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: #333333;
+      background: #f5f6f8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    a { color: #333333; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ========== Top menu ========== */
+    #topmenu {
+      background: #ffffff;
+      box-shadow: 0 2px 0 0 rgba(0, 30, 66, 0.05);
+      position: relative;
+      z-index: 100;
+      flex-shrink: 0;
+      height: 54px;
+    }
+
+    #topmenu .inner {
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      height: 54px;
+      min-height: 54px;
+      gap: 0;
+    }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      margin-right: 8px;
+      text-decoration: none !important;
+      flex-shrink: 0;
+    }
+
+    .logo img {
+      width: 90px;
+      height: auto;
+      display: block;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      list-style: none;
+      flex: 1;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-links > li > a {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 0 14px;
+      height: 36px;
+      line-height: 36px;
+      color: #172b4d;
+      font-size: 14px;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .nav-links > li > a:hover {
+      color: #0156ce;
+      text-decoration: none;
+    }
+
+    .chev {
+      font-size: 10px;
+      color: #666;
+      line-height: 1;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-left: auto;
+      flex-shrink: 0;
+    }
+
+    .btn-submit {
+      display: inline-block;
+      background: #0156ce;
+      color: #ffffff !important;
+      border: none;
+      border-radius: 4px;
+      padding: 0 16px;
+      height: 32px;
+      line-height: 32px;
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      text-decoration: none !important;
+    }
+
+    .btn-submit:hover {
+      background: #014bb5;
+      text-decoration: none !important;
+    }
+
+    .user-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      height: 50px;
+    }
+
+    .user-email {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: #172b4d;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      padding: 0 2px;
+      user-select: none;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-family: inherit;
+      height: 36px;
+    }
+
+    .user-email:focus,
+    .user-email:focus-visible {
+      outline: none;
+    }
+
+    .user-email .chev {
+      width: 18px;
+      height: 18px;
+      color: #172b4d;
+      transition: transform 0.15s ease;
+      display: inline-flex;
+      flex-shrink: 0;
+    }
+
+    .user-email .chev svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .user-wrap.open .user-email .chev {
+      transform: rotate(180deg);
+    }
+
+    /* 对齐现网 #topmenu .drop-down-wrapper + 截图 */
+    .user-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      left: auto;
+      min-width: 9.375rem;
+      width: max-content;
+      margin: 0;
+      z-index: 1000005;
+      list-style: none;
+      padding: 0;
+      background: #ffffff;
+      border: 1px solid #dcdfe4;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      overflow: hidden;
+    }
+
+    .user-dropdown.open { display: block; }
+
+    .user-dropdown li {
+      margin: 0 0 2px;
+      padding: 0;
+      height: 40px;
+      white-space: nowrap;
+    }
+
+    .user-dropdown li:last-child {
+      margin-bottom: 0;
+    }
+
+    .user-dropdown a {
+      display: block;
+      padding: 0.75rem 1rem;
+      color: #172b4d;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.4;
+      text-decoration: none;
+      text-align: left;
+      background: transparent;
+      height: 40px;
+      box-sizing: border-box;
+    }
+
+    .user-dropdown a:hover {
+      color: #0156ce;
+      background: transparent;
+      text-decoration: none;
+    }
+
+    .user-wrap.spotlight {
+      z-index: 1000004;
+      position: relative;
+    }
+
+    .user-wrap.spotlight .user-email {
+      background: #ffffff;
+      border-radius: 2px;
+      box-shadow: 0 0 0 4px #ffffff;
+    }
+
+    .user-wrap.spotlight .user-dropdown {
+      box-shadow:
+        0 0 0 4px #ffffff,
+        0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* ========== Body layout ========== */
+    .app {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px;
+      background: #f5f6f8;
+    }
+
+    /* ========== Left sidebar ========== */
+    #leftcol {
+      width: 220px;
+      flex-shrink: 0;
+      background: #ffffff;
+      border-right: none;
+      padding: 12px 0 16px;
+      overflow-y: auto;
+      align-self: flex-start;
+      /* 白卡片浮在灰底上，与截图间隙一致 */
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02);
+    }
+
+    .menu-block {
+      margin-bottom: 16px;
+      padding: 0 14px;
+    }
+
+    .menu-caption {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #172b4d;
+      line-height: 1.4;
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+
+    .menu-caption.clickable {
+      cursor: pointer;
+    }
+
+    .menu-caption .title-text { flex: 0 0 auto; }
+    .menu-caption .spacer { flex: 1; }
+
+    .menu-caption .q-icon {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #0156ce;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .menu-caption .arrow {
+      color: #666666;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+
+    .beacon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #e53935;
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .beacon::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: #e53935;
+      animation: pulse 1.5s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); opacity: 0.7; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+
+    .beacon.hidden { display: none !important; }
+
+    .menu-list {
+      list-style: none;
+      margin: 6px 0 0;
+      padding: 0;
+    }
+
+    .menu-list li a {
+      display: block;
+      padding: 8px 12px;
+      font-size: 14px;
+      color: #3156a2;
+      text-decoration: none;
+      border-radius: 4px;
+      line-height: 1.3;
+    }
+
+    .menu-list li a:hover {
+      background: #f5f6f8;
+      text-decoration: none;
+    }
+
+    .menu-list li.active a {
+      background: #e6eefa;
+      color: #0156ce;
+      font-weight: 400;
+    }
+
+    /* ========== Main ========== */
+    #maincol {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      display: flex;
+      flex-direction: column;
+      min-height: calc(100vh - 54px - 48px - 20px);
+    }
+
+    .main-toolbar {
+      background: #ffffff;
+      border-bottom: none;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .btn-collapse {
+      border: 1px solid #d0d5dd;
+      background: #f0f1f3;
+      color: #555555;
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    .submit-ms {
+      color: #a94442;
+      font-size: 14px;
+      font-weight: 400;
+      text-decoration: none;
+    }
+
+    .submit-ms:hover {
+      text-decoration: underline;
+      color: #a94442;
+    }
+
+    .main-body {
+      flex: 1;
+      background: transparent;
+      min-height: 320px;
+      padding: 20px 16px;
+    }
+
+    .guide-panel {
+      background: #ffffff;
+      padding: 20px 24px;
+      max-width: 720px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.02);
+    }
+
+    .guide-panel h2 {
+      font-size: 16px;
+      font-weight: 700;
+      color: #172b4d;
+      margin-bottom: 8px;
+    }
+
+    .guide-panel .guide-lead {
+      font-size: 13px;
+      color: #666666;
+      line-height: 1.55;
+      margin-bottom: 16px;
+    }
+
+    .guide-panel ol {
+      margin: 0;
+      padding-left: 20px;
+      color: #333333;
+    }
+
+    .guide-panel li {
+      font-size: 13px;
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+
+    .guide-panel li:last-child {
+      margin-bottom: 0;
+    }
+
+    .guide-panel .note {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid #e8eaed;
+      font-size: 12px;
+      color: #888888;
+      line-height: 1.55;
+    }
+
+    /* ========== Footer ========== */
+    #footer {
+      background: #000000;
+      color: #ffffff;
+      padding: 12px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    #footer .links a {
+      color: #ffffff;
+      margin-left: 18px;
+      text-decoration: none;
+    }
+
+    #footer .links a:hover {
+      text-decoration: underline;
+    }
+
+    /* ========== Scenario 2 interaction (additive) ========== */
+    .migrate-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000001;
+      background: rgba(0, 0, 0, 0.48);
+    }
+
+    .migrate-overlay.show { display: block; }
+
+    .migrate-popover {
+      display: none;
+      position: fixed;
+      z-index: 1000006;
+      width: 300px;
+      background: #ffffff;
+      border: 1px solid #d0d5dd;
+      border-radius: 4px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      padding: 14px;
+    }
+
+    .migrate-popover.show { display: block; }
+
+    /* 箭头指向右侧已展开的用户下拉 */
+    .migrate-popover::before {
+      content: '';
+      position: absolute;
+      top: var(--arrow-top, 28px);
+      right: -10px;
+      border: 6px solid transparent;
+      border-left-color: #ffffff;
+      filter: drop-shadow(1px 0 0 #d0d5dd);
+    }
+
+    .migrate-popover.below::before {
+      top: -10px;
+      right: 36px;
+      left: auto;
+      border: 6px solid transparent;
+      border-bottom-color: #ffffff;
+      filter: drop-shadow(0 -1px 0 #d0d5dd);
+    }
+
+    .migrate-popover .tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #0156ce;
+      background: #e6eefa;
+      padding: 2px 7px;
+      border-radius: 2px;
+      margin-bottom: 8px;
+    }
+
+    .migrate-popover h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #333333;
+      margin-bottom: 6px;
+    }
+
+    .migrate-popover p {
+      font-size: 13px;
+      color: #666666;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .migrate-popover .actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .migrate-popover button {
+      border: 1px solid #cccccc;
+      background: #ffffff;
+      padding: 5px 12px;
+      font-size: 12px;
+      border-radius: 3px;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .migrate-popover button.primary {
+      background: #0156ce;
+      border-color: #0156ce;
+      color: #ffffff;
+    }
+
+    @media (max-width: 960px) {
+      .nav-links { display: none; }
+      #leftcol { width: 200px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header id="topmenu">
+    <div class="inner">
+      <a class="logo" href="#">
+        <img src="assets/img/icon/SUSY_logo.svg" alt="SuSy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+        <span style="display:none;font-weight:700;font-size:20px;color:#222;">SuSy</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#">Journals</a></li>
+        <li><a href="#">Topics</a></li>
+        <li><a href="#">Information <span class="chev">▾</span></a></li>
+        <li><a href="#">Author Services</a></li>
+        <li><a href="#">Initiatives <span class="chev">▾</span></a></li>
+        <li><a href="#">About <span class="chev">▾</span></a></li>
+      </ul>
+      <div class="top-right">
+        <a class="btn-submit" href="#">Submit</a>
+        <div class="user-wrap" id="userWrap">
+          <button type="button" class="user-email" id="userEmail" onclick="toggleDropdown(event)">
+            test2@247.edu
+            <span class="chev" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+              </svg>
+            </span>
+          </button>
+          <ul class="user-dropdown" id="userDropdown">
+            <li><a href="#" onclick="return false;">Dashboard</a></li>
+            <li><a href="#" onclick="return false;">Manage Accounts</a></li>
+            <li><a href="#" onclick="return false;">Change Password</a></li>
+            <li><a href="#" onclick="markMigrationSeen(); return false;">Profile</a></li>
+            <li><a href="#" onclick="return false;">Logout</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app">
+    <aside id="leftcol">
+      <div class="menu-block">
+        <div class="menu-caption clickable" id="accountCaption" onclick="onAccountClick(event)">
+          <span class="title-text">Account</span>
+          <span class="beacon" id="migrateBeacon" onclick="onAccountClick(event)"></span>
+          <span class="spacer"></span>
+          <span class="arrow">▾</span>
+        </div>
+        <ul class="menu-list">
+          <li class="active"><a href="#">Dashboard</a></li>
+        </ul>
+      </div>
+
+      <div class="menu-block">
+        <div class="menu-caption">
+          <span class="title-text">Submissions</span>
+          <span class="q-icon" title="Menu hint">?</span>
+          <span class="spacer"></span>
+          <span class="arrow">▾</span>
+        </div>
+        <ul class="menu-list">
+          <li><a href="#">Submit</a></li>
+          <li><a href="#">Submitted Manuscripts</a></li>
+          <li><a href="#">Co-Authored Manuscripts</a></li>
+          <li><a href="#">Author Services</a></li>
+          <li><a href="#">Discount Vouchers</a></li>
+          <li><a href="#">Invoices</a></li>
+          <li><a href="#">LaTeX Word Count</a></li>
+        </ul>
+      </div>
+
+      <div class="menu-block">
+        <div class="menu-caption">
+          <span class="title-text">Reviewer</span>
+          <span class="q-icon" title="Menu hint">?</span>
+          <span class="spacer"></span>
+          <span class="arrow">▾</span>
+        </div>
+        <ul class="menu-list">
+          <li><a href="#">Volunteer Preferences</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <main id="maincol">
+      <div class="main-toolbar">
+        <button type="button" class="btn-collapse">collapse all</button>
+        <a class="submit-ms" href="#">Submit Manuscript</a>
+      </div>
+      <div class="main-body">
+        <div class="guide-panel">
+          <h2>account入口迁移提示</h2>
+          <p class="guide-lead">本页为原型演示。用于说明「Account 相关设置已迁至右上角用户菜单」时，如何用红点引导用户发现入口。</p>
+          <ol>
+            <li>页面加载后，左侧 <strong>Account</strong> 标题旁显示红色脉冲圆点（beacon）。表示该用户尚未确认迁移提示。</li>
+            <li>点击 <strong>Account</strong> 标题或红色圆点：页面出现半透明遮罩；右上角用户邮箱下拉自动展开并高亮；左侧弹出气泡文案「Account settings moved / Account settings pages are now here」，箭头指向用户下拉菜单。</li>
+            <li>点击气泡中的 <strong>Got it</strong>或者点击遮罩空白处：关闭遮罩与气泡，收起用户下拉，红色圆点消失。表示用户已确认。</li>
+            <li>若红点已消失，再次点击 Account 不会重复弹出引导。</li>
+          </ol>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <footer id="footer">
+    <div>© 1996-2026 MDPI (Basel, Switzerland) unless otherwise stated</div>
+    <div class="links">
+      <a href="#">Accessibility</a>
+      <a href="#">Disclaimer</a>
+      <a href="#">Terms and Conditions</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Privacy Settings</a>
+    </div>
+  </footer>
+
+  <div class="migrate-overlay" id="migrateOverlay" onclick="closeMigrateUI()"></div>
+  <div class="migrate-popover" id="migratePopover">
+    <h3>Account settings moved</h3>
+    <p>Account settings pages are now here.</p>
+    <div class="actions">
+      <button type="button" class="primary" onclick="markMigrationSeen()">Got it</button>
+    </div>
+  </div>
+
+  <script>
+
+    let migrationHinted = 0;
+
+    function applyMigrationState() {
+      const beacon = document.getElementById('migrateBeacon');
+      if (!beacon) return;
+      if (migrationHinted === 1) {
+        beacon.classList.add('hidden');
+      } else {
+        beacon.classList.remove('hidden');
+      }
+    }
+
+    function setDropdownOpen(open) {
+      const wrap = document.getElementById('userWrap');
+      const dd = document.getElementById('userDropdown');
+      wrap.classList.toggle('open', open);
+      dd.classList.toggle('open', open);
+    }
+
+    function toggleDropdown(e) {
+      e.stopPropagation();
+      const dd = document.getElementById('userDropdown');
+      setDropdownOpen(!dd.classList.contains('open'));
+    }
+
+    document.addEventListener('click', (e) => {
+      const wrap = document.getElementById('userWrap');
+      const pop = document.getElementById('migratePopover');
+      if (!wrap.contains(e.target) && !pop.contains(e.target)) {
+        if (!pop.classList.contains('show')) {
+          setDropdownOpen(false);
+        }
+      }
+    });
+
+    function positionPopover() {
+      const dropdown = document.getElementById('userDropdown');
+      const pop = document.getElementById('migratePopover');
+      const rect = dropdown.getBoundingClientRect();
+      const popW = 280;
+      const gap = 14;
+
+      let left = rect.left - popW - gap;
+      let top = rect.top + rect.height / 2 - 60;
+
+      if (left < 12) {
+        left = Math.max(12, rect.right - popW);
+        top = rect.bottom + gap;
+        pop.classList.add('below');
+      } else {
+        pop.classList.remove('below');
+      }
+
+      const approxH = 140;
+      if (top + approxH > window.innerHeight - 12) {
+        top = Math.max(12, window.innerHeight - approxH - 12);
+      }
+      if (top < 12) top = 12;
+
+      pop.style.top = top + 'px';
+      pop.style.left = left + 'px';
+
+      // 箭头对准下拉菜单垂直中部
+      const arrowTop = Math.max(16, Math.min(rect.top + rect.height / 2 - top - 6, 100));
+      pop.style.setProperty('--arrow-top', arrowTop + 'px');
+    }
+
+    function onAccountClick(e) {
+      e.stopPropagation();
+      if (migrationHinted === 1) return;
+      document.getElementById('userWrap').classList.add('spotlight');
+      setDropdownOpen(true);
+      document.getElementById('migrateOverlay').classList.add('show');
+      requestAnimationFrame(() => {
+        document.getElementById('migratePopover').classList.add('show');
+        positionPopover();
+      });
+    }
+
+    function closeMigrateUI() {
+      document.getElementById('migrateOverlay').classList.remove('show');
+      document.getElementById('migratePopover').classList.remove('show');
+      document.getElementById('migratePopover').classList.remove('below');
+      document.getElementById('userWrap').classList.remove('spotlight');
+      setDropdownOpen(false);
+    }
+
+    function markMigrationSeen() {
+      // Demo：仅本次会话隐藏；刷新页面红点会再出现，方便反复体验
+      migrationHinted = 1;
+      closeMigrateUI();
+      applyMigrationState();
+    }
+
+    window.addEventListener('resize', () => {
+      if (document.getElementById('migratePopover').classList.contains('show')) {
+        positionPopover();
+      }
+    });
+
+    try { localStorage.removeItem('migration_hinted'); } catch (e) {}
+    applyMigrationState();
+  </script>
+</body>
+</html>
