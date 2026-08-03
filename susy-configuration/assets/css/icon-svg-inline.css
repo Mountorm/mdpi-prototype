@@ -1,0 +1,7 @@
+/* Compact inline icon hosts (sprite symbols injected by inject-sprite.js) */
+svg.icon-svg {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: middle;
+  fill: currentColor;
+}

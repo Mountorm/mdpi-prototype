@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs & temp
+*.log
+*.tmp
+*.temp
+.cache/
+
+# Python leftovers
+__pycache__/
+*.py
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+
+# Local env
+.env
+.env.*
+
+# Browser save noise (if re-exported)
+*.download
+*.下载
+*_files/

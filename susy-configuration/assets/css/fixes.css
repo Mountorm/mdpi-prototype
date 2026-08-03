@@ -1,0 +1,76 @@
+/**
+ * Prototype visual fixes (loaded last).
+ * 1) Force SuSy primary #0156ce over Element Plus default #409eff
+ * 2) Tag fields: align label / actions with the first tag row
+ */
+
+:root {
+  --el-color-primary: #0156ce;
+  --el-color-primary-dark-2: #004db9;
+  --el-color-primary-light-1: #1a66d2;
+  --el-color-primary-light-2: #3377d7;
+  --el-color-primary-light-3: #4d88dc;
+  --el-color-primary-light-4: #6699e1;
+  --el-color-primary-light-5: #80aae6;
+  --el-color-primary-light-6: #99bbeb;
+  --el-color-primary-light-7: #b2ccf0;
+  --el-color-primary-light-8: #ccddf5;
+  --el-color-primary-light-9: #e5eefa;
+  --el-menu-active-color: #0156ce;
+}
+
+/* Tag text / border / bg — pin to SuSy blue */
+.el-tag.el-tag--primary {
+  --el-tag-text-color: #0156ce;
+  --el-tag-bg-color: #e5eefa;
+  --el-tag-border-color: #ccddf5;
+  --el-tag-hover-color: #0156ce;
+  color: #0156ce;
+}
+
+.el-button--primary {
+  --el-button-bg-color: #0156ce;
+  --el-button-border-color: #0156ce;
+  --el-button-hover-bg-color: #1a66d2;
+  --el-button-hover-border-color: #1a66d2;
+  --el-button-active-bg-color: #004db9;
+  --el-button-active-border-color: #004db9;
+}
+
+/* Rows that contain tags: top-align so label matches first tag line */
+.form_row:has(.el-tag) {
+  align-items: flex-start !important;
+}
+
+.form_row:has(.el-tag) .form_row_label {
+  /* optical align with el-tag--large first line (~28px tall) */
+  padding-top: 7px;
+  align-items: flex-start;
+}
+
+.form_row:has(.el-tag) .form_row_value {
+  align-items: flex-start;
+}
+
+.form_row:has(.el-tag) .form_row_value_show {
+  align-items: flex-start;
+  align-content: flex-start;
+  flex-wrap: wrap;
+}
+
+.form_row:has(.el-tag) .form_row_value_show > div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  align-content: flex-start;
+  width: 100%;
+}
+
+.form_row:has(.el-tag) .form_row_value_btn {
+  padding-top: 4px;
+}
+
+.form_row .form_row_value_show .el-tag {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}

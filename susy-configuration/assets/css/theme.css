@@ -1,0 +1,25 @@
+:root {
+  --next-bg-menuBar: #ffffff;
+  --next-bg-menuBar-light-1: #ffffff;
+  --next-bg-menuBarColor: #000000;
+  --next-bg-menuBarActiveColor: #e6eefa;
+  --next-bg-topBar: #001a3e;
+  --next-bg-topBarBorder: #001a3e;
+  --next-bg-topBarColor: #ffffff;
+  --next-bg-columnsMenuBar: #545c64;
+  --next-bg-columnsMenuBarColor: #e6e6e6;
+  --el-menu-base-level-padding: 16px;
+  --el-button-small-size: 32px;
+  --next-width-breadcrumb-left: 24px;
+  --el-color-primary-dark-2: #004db9;
+  --el-color-primary: #0156ce;
+  --el-color-primary-light-1: #1a66d2;
+  --el-color-primary-light-2: #3377d7;
+  --el-color-primary-light-3: #4d88dc;
+  --el-color-primary-light-4: #6699e1;
+  --el-color-primary-light-5: #80aae6;
+  --el-color-primary-light-6: #99bbeb;
+  --el-color-primary-light-7: #b2ccf0;
+  --el-color-primary-light-8: #ccddf5;
+  --el-color-primary-light-9: #e5eefa;
+}
