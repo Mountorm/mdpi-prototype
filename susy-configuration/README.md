@@ -37,8 +37,11 @@ assets/
 | 隐藏编辑抽屉/弹层 | → `assets/partials/hidden-dialogs.html`（静态首屏不需要） |
 | 扩展插件 / 坏掉的 SPA JS / 邻页 CSS | 已删除 |
 
-## 说明
+## Demo：邮件中的期刊名
 
-- 仍是**静态快照**：交互不可用。
-- `index.html` 行数主要来自 Element Plus 嵌套 DOM（每条配置多层 `div`），这是另存页结构本身，继续硬删会影响样式对齐。
-- 若要以可维护方式继续做交互原型，建议以本页为视觉基准另建源码。
+在 **Basic Configurations** 新增两项（弹窗编辑）：
+
+1. **Journal Name in Email** — 邮件展示名  
+2. **Email Template Variable Override** — 替换名 + 多选模板变量  
+
+代码：`assets/js/email-name-demo.js`、`assets/css/email-name-demo.css`。
