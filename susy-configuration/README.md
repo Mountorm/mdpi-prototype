@@ -9,39 +9,24 @@
 ## 目录
 
 ```text
-index.html                         # 可见页面 DOM（已瘦身）
+index.html                         # 可见页面 DOM
 assets/
   css/                             # 主题与页面样式
-    theme.css                      # CSS 变量
-    icon-svg-inline.css            # 压缩后的内联图标样式
-    ...
   icons/
-    sprite.svg                     # 本页实际用到的 10 个 SVG symbol
+    sprite.svg                     # 本页用到的 SVG symbol
   js/
     inject-sprite.js               # 注入 sprite（兼容 file://）
+    email-name-demo.js             # Journal Name in Email 交互
   img/
     susy-logo.png
     ai-logo-sq.png
-  partials/
-    hidden-dialogs.html            # 隐藏抽屉/弹层快照（不自动加载）
 ```
 
-## 已外提 / 移除
+## Demo：Journal Name in Email
 
-| 内容 | 处理 |
-|------|------|
-| 主题色变量 | → `assets/css/theme.css` |
-| Logo base64 | → `assets/img/susy-logo.png` |
-| SVG 图标精灵 | → `assets/icons/sprite.svg` + `inject-sprite.js` |
-| 未使用的 79 个 icon | 已删除 |
-| 隐藏编辑抽屉/弹层 | → `assets/partials/hidden-dialogs.html`（静态首屏不需要） |
-| 扩展插件 / 坏掉的 SPA JS / 邻页 CSS | 已删除 |
+在 **Basic Configurations** 中（粉色圈出位置）：
 
-## Demo：邮件中的期刊名
-
-在 **Basic Configurations** 新增两项（弹窗编辑）：
-
-1. **Journal Name in Email** — 邮件展示名  
-2. **Email Template Variable Override** — 替换名 + 多选模板变量  
+- 开关开启后可配置邮件期刊名；关闭则不生效、列表留空
+- 弹窗编辑 + 非空校验；问号 tooltip 说明替换规则
 
 代码：`assets/js/email-name-demo.js`、`assets/css/email-name-demo.css`。
