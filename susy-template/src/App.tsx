@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import './App.css'
 import { checkBlankLines, type BlankLineCheckResult } from './blankLineChecker'
@@ -233,23 +233,45 @@ function App() {
   const [hoveredBranch, setHoveredBranch] = useState<string | null>(null)
   const [removedBranches, setRemovedBranches] = useState<Set<string>>(new Set())
   const [resolvedGroups, setResolvedGroups] = useState<Set<string>>(new Set())
+  const [flattenedGroups, setFlattenedGroups] = useState<Set<string>>(new Set())
+  const [contextBranch, setContextBranch] = useState<{ branchId: string; groupId: string; x: number; y: number } | null>(null)
   const [blankCheck, setBlankCheck] = useState<BlankLineCheckResult | null>(null)
   const parsed = useMemo(() => parseTemplate(template), [template])
 
   const resetRemovedBranches = () => {
     setRemovedBranches(new Set())
     setResolvedGroups(new Set())
+    setFlattenedGroups(new Set())
+    setContextBranch(null)
   }
   const syncValues = () => {
     setValues(parsed.values.map((name) => values.find((item) => item.name === name) ?? { name, value: '' }))
     resetRemovedBranches()
   }
   const valueMap = Object.fromEntries(values.map((item) => [item.name, item.value]))
+  useEffect(() => {
+    if (!contextBranch) return
+    const dismissMenu = (event: PointerEvent) => {
+      if ((event.target as HTMLElement).closest('.context-remove-branch')) return
+      setContextBranch(null)
+      setHoveredGroup(null)
+      setHoveredBranch(null)
+    }
+    window.addEventListener('pointerdown', dismissMenu, true)
+    return () => window.removeEventListener('pointerdown', dismissMenu, true)
+  }, [contextBranch])
 
   const copyTemplate = async () => {
     await navigator.clipboard?.writeText(template)
   }
   const runBlankLineCheck = () => setBlankCheck(checkBlankLines(template))
+  const deleteContextBranch = (branchId: string, groupId: string) => {
+    setRemovedBranches((current) => new Set(current).add(branchId))
+    setFlattenedGroups((current) => new Set(current).add(groupId))
+    setContextBranch(null)
+    setHoveredGroup(null)
+    setHoveredBranch(null)
+  }
 
   const renderInline = () => {
     const tokens = [...template.matchAll(tokenPattern)]
@@ -325,8 +347,9 @@ function App() {
           nextBranches[nextBranches.length - 1] = branchId ?? ''
         }
         const branchRemoved = resolvedGroups.has(groupId ?? '') || !isVisible(nextGroups, nextBranches)
+        const syntaxHidden = flattenedGroups.has(groupId ?? '') || branchRemoved
         const canRemove = Boolean(Object.values(valueMap).some((value) => value !== '')) && branchMeta.statuses.get(branchId ?? '') === false
-        if (branchRemoved) {
+        if (syntaxHidden) {
           if (command.startsWith('if ')) {
             groupStack.push(`group-${groupNumber - 1}`)
             branchStack.push(`branch-${branchNumber - 1}`)
@@ -347,7 +370,7 @@ function App() {
         const status = command.startsWith('if ') || command.startsWith('elseif ')
           ? evaluateCondition(command.replace(/^if |^elseif /, ''), valueMap)
           : null
-        output.push(<span key={`condition-${index}`} className={`inline-condition depth-${Math.min(tokenDepth, 3)} ${command === 'else' ? 'inline-else' : ''} ${isBranchTag ? 'branch-trigger' : ''} ${isGroupTagActive ? 'inline-group-active' : ''} ${isGroupTagActive && isCurrentBranch ? 'inline-branch-current' : ''} ${isGroupTagActive && !isCurrentBranch ? 'inline-branch-other' : ''}`} onMouseEnter={() => isBranchTag && (setHoveredGroup(groupId ?? null), setHoveredBranch(branchId ?? null))} onMouseLeave={() => isBranchTag && (setHoveredGroup(null), setHoveredBranch(null))}>
+        output.push(<span key={`condition-${index}`} className={`inline-condition depth-${Math.min(tokenDepth, 3)} ${command === 'else' ? 'inline-else' : ''} ${isBranchTag ? 'branch-trigger' : ''} ${isGroupTagActive ? 'inline-group-active' : ''} ${isGroupTagActive && isCurrentBranch ? 'inline-branch-current' : ''} ${isGroupTagActive && !isCurrentBranch ? 'inline-branch-other' : ''}`} onMouseEnter={() => isBranchTag && (setHoveredGroup(groupId ?? null), setHoveredBranch(branchId ?? null))} onMouseLeave={() => isBranchTag && !contextBranch && (setHoveredGroup(null), setHoveredBranch(null))} onContextMenu={(event) => { if (!isBranchTag || !branchId || !groupId) return; event.preventDefault(); setHoveredGroup(groupId); setHoveredBranch(branchId); setContextBranch({ branchId, groupId, x: event.clientX, y: event.clientY }) }}>
           <span className="condition-raw">{raw}</span>
           {status !== null && <small className={`inline-status status-${status ? 'true' : 'false'}`}>{status ? '满足' : '不满足'}</small>}
           {canRemove && <button className="remove-branch-button" aria-label="删除不满足的分支" onClick={(event) => { event.stopPropagation(); const group = branchMeta.groupForBranch.get(branchId ?? ''); setRemovedBranches((current) => new Set(current).add(branchId ?? '')); if (group) setResolvedGroups((current) => new Set(current).add(group)) }}>×</button>}
@@ -404,7 +427,7 @@ function App() {
         <div className="preview-panel panel">
           <div className="panel-header"><div><span className="panel-kicker">READABLE PREVIEW</span><h2>可读预览</h2></div><button className="quiet-button" onClick={() => setSourceOpen(true)}>显示原文</button></div>
           {showVariables ? <div className="variables-panel"><div className="variables-heading"><div className="variables-title"><span>变量模拟</span><small>可选，不填写时仅显示结构</small></div><div><div className="view-switch"><button className={!finalView ? 'active' : ''} onClick={() => setFinalView(false)}>变量名</button><button className={finalView ? 'active' : ''} onClick={() => setFinalView(true)}>变量值</button></div><button onClick={syncValues}>同步变量</button><button onClick={resetRemovedBranches}>恢复分支</button><button onClick={() => setShowVariables(false)}>收起</button></div></div><div className="variable-grid">{values.length === 0 ? <span className="empty-state">点击“同步变量”，填写变量值以模拟不同场景</span> : values.map((item) => <label key={item.name}><span>{item.name}</span><input value={item.value} onChange={(event) => updateValue(item.name, event.target.value)} placeholder="未填写" /></label>)}</div></div> : <button className="show-variables" onClick={() => setShowVariables(true)}>展开变量模拟面板</button>}
-          <div className="preview-body">{renderInline()}</div>
+          <div className="preview-body">{renderInline()}{contextBranch && <button className="context-remove-branch" style={{ left: contextBranch.x, top: contextBranch.y }} onClick={() => deleteContextBranch(contextBranch.branchId, contextBranch.groupId)}>删除此分支</button>}</div>
           {parsed.warnings.length > 0 && <div className="warnings"><strong>解析提醒</strong>{parsed.warnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
         </div>
       </section>

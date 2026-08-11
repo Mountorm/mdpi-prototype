@@ -95,11 +95,13 @@ h1 em { color: #2c78a6; font-style: normal; }
 .inline-branch-other .variable-chip { background: rgba(248, 223, 232, .82); border-color: #d79aaf; color: #6f6267; box-shadow: none; }
 .inline-condition.inline-branch-current { border-bottom-color: #c49e43; }
 .inline-condition.inline-branch-other { border-bottom-color: #d28ca4; }
-.branch-trigger { cursor: default; }
+.branch-trigger { position: relative; cursor: default; }
 .branch-trigger:hover .condition-raw { color: #1f6689; }
 .remove-branch-button { opacity: 0; margin-left: 4px; padding: 0 4px; border: 1px solid #d89aaa; border-radius: 3px; background: #fff0f4; color: #a34f68; font: 13px/1.1 Arial, sans-serif; vertical-align: 1px; }
 .branch-trigger:hover .remove-branch-button, .remove-branch-button:focus-visible { opacity: 1; }
 .remove-branch-button:hover { border-color: #b9657d; background: #f8dfe8; color: #843b51; }
+.context-remove-branch { position: fixed; z-index: 100; margin: 8px 0 0; padding: 5px 9px; border-color: #c8899d; background: #fff0f4; color: #984d66; font-size: 10px; white-space: nowrap; box-shadow: 0 3px 9px rgba(112, 55, 73, .12); }
+.context-remove-branch:hover { border-color: #a96079; background: #f8dfe8; color: #7f3650; }
 .if-card { margin: 10px 0; padding-left: 13px; border-left: 1px dashed #9cb9c7; overflow: hidden; }
 .if-card.level-1 { border-left-color: #b6a6c5; margin-left: 14px; }
 .if-card.level-2 { border-left-color: #c8b37e; margin-left: 14px; }
