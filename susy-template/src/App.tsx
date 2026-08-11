@@ -168,6 +168,7 @@ type BranchStatus = boolean | null
 function buildBranchStatuses(tokens: RegExpMatchArray[], valueMap: Record<string, string>) {
   const statuses = new Map<string, BranchStatus>()
   const groupForBranch = new Map<string, string>()
+  const branchesByGroup = new Map<string, string[]>()
   const selectedByGroup = new Map<string, string | null>()
   const groups: { id: string; branches: { id: string; condition?: string; kind: 'if' | 'elseif' | 'else' }[] }[] = []
   let groupNumber = 0
@@ -218,9 +219,10 @@ function buildBranchStatuses(tokens: RegExpMatchArray[], valueMap: Record<string
         }
       })
       selectedByGroup.set(group.id, selected)
+      branchesByGroup.set(group.id, group.branches.map((branch) => branch.id))
     }
   })
-  return { statuses, groupForBranch, selectedByGroup }
+  return { statuses, groupForBranch, selectedByGroup, branchesByGroup }
 }
 
 function App() {
@@ -252,7 +254,7 @@ function App() {
   useEffect(() => {
     if (!contextBranch) return
     const dismissMenu = (event: PointerEvent) => {
-      if ((event.target as HTMLElement).closest('.context-remove-branch')) return
+      if ((event.target as HTMLElement).closest('.context-branch-menu')) return
       setContextBranch(null)
       setHoveredGroup(null)
       setHoveredBranch(null)
@@ -267,6 +269,22 @@ function App() {
   const runBlankLineCheck = () => setBlankCheck(checkBlankLines(template))
   const deleteContextBranch = (branchId: string, groupId: string) => {
     setRemovedBranches((current) => new Set(current).add(branchId))
+    setFlattenedGroups((current) => new Set(current).add(groupId))
+    setContextBranch(null)
+    setHoveredGroup(null)
+    setHoveredBranch(null)
+  }
+  const hitContextBranch = (branchId: string, groupId: string) => {
+    const tokens = [...template.matchAll(tokenPattern)]
+    const branchMeta = buildBranchStatuses(tokens, valueMap)
+    const siblingBranches = branchMeta.branchesByGroup.get(groupId) ?? []
+    setRemovedBranches((current) => {
+      const next = new Set(current)
+      siblingBranches.forEach((siblingId) => {
+        if (siblingId !== branchId) next.add(siblingId)
+      })
+      return next
+    })
     setFlattenedGroups((current) => new Set(current).add(groupId))
     setContextBranch(null)
     setHoveredGroup(null)
@@ -427,7 +445,7 @@ function App() {
         <div className="preview-panel panel">
           <div className="panel-header"><div><span className="panel-kicker">READABLE PREVIEW</span><h2>可读预览</h2></div><button className="quiet-button" onClick={() => setSourceOpen(true)}>显示原文</button></div>
           {showVariables ? <div className="variables-panel"><div className="variables-heading"><div className="variables-title"><span>变量模拟</span><small>可选，不填写时仅显示结构</small></div><div><div className="view-switch"><button className={!finalView ? 'active' : ''} onClick={() => setFinalView(false)}>变量名</button><button className={finalView ? 'active' : ''} onClick={() => setFinalView(true)}>变量值</button></div><button onClick={syncValues}>同步变量</button><button onClick={resetRemovedBranches}>恢复分支</button><button onClick={() => setShowVariables(false)}>收起</button></div></div><div className="variable-grid">{values.length === 0 ? <span className="empty-state">点击“同步变量”，填写变量值以模拟不同场景</span> : values.map((item) => <label key={item.name}><span>{item.name}</span><input value={item.value} onChange={(event) => updateValue(item.name, event.target.value)} placeholder="未填写" /></label>)}</div></div> : <button className="show-variables" onClick={() => setShowVariables(true)}>展开变量模拟面板</button>}
-          <div className="preview-body">{renderInline()}{contextBranch && <button className="context-remove-branch" style={{ left: contextBranch.x, top: contextBranch.y }} onClick={() => deleteContextBranch(contextBranch.branchId, contextBranch.groupId)}>删除此分支</button>}</div>
+          <div className="preview-body">{renderInline()}{contextBranch && <div className="context-branch-menu" style={{ left: contextBranch.x, top: contextBranch.y }}><button className="context-remove-branch" onClick={() => deleteContextBranch(contextBranch.branchId, contextBranch.groupId)}>删除此分支</button><button className="context-hit-branch" onClick={() => hitContextBranch(contextBranch.branchId, contextBranch.groupId)}>命中此分支</button></div>}</div>
           {parsed.warnings.length > 0 && <div className="warnings"><strong>解析提醒</strong>{parsed.warnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
         </div>
       </section>
