@@ -119,9 +119,8 @@ function inputValue(value: string): string | number | boolean {
 function evaluateCondition(condition: string | undefined, valueMap: Record<string, string>): boolean | null {
   if (!condition) return null
   if (/\b(strtotime|count)\s*\(/i.test(condition)) return null
-  const alternatives = condition.split(/\s+or\s+/i)
-  const results = alternatives.map((part) => {
-    let expression = part.trim()
+  const evaluateAtom = (atom: string): boolean | null => {
+    let expression = atom.trim()
     let negate = false
     if (expression.startsWith('!')) {
       negate = true
@@ -151,6 +150,13 @@ function evaluateCondition(condition: string | undefined, valueMap: Record<strin
       result = Boolean(resolve(expression))
     }
     return negate ? !result : result
+  }
+  const alternatives = condition.split(/\s*(?:\|\||\bor\b)\s*/i)
+  const results = alternatives.map((alternative) => {
+    const conjunction = alternative.split(/\s*(?:&&|\band\b)\s*/i).map(evaluateAtom)
+    if (conjunction.some((result) => result === false)) return false
+    if (conjunction.some((result) => result === null)) return null
+    return true
   })
   if (results.some((result) => result === true)) return true
   if (results.every((result) => result === false)) return false
