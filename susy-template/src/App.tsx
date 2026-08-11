@@ -157,6 +157,66 @@ function evaluateCondition(condition: string | undefined, valueMap: Record<strin
   return null
 }
 
+type BranchStatus = boolean | null
+
+function buildBranchStatuses(tokens: RegExpMatchArray[], valueMap: Record<string, string>) {
+  const statuses = new Map<string, BranchStatus>()
+  const groupForBranch = new Map<string, string>()
+  const selectedByGroup = new Map<string, string | null>()
+  const groups: { id: string; branches: { id: string; condition?: string; kind: 'if' | 'elseif' | 'else' }[] }[] = []
+  let groupNumber = 0
+  let branchNumber = 0
+  tokens.forEach((match) => {
+    const command = match[1]
+    if (command.startsWith('if ')) {
+      const groupId = `group-${groupNumber}`
+      const branchId = `branch-${branchNumber}`
+      const group = { id: groupId, branches: [] as { id: string; condition?: string; kind: 'if' | 'elseif' | 'else' }[] }
+      group.branches.push({ id: branchId, condition: command.slice(3).trim(), kind: 'if' })
+      groupForBranch.set(branchId, groupId)
+      groupNumber += 1
+      branchNumber += 1
+      groups.push(group)
+    } else if (command.startsWith('elseif ') || command === 'else') {
+      const group = groups.at(-1)
+      if (!group) return
+      const branchId = `branch-${branchNumber}`
+      group.branches.push({
+        id: branchId,
+        condition: command.startsWith('elseif ') ? command.slice(7).trim() : undefined,
+        kind: command === 'else' ? 'else' : 'elseif',
+      })
+      groupForBranch.set(branchId, group.id)
+      branchNumber += 1
+    } else if (command === '/if') {
+      const group = groups.pop()
+      if (!group) return
+      let selected: string | null = null
+      let unknown = false
+      group.branches.forEach((branch) => {
+        if (branch.kind === 'else') {
+          const isSelected = unknown ? null : selected === null
+          statuses.set(branch.id, isSelected)
+          if (isSelected) selected = branch.id
+          return
+        }
+        const result = evaluateCondition(branch.condition, valueMap)
+        if (result === null) {
+          statuses.set(branch.id, null)
+          unknown = true
+        } else if (result && selected === null && !unknown) {
+          statuses.set(branch.id, true)
+          selected = branch.id
+        } else {
+          statuses.set(branch.id, false)
+        }
+      })
+      selectedByGroup.set(group.id, selected)
+    }
+  })
+  return { statuses, groupForBranch, selectedByGroup }
+}
+
 function App() {
   const [template, setTemplate] = useState('')
   const [values, setValues] = useState<Value[]>([])
@@ -165,10 +225,19 @@ function App() {
   const [sourceOpen, setSourceOpen] = useState(true)
   const [hoveredGroup, setHoveredGroup] = useState<string | null>(null)
   const [hoveredBranch, setHoveredBranch] = useState<string | null>(null)
+  const [removedBranches, setRemovedBranches] = useState<Set<string>>(new Set())
+  const [resolvedGroups, setResolvedGroups] = useState<Set<string>>(new Set())
   const [blankCheck, setBlankCheck] = useState<BlankLineCheckResult | null>(null)
   const parsed = useMemo(() => parseTemplate(template), [template])
 
-  const syncValues = () => setValues(parsed.values.map((name) => values.find((item) => item.name === name) ?? { name, value: '' }))
+  const resetRemovedBranches = () => {
+    setRemovedBranches(new Set())
+    setResolvedGroups(new Set())
+  }
+  const syncValues = () => {
+    setValues(parsed.values.map((name) => values.find((item) => item.name === name) ?? { name, value: '' }))
+    resetRemovedBranches()
+  }
   const valueMap = Object.fromEntries(values.map((item) => [item.name, item.value]))
 
   const copyTemplate = async () => {
@@ -179,6 +248,7 @@ function App() {
   const renderInline = () => {
     const tokens = [...template.matchAll(tokenPattern)]
     const output: ReactNode[] = []
+    const branchMeta = buildBranchStatuses(tokens, valueMap)
     const groupStack: string[] = []
     const branchStack: string[] = []
     let cursor = 0
@@ -192,7 +262,14 @@ function App() {
         ? ' inline-group-active inline-branch-current'
         : ' inline-group-active inline-branch-other'
     }
+    const isVisible = (groups: string[], branches: string[]) => groups.every((groupId, index) => {
+      const branchId = branches[index]
+      if (removedBranches.has(branchId)) return false
+      if (!resolvedGroups.has(groupId)) return true
+      return branchMeta.selectedByGroup.get(groupId) === branchId
+    })
     const addText = (text: string, key: string) => {
+      if (!isVisible(groupStack, branchStack)) return
       text.split(/\r?\n/).forEach((line, lineIndex, lines) => {
         if (line) output.push(<span key={`${key}-${lineIndex}`} className={`inline-branch-content${activeBranchClass()}`}>{line}</span>)
         if (lineIndex < lines.length - 1) {
@@ -208,6 +285,10 @@ function App() {
       if (start > cursor) addText(template.slice(cursor, start), `text-${index}`)
       const tokenDepth = command === '/if' ? Math.max(depth - 1, 0) : depth
       if (command.startsWith('$')) {
+        if (!isVisible(groupStack, branchStack)) {
+          cursor = start + raw.length
+          return
+        }
         const name = command.slice(1)
         const value = valueMap[name]
         output.push(<span key={`variable-${index}`} className={`inline-branch-content${activeBranchClass()}`}><span className="variable-chip">{finalView && value ? value : raw}{finalView && value ? <small>{raw}</small> : null}</span></span>)
@@ -228,12 +309,42 @@ function App() {
         const isCurrentBranch = groupId === hoveredGroup
           ? branchId === hoveredBranch
           : groupIndex >= 0 && branchStack[groupIndex] === hoveredBranch
+        const isBranchBoundary = command.startsWith('elseif ') || command === 'else'
+        const nextGroups = [...groupStack]
+        const nextBranches = [...branchStack]
+        if (command.startsWith('if ')) {
+          nextGroups.push(`group-${groupNumber - 1}`)
+          nextBranches.push(`branch-${branchNumber - 1}`)
+        } else if (isBranchBoundary) {
+          nextBranches[nextBranches.length - 1] = branchId ?? ''
+        }
+        const branchRemoved = resolvedGroups.has(groupId ?? '') || !isVisible(nextGroups, nextBranches)
+        const canRemove = Boolean(Object.values(valueMap).some((value) => value !== '')) && branchMeta.statuses.get(branchId ?? '') === false
+        if (branchRemoved) {
+          if (command.startsWith('if ')) {
+            groupStack.push(`group-${groupNumber - 1}`)
+            branchStack.push(`branch-${branchNumber - 1}`)
+            depth += 1
+          }
+          if (command.startsWith('elseif ') || command === 'else') {
+            branchStack.pop()
+            branchStack.push(`branch-${branchNumber - 1}`)
+          }
+          if (command === '/if') {
+            groupStack.pop()
+            branchStack.pop()
+            depth = Math.max(depth - 1, 0)
+          }
+          cursor = start + raw.length
+          return
+        }
         const status = command.startsWith('if ') || command.startsWith('elseif ')
           ? evaluateCondition(command.replace(/^if |^elseif /, ''), valueMap)
           : null
         output.push(<span key={`condition-${index}`} className={`inline-condition depth-${Math.min(tokenDepth, 3)} ${command === 'else' ? 'inline-else' : ''} ${isBranchTag ? 'branch-trigger' : ''} ${isGroupTagActive ? 'inline-group-active' : ''} ${isGroupTagActive && isCurrentBranch ? 'inline-branch-current' : ''} ${isGroupTagActive && !isCurrentBranch ? 'inline-branch-other' : ''}`} onMouseEnter={() => isBranchTag && (setHoveredGroup(groupId ?? null), setHoveredBranch(branchId ?? null))} onMouseLeave={() => isBranchTag && (setHoveredGroup(null), setHoveredBranch(null))}>
           <span className="condition-raw">{raw}</span>
           {status !== null && <small className={`inline-status status-${status ? 'true' : 'false'}`}>{status ? '满足' : '不满足'}</small>}
+          {canRemove && <button className="remove-branch-button" aria-label="删除不满足的分支" onClick={(event) => { event.stopPropagation(); const group = branchMeta.groupForBranch.get(branchId ?? ''); setRemovedBranches((current) => new Set(current).add(branchId ?? '')); if (group) setResolvedGroups((current) => new Set(current).add(group)) }}>×</button>}
         </span>)
       }
       if (command.startsWith('if ')) {
@@ -257,6 +368,7 @@ function App() {
   }
 
   const updateValue = (name: string, value: string) => {
+    resetRemovedBranches()
     setValues((current) => current.some((item) => item.name === name)
       ? current.map((item) => item.name === name ? { ...item, value } : item)
       : [...current, { name, value }])
@@ -267,7 +379,7 @@ function App() {
       <header className="topbar">
         <div className="brand"><span className="brand-mark">S</span><div><strong>Template Lens</strong><span>邮件模板可读化工具</span></div></div>
         <div className="toolbar">
-          <button onClick={() => setTemplate(exampleTemplate)}>载入示例</button>
+          <button onClick={() => { setTemplate(exampleTemplate); resetRemovedBranches() }}>载入示例</button>
           <button onClick={copyTemplate}>复制原始模板</button>
           <button className="check-button" onClick={runBlankLineCheck}>检查连续空行</button>
         </div>
@@ -280,12 +392,12 @@ function App() {
       <section className={`workspace ${sourceOpen ? '' : 'source-collapsed'}`}>
         {sourceOpen ? <div className="source-panel panel">
           <div className="panel-header"><div><span className="panel-kicker">SOURCE</span><h2>原始模板</h2></div><div className="panel-actions"><span className="panel-meta">Smarty 风格</span><button className="quiet-button" onClick={() => setSourceOpen(false)}>收起原文</button></div></div>
-          <textarea value={template} onChange={(event) => setTemplate(event.target.value)} spellCheck={false} aria-label="原始邮件模板" />
+          <textarea value={template} onChange={(event) => { setTemplate(event.target.value); resetRemovedBranches() }} spellCheck={false} aria-label="原始邮件模板" />
           <div className="source-footer"><span>支持变量、条件、嵌套分支</span><span>{template.length.toLocaleString()} 字符</span></div>
         </div> : <button className="collapsed-source panel" onClick={() => setSourceOpen(true)}><span className="panel-kicker">SOURCE</span><strong>展开原始模板</strong><span>{template.length.toLocaleString()} 字符</span></button>}
         <div className="preview-panel panel">
           <div className="panel-header"><div><span className="panel-kicker">READABLE PREVIEW</span><h2>可读预览</h2></div><button className="quiet-button" onClick={() => setSourceOpen(true)}>显示原文</button></div>
-          {showVariables ? <div className="variables-panel"><div className="variables-heading"><div className="variables-title"><span>变量模拟</span><small>可选，不填写时仅显示结构</small></div><div><div className="view-switch"><button className={!finalView ? 'active' : ''} onClick={() => setFinalView(false)}>变量名</button><button className={finalView ? 'active' : ''} onClick={() => setFinalView(true)}>变量值</button></div><button onClick={syncValues}>同步变量</button><button onClick={() => setShowVariables(false)}>收起</button></div></div><div className="variable-grid">{values.length === 0 ? <span className="empty-state">点击“同步变量”，填写变量值以模拟不同场景</span> : values.map((item) => <label key={item.name}><span>{item.name}</span><input value={item.value} onChange={(event) => updateValue(item.name, event.target.value)} placeholder="未填写" /></label>)}</div></div> : <button className="show-variables" onClick={() => setShowVariables(true)}>展开变量模拟面板</button>}
+          {showVariables ? <div className="variables-panel"><div className="variables-heading"><div className="variables-title"><span>变量模拟</span><small>可选，不填写时仅显示结构</small></div><div><div className="view-switch"><button className={!finalView ? 'active' : ''} onClick={() => setFinalView(false)}>变量名</button><button className={finalView ? 'active' : ''} onClick={() => setFinalView(true)}>变量值</button></div><button onClick={syncValues}>同步变量</button><button onClick={resetRemovedBranches}>恢复分支</button><button onClick={() => setShowVariables(false)}>收起</button></div></div><div className="variable-grid">{values.length === 0 ? <span className="empty-state">点击“同步变量”，填写变量值以模拟不同场景</span> : values.map((item) => <label key={item.name}><span>{item.name}</span><input value={item.value} onChange={(event) => updateValue(item.name, event.target.value)} placeholder="未填写" /></label>)}</div></div> : <button className="show-variables" onClick={() => setShowVariables(true)}>展开变量模拟面板</button>}
           <div className="preview-body">{renderInline()}</div>
           {parsed.warnings.length > 0 && <div className="warnings"><strong>解析提醒</strong>{parsed.warnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
         </div>

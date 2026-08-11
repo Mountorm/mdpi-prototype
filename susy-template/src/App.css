@@ -97,6 +97,9 @@ h1 em { color: #2c78a6; font-style: normal; }
 .inline-condition.inline-branch-other { border-bottom-color: #d28ca4; }
 .branch-trigger { cursor: default; }
 .branch-trigger:hover .condition-raw { color: #1f6689; }
+.remove-branch-button { opacity: 0; margin-left: 4px; padding: 0 4px; border: 1px solid #d89aaa; border-radius: 3px; background: #fff0f4; color: #a34f68; font: 13px/1.1 Arial, sans-serif; vertical-align: 1px; }
+.branch-trigger:hover .remove-branch-button, .remove-branch-button:focus-visible { opacity: 1; }
+.remove-branch-button:hover { border-color: #b9657d; background: #f8dfe8; color: #843b51; }
 .if-card { margin: 10px 0; padding-left: 13px; border-left: 1px dashed #9cb9c7; overflow: hidden; }
 .if-card.level-1 { border-left-color: #b6a6c5; margin-left: 14px; }
 .if-card.level-2 { border-left-color: #c8b37e; margin-left: 14px; }
