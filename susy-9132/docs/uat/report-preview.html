@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AcE Checklist Report — manuscripts-1234567</title>
+<style>
+  :root {
+    --navy: #001a3e;
+    --blue: #0156ce;
+    --ink: #1b3555;
+    --ink2: #344764;
+    --muted: #5f6b7d;
+    --line: #eef0f3;
+    --border: #e1e5ea;
+    --green: #256b41;
+    --green-bg: #e7f4ec;
+    --orange: #9a3d20;
+    --orange-bg: #fdeee7;
+    --gray-bg: #f0f2f5;
+    --sheet-bg: #fafbfe;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: #f0f2f5;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .page { max-width: 960px; margin: 24px auto; padding: 0 16px 40px; }
+
+  /* ---- app shell mock (top bar + sidebar, to simulate the product) ---- */
+  .topbar {
+    position: sticky; top: 0; z-index: 50;
+    display: flex; align-items: center; gap: 20px;
+    height: 56px; padding: 0 20px;
+    background: #fff; border-bottom: 1px solid var(--border);
+  }
+  .topbar .logo { font-weight: 800; color: var(--navy); font-size: 16px; }
+  .topbar .nav { display: flex; gap: 18px; color: var(--muted); font-size: 13px; }
+  .topbar .nav span.active { color: var(--blue); font-weight: 600; border-bottom: 2px solid var(--blue); padding-bottom: 16px; }
+  .topbar .user { margin-left: auto; color: var(--ink2); font-size: 13px; font-weight: 600; }
+  .toolbar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 20px; background: #fff; border-bottom: 1px solid var(--border);
+  }
+  .toolbar .ms-id { font-weight: 700; color: var(--ink); font-size: 14px; }
+  .toolbar .title { display: flex; align-items: center; gap: 7px; color: var(--ink); font-weight: 600; font-size: 14px; margin-left: 16px; }
+  .toolbar .title svg { width: 17px; height: 17px; fill: var(--blue); }
+
+  /* ---- report sheet ---- */
+  .sheet { background: #fff; border: 1px solid var(--border); border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,.06); overflow: hidden; }
+  .rp-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 22px 30px 14px; border-bottom: 2px solid var(--navy); }
+  .rp-header .logo { height: 30px; }
+  .rp-header-right { text-align: right; }
+  .rp-report-title { font-size: 21px; font-weight: 700; color: var(--navy); }
+  .rp-report-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .rp-meta { padding: 12px 30px 10px; background: #f8f9fd; border-bottom: 1px solid var(--line); }
+  .rp-meta-title { font-size: 15px; font-weight: 600; color: var(--ink); margin: 0 0 8px; line-height: 1.4; }
+  .rp-meta-row { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; }
+  .rp-meta-item { display: flex; flex-direction: column; }
+  .rp-meta-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; }
+  .rp-meta-value { font-weight: 600; color: var(--ink); }
+  .rp-meta-summary { margin-left: auto; display: flex; gap: 8px; }
+  .pill { display: inline-flex; align-items: center; height: 20px; padding: 0 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+  .pill.passed { color: var(--green); background: var(--green-bg); }
+  .pill.warning { color: var(--orange); background: var(--orange-bg); }
+
+  /* controls (screen only) */
+  .controls { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 10px 30px; border-bottom: 1px solid var(--line); }
+  .seg { display: inline-flex; }
+  .seg button { height: 28px; padding: 0 12px; border: 1px solid #c8cdd3; background: #fff; color: var(--ink2); font: inherit; font-size: 12px; cursor: pointer; }
+  .seg button:first-child { border-radius: 4px 0 0 4px; }
+  .seg button:last-child { border-radius: 0 4px 4px 0; }
+  .seg button.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .controls .btn { height: 28px; padding: 0 12px; border: 1px solid #c8cdd3; border-radius: 4px; background: #fff; color: var(--ink2); font: inherit; font-size: 12px; cursor: pointer; }
+  .controls .btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+  /* body */
+  .rp-body { padding: 14px 30px 8px; }
+  .group { margin-bottom: 18px; }
+  .group-title { display: flex; align-items: center; gap: 8px; margin: 0 0 6px; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+  .group-title.warning { color: var(--orange); }
+  .group-title.passed { color: var(--green); }
+  .group-title.neutral { color: var(--muted); }
+  .group-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px; font-size: 11px; background: var(--gray-bg); color: var(--muted); }
+
+  /* item rows */
+  .row { border: 1px solid var(--line); border-radius: 6px; padding: 10px 14px; margin-bottom: 9px; }
+  .row-title-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .row-title { font-size: 13px; font-weight: 600; color: var(--ink2); }
+  .badge { display: inline-flex; align-items: center; height: 19px; padding: 0 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .badge.passed { color: var(--green); background: var(--green-bg); }
+  .badge.warning { color: var(--orange); background: var(--orange-bg); }
+
+  /* detection result block */
+  .det { margin-top: 8px; border: 1px solid var(--line); border-radius: 6px; background: var(--sheet-bg); padding: 8px 12px; }
+  .det-summary { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .det-label { font-size: 11px; color: var(--muted); min-width: 70px; }
+  .det-summary-text { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .det-toggle { margin-left: auto; display: inline-flex; align-items: center; gap: 2px; border: none; background: transparent; color: var(--blue); font: inherit; font-size: 12px; cursor: pointer; }
+  .det-detail { margin-top: 7px; padding-top: 7px; border-top: 1px dashed #e1e5ea; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .det-detail.hidden { display: none; }
+  .det-text { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .det-link { color: var(--blue); font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 2px; }
+  .ref-list { list-style: none; margin: 0; padding: 0; flex-basis: 100%; }
+  .ref-list li { padding: 3px 0; font-size: 12.5px; color: var(--ink2); }
+  .ref-list .num { display: inline-block; min-width: 34px; font-weight: 600; color: var(--muted); }
+  /* AI donut */
+  .donut-wrap { display: flex; align-items: center; gap: 16px; }
+  .donut { width: 72px; height: 72px; position: relative; }
+  .donut svg { width: 100%; height: 100%; }
+  .legend { display: flex; flex-direction: column; gap: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink2); }
+  .legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .legend .g { background: var(--green); }
+  .legend .y { background: #e0a34e; }
+  .legend .r { background: #c7352d; }
+
+  /* AE note */
+  .ae-note { margin: 7px 0 0; padding: 7px 10px; border-radius: 4px; background: #f8f9fd; font-size: 12px; color: var(--muted); }
+  .ae-note b { color: var(--ink2); font-weight: 600; }
+
+  .rp-footer { display: flex; justify-content: space-between; padding: 12px 30px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+
+  .notice { margin-top: 18px; padding: 12px 16px; border: 1px dashed var(--border); border-radius: 6px; background: #fff; font-size: 12px; color: var(--muted); }
+  @media print { .topbar, .toolbar, .controls { display: none; } body { background: #fff; } }
+</style>
+</head>
+<body>
+
+<!-- ===== app shell mock ===== -->
+<header class="topbar">
+  <span class="logo">MDPI</span>
+  <nav class="nav">
+    <span>Journals</span><span>Topics</span><span>Information</span><span>Author Services</span><span class="active">SuSy</span><span>About</span>
+  </nav>
+  <span class="user">hongqiang.cui@mdpi.com</span>
+</header>
+
+<div class="toolbar">
+  <span class="ms-id">manuscripts-1234567</span>
+  <span class="title">
+    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+    AcE Checklist Report
+  </span>
+</div>
+
+<!-- ===== report sheet ===== -->
+<div class="page">
+<div class="sheet">
+
+  <header class="rp-header">
+    <div><img class="logo" src="https://pub.mdpi-res.com/img/design/mdpi-pub-logo-black-small1.svg?da3a8dcae975a41c" alt="MDPI" onerror="this.style.display='none'" /></div>
+    <div class="rp-header-right">
+      <div class="rp-report-title">AcE Checklist Report</div>
+      <div class="rp-report-sub">Academic Editor pre-check summary</div>
+    </div>
+  </header>
+
+  <section class="rp-meta">
+    <p class="rp-meta-title">Recent Advances in Biosensors for Point-of-Care Diagnostics</p>
+    <div class="rp-meta-row">
+      <div class="rp-meta-item"><span class="rp-meta-label">Manuscript ID</span><span class="rp-meta-value">manuscripts-1234567</span></div>
+      <div class="rp-meta-item"><span class="rp-meta-label">Journal</span><span class="rp-meta-value">Reports</span></div>
+      <div class="rp-meta-item"><span class="rp-meta-label">Submitted</span><span class="rp-meta-value">2026-08-10</span></div>
+      <div class="rp-meta-summary">
+        <span class="pill passed">6 passed</span>
+        <span class="pill warning">4 warning</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="controls">
+    <div class="seg">
+      <button class="active" id="segAttention">By attention</button>
+      <button id="segCategory">By category</button>
+    </div>
+    <div>
+      <button class="btn" id="btnPrint">Print / Save as PDF</button>
+    </div>
+  </div>
+
+  <!-- ===== attention view ===== -->
+  <div class="rp-body" id="viewAttention">
+
+    <section class="group">
+      <h3 class="group-title warning">Attention needed <span class="group-count">4</span></h3>
+
+      <!-- Special Issue Scope — processing -->
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Special Issue Scope Match</span>
+          <span class="badge warning">Warning</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">Detection</span>
+            <span class="det-summary-text">—</span>
+          </div>
+        </div>
+        <p class="ae-note"><b>Editor note:</b> The Special Issue scope check is still running in the background; the result is not available yet. Could you advise whether to proceed with the current SI assignment based on the manuscript content?</p>
+      </div>
+
+      <!-- AI Generated Content -->
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">AI Generated Content</span>
+          <span class="badge warning">Warning</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">AI ratio</span>
+            <span class="det-summary-text">Human 55% · Maybe AI 30% · Likely AI 15%</span>
+            <button class="det-toggle" onclick="toggleDet(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>Details</button>
+          </div>
+          <div class="det-detail hidden" data-content="donut"></div>
+        </div>
+        <p class="ae-note"><b>Editor note:</b> 15% of the manuscript is flagged as likely AI-generated. I have reviewed the flagged sections; the phrasing in the methods section reads unusually uniform. Please advise.</p>
+      </div>
+
+      <!-- Image Manipulation -->
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Image Manipulation Detection</span>
+          <span class="badge warning">Warning</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">Detection</span>
+            <span class="det-summary-text">Alert</span>
+            <a class="det-link" href="#" onclick="return false;">View report ›</a>
+          </div>
+        </div>
+        <p class="ae-note"><b>Editor note:</b> Proofig raised an alert on Figure 3 — possible duplication. I could not fully verify; requesting AcEd guidance.</p>
+      </div>
+
+      <!-- Unverifiable References -->
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Unverifiable References</span>
+          <span class="badge warning">Warning</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">Found</span>
+            <span class="det-summary-text">7 references</span>
+            <button class="det-toggle" onclick="toggleDet(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>Details</button>
+          </div>
+          <div class="det-detail hidden" data-content="refs"></div>
+        </div>
+        <p class="ae-note"><b>Editor note:</b> 7 references could not be verified against any index. List is provided; the high count may indicate citation issues.</p>
+      </div>
+    </section>
+
+    <section class="group">
+      <h3 class="group-title passed">Passed <span class="group-count">6</span></h3>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Word Count</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">8,542</span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Figures Count</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">5</span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Tables Count</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">3</span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Journal Scope Match</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det"><div class="det-summary"><span class="det-label">Detection</span><span class="det-summary-text">Match</span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Article Type</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det"><div class="det-summary"><span class="det-label">Article type</span><span class="det-summary-text">Research Article</span></div></div>
+      </div>
+
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">iThenticate</span><span class="badge passed">Passed</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">Similarity</span>
+            <span class="det-summary-text">24%</span>
+            <a class="det-link" href="#" onclick="return false;">View full report ›</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="group">
+      <h3 class="group-title neutral">Manuscript Information <span class="group-count">1</span></h3>
+      <div class="row">
+        <div class="row-title-line">
+          <span class="row-title">Out of Scope References</span><span class="badge warning">Warning</span>
+        </div>
+        <div class="det">
+          <div class="det-summary">
+            <span class="det-label">Found</span>
+            <span class="det-summary-text">3 references</span>
+            <button class="det-toggle" onclick="toggleDet(this)"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>Details</button>
+          </div>
+          <div class="det-detail" data-content="refs2"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== category view ===== -->
+  <div class="rp-body" id="viewCategory" style="display:none">
+    <section class="group">
+      <h3 class="group-title neutral">Manuscript Information <span class="group-count">5</span></h3>
+      <div class="row"><div class="row-title-line"><span class="row-title">Word Count</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">8,542</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Figures Count</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">5</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Tables Count</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Value</span><span class="det-summary-text">3</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Journal Scope Match</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Detection</span><span class="det-summary-text">Match</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Special Issue Scope Match</span><span class="badge warning">Warning</span></div><div class="det"><div class="det-summary"><span class="det-label">Detection</span><span class="det-summary-text">—</span></div></div><p class="ae-note"><b>Editor note:</b> Scope check still running; result not available.</p></div>
+    </section>
+    <section class="group">
+      <h3 class="group-title neutral">Reference Analysis <span class="group-count">2</span></h3>
+      <div class="row"><div class="row-title-line"><span class="row-title">Out of Scope References</span><span class="badge warning">Warning</span></div><div class="det"><div class="det-summary"><span class="det-label">Found</span><span class="det-summary-text">3 references</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Unverifiable References</span><span class="badge warning">Warning</span></div><div class="det"><div class="det-summary"><span class="det-label">Found</span><span class="det-summary-text">7 references</span></div></div></div>
+    </section>
+    <section class="group">
+      <h3 class="group-title neutral">Ethical Issues <span class="group-count">4</span></h3>
+      <div class="row"><div class="row-title-line"><span class="row-title">iThenticate</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Similarity</span><span class="det-summary-text">24%</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">AI Generated Content</span><span class="badge warning">Warning</span></div><div class="det"><div class="det-summary"><span class="det-label">AI ratio</span><span class="det-summary-text">Human 55% · Maybe AI 30% · Likely AI 15%</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Image Manipulation Detection</span><span class="badge warning">Warning</span></div><div class="det"><div class="det-summary"><span class="det-label">Detection</span><span class="det-summary-text">Alert</span></div></div></div>
+      <div class="row"><div class="row-title-line"><span class="row-title">Article Type</span><span class="badge passed">Passed</span></div><div class="det"><div class="det-summary"><span class="det-label">Article type</span><span class="det-summary-text">Research Article</span></div></div></div>
+    </section>
+  </div>
+
+  <footer class="rp-footer">
+    <span>AcE Checklist Report · Generated by Assistant Editor</span>
+    <span>2026-08-12 14:32</span>
+  </footer>
+</div>
+
+<div class="notice">
+  <b>Static snapshot for UAT research.</b> This is a realistic mock of the AcE report page — the actual product is a Vue app; this HTML reproduces its look and interactions (grouping toggle, expandable detection details, print) for review purposes only.
+</div>
+</div>
+
+<script>
+function toggleDet(btn) {
+  const detail = btn.closest('.det').querySelector('.det-detail');
+  const hidden = detail.classList.toggle('hidden');
+  btn.innerHTML = hidden
+    ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z"/></svg>Details'
+    : '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M16.59 15.41L12 10.83 7.41 15.41 6 14l6-6 6 6z"/></svg>Less';
+}
+// fill detail content when expanded
+document.querySelectorAll('.det-detail[data-content]').forEach(function (el) {
+  var c = el.getAttribute('data-content');
+  if (c === 'donut') {
+    el.innerHTML =
+      '<div class="donut-wrap">' +
+      '<div class="donut"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#f0f2f5" stroke-width="14"/>' +
+      '<circle cx="40" cy="40" r="32" fill="none" stroke="#256b41" stroke-width="14" stroke-dasharray="110.6 201.1" stroke-dashoffset="0" transform="rotate(-90 40 40)"/>' +
+      '<circle cx="40" cy="40" r="32" fill="none" stroke="#e0a34e" stroke-width="14" stroke-dasharray="60.3 201.1" stroke-dashoffset="-110.6" transform="rotate(-90 40 40)"/>' +
+      '<circle cx="40" cy="40" r="32" fill="none" stroke="#c7352d" stroke-width="14" stroke-dasharray="30.2 201.1" stroke-dashoffset="-170.9" transform="rotate(-90 40 40)"/></svg></div>' +
+      '<div class="legend"><span><i class="g"></i>Human 55%</span><span><i class="y"></i>Maybe AI 30%</span><span><i class="r"></i>Likely AI 15%</span></div>' +
+      '</div>';
+  } else if (c === 'refs') {
+    el.innerHTML = '<ul class="ref-list">' +
+      '<li><span class="num">#4</span>Garcia et al., 2019</li>' +
+      '<li><span class="num">#22</span>Wang &amp; Li, 2021</li>' +
+      '<li><span class="num">#33</span>Kim et al., 2020</li>' +
+      '<li><span class="num">#41</span>Alvarez et al., 2018</li>' +
+      '<li><span class="num">#47</span>Novak, 2022</li>' +
+      '<li><span class="num">#55</span>Tanaka et al., 2021</li>' +
+      '<li><span class="num">#60</span>Muller et al., 2019</li></ul>';
+  } else if (c === 'refs2') {
+    el.innerHTML = '<ul class="ref-list">' +
+      '<li><span class="num">#12</span>Smith et al., 2020</li>' +
+      '<li><span class="num">#18</span>Jones &amp; Lee, 2021</li>' +
+      '<li><span class="num">#27</span>Chen et al., 2022</li></ul>';
+  }
+});
+// grouping toggle
+function seg(which) {
+  document.getElementById('segAttention').classList.toggle('active', which === 'attention');
+  document.getElementById('segCategory').classList.toggle('active', which === 'category');
+  document.getElementById('viewAttention').style.display = which === 'attention' ? 'block' : 'none';
+  document.getElementById('viewCategory').style.display = which === 'category' ? 'block' : 'none';
+}
+document.getElementById('segAttention').onclick = function(){ seg('attention'); };
+document.getElementById('segCategory').onclick = function(){ seg('category'); };
+document.getElementById('btnPrint').onclick = function(){ window.print(); };
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+/* ============================================
+   Susy theme variables (extracted from the legacy static snapshot)
+   ============================================ */
+:root {
+  /* Layout colors */
+  --next-bg-menuBar: #ffffff;
+  --next-bg-menuBar-light-1: #ffffff;
+  --next-bg-menuBarColor: #000000;
+  --next-bg-menuBarActiveColor: #e6eefa;
+  --next-bg-topBar: #001a3e;
+  --next-bg-topBarBorder: #001a3e;
+  --next-bg-topBarColor: #ffffff;
+  --next-bg-columnsMenuBar: #545c64;
+  --next-bg-columnsMenuBarColor: #e6e6e6;
+  --next-bg-main-color: #f8f9fd;
+  --next-layout-pd: 24px;
+  --next-border-color-light: #f1f2f3;
+  --next-color-user-hover: rgba(0, 0, 0, 0.04);
+  --next-color-menu-hover: rgba(0, 0, 0, 0.2);
+
+  /* Element Plus menu / layout params (matches snapshot) */
+  --el-menu-base-level-padding: 16px;
+  --el-button-small-size: 32px;
+  --next-width-breadcrumb-left: 24px;
+
+  /* SuSy primary #0156ce (overrides Element Plus default #409eff) */
+  --el-color-primary: #0156ce;
+  --el-color-primary-dark-2: #004db9;
+  --el-color-primary-light-1: #1a66d2;
+  --el-color-primary-light-2: #3377d7;
+  --el-color-primary-light-3: #4d88dc;
+  --el-color-primary-light-4: #6699e1;
+  --el-color-primary-light-5: #80aae6;
+  --el-color-primary-light-6: #99bbeb;
+  --el-color-primary-light-7: #b2ccf0;
+  --el-color-primary-light-8: #ccddf5;
+  --el-color-primary-light-9: #e5eefa;
+  --el-menu-active-color: #0156ce;
+}
+
+/* el-tag / el-button pinned to SuSy blue */
+.el-tag.el-tag--primary {
+  --el-tag-text-color: #0156ce;
+  --el-tag-bg-color: #e5eefa;
+  --el-tag-border-color: #ccddf5;
+  --el-tag-hover-color: #0156ce;
+  color: #0156ce;
+}
+
+.el-button--primary {
+  --el-button-bg-color: #0156ce;
+  --el-button-border-color: #0156ce;
+  --el-button-hover-bg-color: #1a66d2;
+  --el-button-hover-border-color: #1a66d2;
+  --el-button-active-bg-color: #004db9;
+  --el-button-active-border-color: #004db9;
+}

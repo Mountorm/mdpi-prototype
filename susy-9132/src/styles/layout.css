@@ -1,0 +1,273 @@
+/* ============================================
+   Susy layout shell styles
+   Extracted from the legacy static snapshot (element-layout.css and friends)
+   ============================================ */
+
+/* Global box model: width includes padding (fixes .layout-pd overflow) */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* ---- Element Plus base container baseline (matches snapshot) ---- */
+.el-container {
+  box-sizing: border-box;
+  display: flex;
+  flex: 1;
+  flex-basis: auto;
+  flex-direction: row;
+  min-width: 0;
+}
+.el-container.is-vertical { flex-direction: column; }
+.el-header {
+  --el-header-padding: 0 20px;
+  --el-header-height: 60px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  height: var(--el-header-height);
+  padding: var(--el-header-padding);
+}
+.el-main {
+  --el-main-padding: 20px;
+  box-sizing: border-box;
+  display: block;
+  flex: 1;
+  flex-basis: auto;
+  overflow: auto;
+  padding: var(--el-main-padding);
+}
+.el-aside {
+  box-sizing: border-box;
+  flex-shrink: 0;
+  overflow: auto;
+  width: var(--el-aside-width, 300px);
+}
+
+/* ---- Overall container ---- */
+.layout-container { width: 100%; height: 100%; }
+.layout-container .layout-pd,
+.layout-container .layout-padding { padding: 0 var(--next-layout-pd) 10px !important; }
+.layout-container .layout-title { margin: 0 0 20px; font-size: 30px; font-weight: 700; }
+.layout-container .layout-pd-outline { padding: 24px 24px 16px; background: #fff; border-radius: 16px; }
+.layout-container .layout-flex,
+.layout-container .layout-padding-auto,
+.layout-container .layout-padding,
+.layout-container .layout-main .layout-main-scroll .layout-parent,
+.layout-container .layout-main .layout-main-scroll { display: flex; flex-direction: column; flex: 1; }
+.layout-container .layout-aside {
+  background: var(--next-bg-menuBar);
+  box-shadow: 2px 0 6px #00152903;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden !important;
+}
+.layout-container .layout-aside .el-scrollbar__view { overflow: hidden; }
+.layout-container .layout-header { background-color: #001a3e; padding: 0 !important; height: auto !important; }
+.layout-container .layout-main {
+  padding: 0 !important;
+  overflow: hidden;
+  width: 100%;
+  background-color: var(--next-bg-main-color);
+  display: flex;
+  flex-direction: column;
+}
+.layout-container .layout-main .layout-main-scroll .layout-parent { position: relative; }
+.layout-container .layout-el-aside-br-color { border-right: 1px solid var(--el-border-color-light, #ebeef5); }
+.layout-container .layout-aside-pc-240 { width: 240px !important; transition: width 0.3s ease; }
+.layout-container .layout-mian-height-60 { height: calc(100vh - 60px); }
+.layout-container .el-scrollbar { width: 100%; }
+
+/* ---- Utility classes ---- */
+.flex-center { display: flex; flex-direction: column; width: 100%; overflow: hidden; }
+.flex-auto { flex: 1; overflow: hidden; }
+.w100 { width: 100% !important; }
+.h100 { height: 100% !important; }
+.pr35 { padding-right: 35px !important; }
+.outSide { display: flex; height: 100%; width: 100%; }
+
+/* ---- Top bar ---- */
+.layout-navbars-container { display: flex; flex-direction: column; width: 100%; height: 100%; }
+.layout-navbars-breadcrumb-index {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  background: var(--next-bg-topBar);
+  border-bottom: 1px solid var(--next-bg-topBarBorder);
+  font-size: 14px;
+}
+
+/* Top bar logo */
+.layout-logo {
+  width: 220px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: #00152905 0 1px 4px;
+  color: var(--el-color-primary);
+  font-size: 16px;
+  cursor: pointer;
+  animation: logoAnimation 0.3s ease-in-out;
+  margin-right: 20px;
+}
+.layout-logo-medium-img { width: 90px; margin-right: 60px; }
+.sidebar-logo-link { display: flex; align-items: center; justify-content: center; }
+
+/* Top bar menu items */
+.menu-item {
+  position: relative;
+  margin: 0 20px;
+  color: #fff;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.menu-item.active { color: #528cde; }
+.menu-item::after {
+  content: "";
+  width: 0;
+  display: block;
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%);
+  height: 2px;
+  background: #528cde;
+  transition: all 0.2s;
+}
+.menu-item.active::after { width: 100%; }
+
+/* Top bar user area */
+.layout-navbars-breadcrumb-user { display: flex; align-items: center; justify-content: flex-end; }
+.layout-navbars-breadcrumb-user-link { height: 100%; display: flex; align-items: center; white-space: nowrap; }
+.layout-navbars-breadcrumb-user-link-shortName {
+  width: 30px;
+  height: 30px;
+  background: var(--el-menu-active-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5px;
+  color: #fff;
+}
+.layout-navbars-breadcrumb-user { color: var(--next-bg-topBarColor); }
+
+/* ---- Breadcrumb ---- */
+.layout-navbars-breadcrumb {
+  height: 51px;
+  display: flex;
+  align-items: center;
+  padding-left: var(--next-width-breadcrumb-left);
+}
+.layout-navbars-breadcrumb .el-breadcrumb__inner { font-weight: unset; color: #626f86; }
+.layout-navbars-breadcrumb .el-breadcrumb__inner a { color: #626f86; }
+.layout-navbars-breadcrumb .el-breadcrumb__inner:hover,
+.layout-navbars-breadcrumb .el-breadcrumb__inner a:hover { color: var(--el-color-primary) !important; }
+.layout-navbars-breadcrumb .layout-navbars-breadcrumb-span { display: flex; opacity: 0.9; color: var(--el-color-primary); }
+.layout-navbars-breadcrumb .el-breadcrumb__separator { opacity: 0.7; color: #626f86; }
+
+/* ---- Sidebar menu ---- */
+.collapase-bottom {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  border-top: 1px solid #dcdfe4;
+  padding: 12px 15px;
+}
+.collapase-bottom .collapase-btn { display: flex; align-items: center; }
+.collapase-bottom .fold_txt { margin-left: 10px; }
+.layout-navbars-breadcrumb-icon.is-active { transform: rotate(180deg); }
+
+/* el-menu: transparent bg, no border (legacy snapshot inline style) */
+.el-menu {
+  --el-menu-bg-color: transparent;
+  --el-menu-hover-bg-color: rgba(0, 0, 0, 0.2);
+  border: none;
+}
+
+/* Base typography for menu items and sub-menu titles */
+.el-menu-item,
+.el-sub-menu__title {
+  font-size: 14px;
+}
+
+/* Hover state (legacy: #e6eefa) */
+.el-menu-item:hover,
+.el-sub-menu__title:hover { background-color: var(--next-bg-menuBarActiveColor); }
+
+/* AcE Checklist item active state (legacy: #e6eefa bg + #0156ce text) */
+.el-menu-item.is-active {
+  background-color: var(--next-bg-menuBarActiveColor) !important;
+  color: var(--el-menu-active-color);
+}
+
+/* ---- Main content area ---- */
+.fix-head .layout-main-scroll,
+.fix-head .layout-parent,
+.fix-head .layout-pd { height: 100%; overflow: hidden; }
+.fix-head .layout-pd-outline { height: calc(100% - 54px); overflow: auto; }
+.layout-pd-outline { min-height: 0 !important; overflow: hidden !important; }
+
+/* Option Settings submenu — legacy title look, but NO active highlight */
+.el-sub-menu__title {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  padding: 0 16px !important;
+  margin: 0;
+  color: #303133;
+  white-space: nowrap;
+}
+.el-sub-menu__title .md-icon { margin-right: 5px; flex-shrink: 0; }
+/* No selected state for the group title */
+.el-sub-menu.is-active .el-sub-menu__title {
+  background-color: transparent !important;
+  color: #303133;
+}
+/* Hide the built-in EP arrow; use the Google arrow instead */
+.el-sub-menu__icon-arrow { display: none; }
+.el-sub-menu__title .group-arrow {
+  margin-left: auto;
+  margin-right: 0;
+  transform: rotate(0deg);
+  color: #303133;
+}
+.el-sub-menu.is-opened .el-sub-menu__title .group-arrow { transform: rotate(180deg); }
+
+/* AcE Checklist menu item inside the submenu — level 1 indent (36px), 56px height */
+.el-menu--inline .el-menu-item {
+  height: 56px;
+  line-height: 56px;
+  padding-left: 36px !important;
+  font-size: 14px;
+}
+
+/* ---- Collapsed sidebar (Fold button) ---- */
+.layout-aside-pc-54 { width: 54px !important; transition: width 0.3s ease; }
+.layout-aside-pc-54 .el-menu--collapse { width: 100%; }
+.layout-aside-pc-54 .el-sub-menu__title { justify-content: center; padding: 0 !important; }
+.layout-aside-pc-54 .el-sub-menu__title > span,
+.layout-aside-pc-54 .el-sub-menu__title .group-arrow { display: none; }
+.layout-aside-pc-54 .collapase-bottom { justify-content: center; padding: 12px 0; }
+.layout-aside-pc-54 .fold_txt { display: none; }
+
+/* Hide breadcrumb on narrow screens (matches snapshot) */
+@media screen and (max-width: 768px) {
+  .layout-navbars-breadcrumb-hide { display: none; }
+}
+
+/* Full-screen layout baseline (matches snapshot) */
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
