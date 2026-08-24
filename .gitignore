@@ -28,3 +28,6 @@ __v0_*
 
 # TypeScript build info
 *.tsbuildinfo
+
+# Local Claude settings (secrets)
+.claude/settings.local.json
