@@ -114,6 +114,8 @@ npx wrangler deploy          # 读 CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID
   ```
 - dashboard：Worker → Settings → Domains & Routes → Custom Domain。
 
+> Worker 自定义域名由 Cloudflare **自动创建 DNS**（`AAAA -> 100::` 哨兵记录），与 Pages 不同，**无需手动建 CNAME**。
+
 ## 上线验证
 
 ```bash

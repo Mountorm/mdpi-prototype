@@ -78,7 +78,7 @@ mdpi-prototype/
 子目录含 `wrangler.toml`（如 susy-8182 mock-api-service）：
 1. 在子目录内 `npx wrangler login` 或确保 `CLOUDFLARE_API_TOKEN` 已配置。
 2. `npx wrangler deploy`（默认读子目录 `wrangler.toml`）。
-3. 自定义域名：在 `wrangler.toml` 的 `routes` 里加 `{ pattern = "{子目录名}.mdpi.cloud", zone_name = "mdpi.cloud", custom_domain = true }` 后重新 deploy；或在 dashboard 的 Worker → Settings → Domains & Routes 里添加。**注意 Worker 名（wrangler.toml 的 `name`）与目录名、域名可以不同**。
+3. 自定义域名：在 `wrangler.toml` 的 `routes` 里加 `{ pattern = "{子目录名}.mdpi.cloud", zone_name = "mdpi.cloud", custom_domain = true }` 后重新 deploy；或在 dashboard 的 Worker → Settings → Domains & Routes 里添加。**注意 Worker 名（wrangler.toml 的 `name`）与目录名、域名可以不同**。Worker 自定义域名由 Cloudflare 自动创建 DNS（`AAAA -> 100::` 哨兵记录，susy-8182 就是如此），**无需像 Pages 那样手动建 CNAME**。
 4. 验证：`curl -I https://{子目录名}.mdpi.cloud`。
 
 ## 汇报格式
