@@ -53,7 +53,20 @@ curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$CLOUDFLARE_ACCOU
   -H "Content-Type: application/json" \
   -d '{"name": "susy-XXXX.mdpi.cloud"}'
 ```
-成功时 API 会自动创建 DNS 记录（zone 需在账户内）。
+> ⚠️ **API 添加域名不会自动创建 DNS 记录**（实测确认），域名会一直停在 `pending`。需显式创建 CNAME：
+
+```bash
+# 1. 取 zone id
+ZONE_ID=$(curl -s "https://api.cloudflare.com/client/v4/zones?name=mdpi.cloud" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" | jq -r '.result[0].id')
+# 2. 创建 CNAME：{子目录名}.mdpi.cloud -> {子目录名}.pages.dev
+curl -s -X POST "https://api.cloudflare.com/client/v4/zones/$ZONE_ID/dns_records" \
+  -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"type": "CNAME", "name": "susy-XXXX.mdpi.cloud", "content": "susy-XXXX.pages.dev", "proxied": true, "ttl": 1}'
+```
+
+> 添加域名后再建 CNAME，域名状态会从 `pending` 变为 `active`。zone 需在账户内且为 Cloudflare 权威 DNS。
 
 ### 查看项目 / 构建列表（验证用）
 

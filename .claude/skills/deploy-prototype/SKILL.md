@@ -49,7 +49,7 @@ mdpi-prototype/
 创建项目时一并设置 git 连接、根目录、构建命令、输出目录。**构建命令和输出目录必须与本地验证结果一致**。命令模板见 api-commands.md。创建成功后 CF 会用当前 `main` 分支触发首次构建。
 
 ### 步骤 4 · 添加自定义域名
-`POST .../pages/projects/{project_name}/domains`，域名 = `{子目录名}.mdpi.cloud`。若提示域名已有 DNS 记录或 zone 不存在，按 risks.md 处理。
+`POST .../pages/projects/{project_name}/domains`，域名 = `{子目录名}.mdpi.cloud`。**注意：API 添加域名不会自动创建 DNS 记录（实测确认），还需显式创建 CNAME `{子目录名}.mdpi.cloud → {子目录名}.pages.dev`**，命令见 api-commands.md。若提示域名已有 DNS 记录或 zone 不存在，按 risks.md 处理。
 
 ### 步骤 5 · 配置监视路径（Build watch paths）
 用 API 写入 `source.config.path_includes = ["{子目录名}/*"]`（`*` 会跨 `/` 匹配子目录内所有文件）。**创建项目时可在 `source.config` 里一并写入**，或事后用 PATCH 更新。效果：只有该子目录内有变更才触发构建，其他项目的改动不会触发本项目重建。命令见 api-commands.md。

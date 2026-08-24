@@ -20,8 +20,9 @@
 - 未配置时默认 Include `*`（全仓库变更都会触发本项目构建）——这正是要避免的"全盘重建"，**所以每个新项目都必须写入监视路径**。
 
 ### 4. 域名约束
-- 自定义域名只能在**账户内已存在的 zone** 上添加；`mdpi.cloud` 必须在同一账户。
-- 域名若已有 CNAME 记录会添加失败，需要先处理已有记录。
+- 自定义域名只能在**账户内已存在的 zone** 上添加；`mdpi.cloud` 必须在同一账户，且 zone 需为 Cloudflare 权威 DNS。
+- **API 添加域名不会自动创建 DNS 记录**（实测确认），域名会停在 `pending`；必须显式创建 CNAME `{目录名}.mdpi.cloud → {目录名}.pages.dev`（proxied=true）。见 api-commands.md。
+- 域名若已有 CNAME 记录（重复添加）会冲突，需要先处理已有记录。
 - 项目名/目录名决定域名：`{目录名}.mdpi.cloud`，命名要一致。
 
 ### 5. index.html 链接必须 https
