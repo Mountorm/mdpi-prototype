@@ -1,0 +1,290 @@
+meta:
+  profile: default
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1440x920
+  title: SuSy 与 Ethicality 审稿报告投递与检测结果时序图
+nodes:
+  - id: susy
+    label: SuSy
+    type: service
+    bounds:
+      x: 220
+      'y': 56
+      width: 200
+      height: 56
+  - id: eth
+    label: Ethicality
+    type: service
+    bounds:
+      x: 860
+      'y': 56
+      width: 200
+      height: 56
+  - id: lifeline-susy
+    label: ' '
+    type: memory
+    bounds:
+      x: 318
+      'y': 120
+      width: 4
+      height: 760
+    style:
+      fillColor: none
+      strokeColor: '#94A3B8'
+      strokeWidth: 2
+  - id: lifeline-eth
+    label: ' '
+    type: memory
+    bounds:
+      x: 958
+      'y': 120
+      width: 4
+      height: 760
+    style:
+      fillColor: none
+      strokeColor: '#94A3B8'
+      strokeWidth: 2
+  - id: note-trigger
+    label: 触发条件：SuSy 收到新的审稿报告，或已有审稿报告被修改
+    type: text
+    bounds:
+      x: 340
+      'y': 12
+      width: 600
+      height: 32
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 15
+      italic: true
+      fontColor: '#475569'
+  - id: a1-susy
+    label: ' '
+    type: service
+    bounds:
+      x: 316
+      'y': 172
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: a1-eth
+    label: ' '
+    type: service
+    bounds:
+      x: 956
+      'y': 172
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: note-1-body
+    label: 请求体：稿件ID / 报告ID / 报告内容 / 报告版本
+    type: text
+    bounds:
+      x: 360
+      'y': 196
+      width: 560
+      height: 24
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 13
+      fontColor: '#64748B'
+  - id: a2-susy
+    label: ' '
+    type: service
+    bounds:
+      x: 316
+      'y': 252
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: a2-eth
+    label: ' '
+    type: service
+    bounds:
+      x: 956
+      'y': 252
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: frame-alt
+    label: alt [状态码 ≠ 201]
+    type: service
+    bounds:
+      x: 192
+      'y': 300
+      width: 784
+      height: 204
+    style:
+      fillColor: none
+      strokeColor: '#F59E0B'
+      strokeWidth: 2
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 6
+      fontSize: 15
+      fontColor: '#B45309'
+      bold: true
+  - id: a3-susy
+    label: ' '
+    type: service
+    bounds:
+      x: 316
+      'y': 364
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: a3-eth
+    label: ' '
+    type: service
+    bounds:
+      x: 956
+      'y': 364
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: note-3-retry
+    label: 最多重试 3 次；仍非 201 → 标记该报告 ingest 状态为失败（failed）
+    type: service
+    bounds:
+      x: 344
+      'y': 404
+      width: 600
+      height: 44
+    style:
+      fillColor: '#FEF3C7'
+      strokeColor: '#D97706'
+      strokeWidth: 1.5
+      fontColor: '#92400E'
+      fontSize: 14
+  - id: note-4-eth
+    label: |-
+      内部处理：
+      检查该稿件的全部审稿报告
+      （相似度 / 重复率 / AI 写作检测）
+    type: service
+    bounds:
+      x: 1000
+      'y': 540
+      width: 380
+      height: 88
+    style:
+      fillColor: '#FEF3C7'
+      strokeColor: '#D97706'
+      strokeWidth: 1.5
+      fontColor: '#92400E'
+      fontSize: 14
+  - id: a4-susy
+    label: ' '
+    type: service
+    bounds:
+      x: 316
+      'y': 652
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: a4-eth
+    label: ' '
+    type: service
+    bounds:
+      x: 956
+      'y': 652
+      width: 8
+      height: 8
+    style:
+      fillColor: none
+      strokeColor: none
+  - id: note-5-body
+    label: 请求体：该稿件全部报告的检测结果
+    type: text
+    bounds:
+      x: 360
+      'y': 676
+      width: 560
+      height: 24
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 13
+      fontColor: '#64748B'
+  - id: note-6-susy
+    label: |-
+      校验数据
+      入库存储
+      展示到报告详情页
+    type: service
+    bounds:
+      x: 40
+      'y': 732
+      width: 260
+      height: 96
+    style:
+      fillColor: '#FEF3C7'
+      strokeColor: '#D97706'
+      strokeWidth: 1.5
+      fontColor: '#92400E'
+      fontSize: 14
+  - id: legend
+    label: 图例：实线箭头 → 请求消息；虚线箭头 → 响应 / 回调消息；橙色框 → 异常分支（alt）；黄色框 → 系统内部处理
+    type: text
+    bounds:
+      x: 320
+      'y': 852
+      width: 800
+      height: 28
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 13
+      fontColor: '#64748B'
+edges:
+  - from: a1-susy
+    to: a1-eth
+    type: primary
+    label: POST /api/v2/ingest/peer_review_report
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+  - from: a2-eth
+    to: a2-susy
+    type: data
+    label: 201 Created（接收成功）
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+  - from: a3-susy
+    to: a3-eth
+    type: primary
+    label: 重试（等待 10 分钟后）
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+  - from: a4-eth
+    to: a4-susy
+    type: primary
+    label: POST /restapi/open_api/submit/review_report/check_result
+    labelPosition: center
+    labelOffset:
+      x: 0
+      'y': -14
+modules: []

@@ -1,0 +1,210 @@
+meta:
+  profile: default
+  theme: tech-blue
+  source: generated
+  layout: horizontal
+  canvas: 1440x920
+  title: SuSy - Ethicality Peer Review Report Ingest and Check-Result Sequence
+
+nodes:
+  # ---------- Participant headers ----------
+  - id: susy
+    label: SuSy
+    type: service
+    bounds: { x: 220, y: 56, width: 200, height: 56 }
+
+  - id: eth
+    label: Ethicality
+    type: service
+    bounds: { x: 860, y: 56, width: 200, height: 56 }
+
+  # ---------- Lifelines (thin dashed) ----------
+  - id: lifeline-susy
+    label: " "
+    type: memory
+    bounds: { x: 318, y: 120, width: 4, height: 760 }
+    style:
+      fillColor: none
+      strokeColor: "#94A3B8"
+      strokeWidth: 2
+      fontSize: 1
+
+  - id: lifeline-eth
+    label: " "
+    type: memory
+    bounds: { x: 958, y: 120, width: 4, height: 760 }
+    style:
+      fillColor: none
+      strokeColor: "#94A3B8"
+      strokeWidth: 2
+      fontSize: 1
+
+  # ---------- Top trigger note ----------
+  - id: note-trigger
+    label: "Trigger: SuSy receives a new peer review report, or an existing report is modified"
+    type: text
+    bounds: { x: 240, y: 12, width: 800, height: 32 }
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 15
+      italic: true
+      fontColor: "#475569"
+
+  # ---------- 1. Ingest peer review report ----------
+  - id: a1-susy
+    label: " "
+    type: service
+    bounds: { x: 316, y: 172, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: a1-eth
+    label: " "
+    type: service
+    bounds: { x: 956, y: 172, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  # ---------- 2. 201 success response ----------
+  - id: a2-susy
+    label: " "
+    type: service
+    bounds: { x: 316, y: 252, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: a2-eth
+    label: " "
+    type: service
+    bounds: { x: 956, y: 252, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  # ---------- alt exception frame ----------
+  - id: frame-alt
+    label: "alt [status != 201]"
+    type: service
+    bounds: { x: 192, y: 300, width: 784, height: 204 }
+    style:
+      fillColor: none
+      strokeColor: "#F59E0B"
+      strokeWidth: 2
+      align: left
+      verticalAlign: top
+      spacingLeft: 12
+      spacingTop: 6
+      fontSize: 15
+      fontColor: "#B45309"
+      bold: true
+
+  # ---------- 3. Retry ----------
+  - id: a3-susy
+    label: " "
+    type: service
+    bounds: { x: 316, y: 364, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: a3-eth
+    label: " "
+    type: service
+    bounds: { x: 956, y: 364, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: note-3-retry
+    label: "Retry up to 3 times; if still not 201 → mark this report ingest as failed"
+    type: service
+    bounds: { x: 300, y: 404, width: 660, height: 44 }
+    style:
+      fillColor: "#FEF3C7"
+      strokeColor: "#D97706"
+      strokeWidth: 1.5
+      fontColor: "#92400E"
+      fontSize: 14
+
+  # ---------- 4. Ethicality internal check ----------
+  - id: note-4-eth
+    label: "Internal processing:\ncheck all review reports of this manuscript"
+    type: service
+    bounds: { x: 1000, y: 540, width: 380, height: 64 }
+    style:
+      fillColor: "#FEF3C7"
+      strokeColor: "#D97706"
+      strokeWidth: 1.5
+      fontColor: "#92400E"
+      fontSize: 14
+
+  # ---------- 5. Callback check results ----------
+  - id: a4-susy
+    label: " "
+    type: service
+    bounds: { x: 316, y: 652, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: a4-eth
+    label: " "
+    type: service
+    bounds: { x: 956, y: 652, width: 8, height: 8 }
+    style: { fillColor: none, strokeColor: none, fontSize: 1 }
+
+  - id: note-5-body
+    label: "Body: detection results of all reports of this manuscript"
+    type: text
+    bounds: { x: 300, y: 676, width: 680, height: 28 }
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 13
+      fontColor: "#64748B"
+
+  # ---------- 6. SuSy validate / store / display ----------
+  - id: note-6-susy
+    label: "Validate data\nStore to database\nDisplay on page"
+    type: service
+    bounds: { x: 40, y: 732, width: 260, height: 96 }
+    style:
+      fillColor: "#FEF3C7"
+      strokeColor: "#D97706"
+      strokeWidth: 1.5
+      fontColor: "#92400E"
+      fontSize: 14
+
+  # ---------- Legend ----------
+  - id: legend
+    label: "Legend: solid arrow = request; dashed arrow = response / callback; orange box = exception branch (alt); yellow box = internal processing"
+    type: text
+    bounds: { x: 140, y: 852, width: 1160, height: 28 }
+    style:
+      align: center
+      verticalAlign: middle
+      fontSize: 13
+      fontColor: "#64748B"
+
+edges:
+  # 1. Ingest peer review report
+  - from: a1-susy
+    to: a1-eth
+    type: primary
+    label: "POST /api/v2/ingest/peer_review_report"
+    labelPosition: center
+    labelOffset: { x: 0, y: -14 }
+
+  # 2. 201 success response
+  - from: a2-eth
+    to: a2-susy
+    type: data
+    label: "201 Created (accepted)"
+    labelPosition: center
+    labelOffset: { x: 0, y: -14 }
+
+  # 3. Retry
+  - from: a3-susy
+    to: a3-eth
+    type: primary
+    label: "Retry (after 10 minutes)"
+    labelPosition: center
+    labelOffset: { x: 0, y: -14 }
+
+  # 5. Callback check results
+  - from: a4-eth
+    to: a4-susy
+    type: primary
+    label: "POST /restapi/open_api/submit/review_report/check_result"
+    labelPosition: center
+    labelOffset: { x: 0, y: -14 }

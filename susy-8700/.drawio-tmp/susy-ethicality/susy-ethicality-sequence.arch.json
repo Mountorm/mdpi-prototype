@@ -1,0 +1,147 @@
+{
+  "version": 1,
+  "title": "SuSy 与 Ethicality 审稿报告投递与检测结果时序图",
+  "type": "flow-diagram",
+  "source": "generated",
+  "profile": "default",
+  "theme": "tech-blue",
+  "layout": "horizontal",
+  "counts": {
+    "nodes": 20,
+    "edges": 4,
+    "modules": 0
+  },
+  "nodes": [
+    {
+      "id": "susy",
+      "label": "SuSy",
+      "type": "service"
+    },
+    {
+      "id": "eth",
+      "label": "Ethicality",
+      "type": "service"
+    },
+    {
+      "id": "lifeline-susy",
+      "label": " ",
+      "type": "memory"
+    },
+    {
+      "id": "lifeline-eth",
+      "label": " ",
+      "type": "memory"
+    },
+    {
+      "id": "note-trigger",
+      "label": "触发条件：SuSy 收到新的审稿报告，或已有审稿报告被修改",
+      "type": "text"
+    },
+    {
+      "id": "a1-susy",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "a1-eth",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "note-1-body",
+      "label": "请求体：稿件ID / 报告ID / 报告内容 / 报告版本",
+      "type": "text"
+    },
+    {
+      "id": "a2-susy",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "a2-eth",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "frame-alt",
+      "label": "alt [状态码 ≠ 201]",
+      "type": "service"
+    },
+    {
+      "id": "a3-susy",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "a3-eth",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "note-3-retry",
+      "label": "最多重试 3 次；仍非 201 → 标记该报告 ingest 状态为失败（failed）",
+      "type": "service"
+    },
+    {
+      "id": "note-4-eth",
+      "label": "内部处理：\n检查该稿件的全部审稿报告\n（相似度 / 重复率 / AI 写作检测）",
+      "type": "service"
+    },
+    {
+      "id": "a4-susy",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "a4-eth",
+      "label": " ",
+      "type": "service"
+    },
+    {
+      "id": "note-5-body",
+      "label": "请求体：该稿件全部报告的检测结果",
+      "type": "text"
+    },
+    {
+      "id": "note-6-susy",
+      "label": "校验数据\n入库存储\n展示到报告详情页",
+      "type": "service"
+    },
+    {
+      "id": "legend",
+      "label": "图例：实线箭头 → 请求消息；虚线箭头 → 响应 / 回调消息；橙色框 → 异常分支（alt）；黄色框 → 系统内部处理",
+      "type": "text"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "from": "a1-susy",
+      "to": "a1-eth",
+      "type": "primary",
+      "label": "POST /api/v2/ingest/peer_review_report"
+    },
+    {
+      "id": "edge-2",
+      "from": "a2-eth",
+      "to": "a2-susy",
+      "type": "data",
+      "label": "201 Created（接收成功）"
+    },
+    {
+      "id": "edge-3",
+      "from": "a3-susy",
+      "to": "a3-eth",
+      "type": "primary",
+      "label": "重试（等待 10 分钟后）"
+    },
+    {
+      "id": "edge-4",
+      "from": "a4-eth",
+      "to": "a4-susy",
+      "type": "primary",
+      "label": "POST /restapi/open_api/submit/review_report/check_result"
+    }
+  ],
+  "modules": []
+}

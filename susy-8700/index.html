@@ -407,185 +407,236 @@
                     <button class="copy-script-button" type="button">Copy JavaScript</button>
                 </div>
                 <textarea class="script-source" readonly aria-label="JavaScript to copy">(function () {
-                    // ---- 1) 清理上一次运行 ----
-                    var oldStyle = document.getElementById('susy-round-style');
-                    if (oldStyle) oldStyle.remove();
-                    document.querySelectorAll('div.cell.break-word.review-round-card').forEach(function (cell) {
-                      cell.classList.remove('review-round-card');
-                      cell.style.background = ''; cell.style.border = ''; cell.style.borderRadius = '';
-                      cell.style.paddingTop = ''; cell.style.paddingBottom = '';
-                    });
-                    document.querySelectorAll('.review-round-label').forEach(function (el) { el.remove(); });
-                    document.querySelectorAll('.show-dialog-btn[data-tpl-hidden]').forEach(function (a) {
-                      a.style.display = '';
-                      a.removeAttribute('data-tpl-hidden');
-                    });
-                    document.querySelectorAll('.round-stats').forEach(function (el) { el.remove(); });
-                  
-                    // ---- 2) 识别 ----
-                    function isRoundRow(row) {
-                      if (row.closest('div.row.grid-x') !== row) return false;
-                      var label = row.querySelector(':scope > div.cell:not(.break-word)');
-                      var content = row.querySelector(':scope > div.break-word');
-                      if (!content) return false;
-                      if (label && label.querySelector('img')) return false;
-                      return !!content.querySelector('a[href*="?report="]');
-                    }
-                  
-                    // ---- 3) 分组 ----
-                    var rows = Array.prototype.slice.call(document.querySelectorAll('div.row.grid-x'));
-                    var groups = [], current = [], prev = null;
-                    rows.forEach(function (row) {
-                      var isRound = isRoundRow(row);
-                      if (isRound && prev && prev === row.previousElementSibling && isRoundRow(prev)) {
-                        current.push(row);
-                      } else if (isRound) {
-                        if (current.length) groups.push(current);
-                        current = [row];
-                      } else {
-                        if (current.length) groups.push(current);
-                        current = [];
-                      }
-                      prev = row;
-                    });
-                    if (current.length) groups.push(current);
-                  
-                    // ---- 4) 常量与状态 ----
-                    var CARD_BG = '#fafbfc';
-                    var CARD_BORDER = '#e3e6ea';
-                    var RED = '#F06146';
-                    var YELLOW = '#c2ad00';
-                    var GREEN = '#3BAB76';
-                    var STATES = ['issue', 'clean', 'pending', 'error']; 
-                  
-                    function buildAiBlock(state) {
-                      var link = document.createElement('a');
-                      link.href = 'javascript:void(0);';
-                      if (state === 'pending') {
-                        link.setAttribute('title', 'AI detection in progress, check back later');
-                        link.style.color = '#666';
-                        link.style.cursor = 'default';
-                        link.style.textDecoration = 'none';
-                        link.textContent = 'AI detection pending';
-                      } else if (state === 'error') {
-                        link.setAttribute('title', 'AI detection failed or report content insufficient');
-                        link.style.color = '#666';
-                        link.style.cursor = 'default';
-                        link.style.textDecoration = 'none';
-                        link.textContent = 'AI detection unavailable';
-                      } else if (state === 'clean') {
-                        link.setAttribute('title', 'View Ethicality Report');
-                        link.innerHTML = '<span style="color:' + GREEN + ';font-weight:600;">No AI content detected</span>';
-                      } else { // issue
-                        link.setAttribute('title', 'View Ethicality Report');
-                        link.innerHTML =
-                          '<span style="color:' + RED + ';font-weight:600;">Likely AI: 62%</span>' +
-                          ' <span style="color:' + YELLOW + ';font-weight:600;">Maybe AI: 15%</span>';
-                      }
-                      return link;
-                    }
-                  
-                    function buildTplBlock(content, state) {
-                      var original = content.querySelector('.show-dialog-btn');
-                      if (!original) {
-                        var link = document.createElement('a');
-                        link.href = 'javascript:void(0);';
-                        link.style.cursor = 'default';
-                        link.style.textDecoration = 'none';
-                        if (state === 'error') {
-                          link.setAttribute('title', 'Detection failed or report content insufficient');
-                          link.style.color = '#666';
-                          link.textContent = 'Similarity Rate: Detection unavailable';
-                        } else {
-                          link.setAttribute('title', 'Detection in progress, check back later');
-                          link.style.color = '#999';
-                          link.textContent = 'Similarity Rate: Detection pending';
-                        }
-                        return link;
-                      }
-                      var title = original.getAttribute('title') || 'Template Report Concern';
-                      var disabled = original.classList.contains('disabled');
-                      var clone = original.cloneNode(true);
-                      clone.removeAttribute('title');
-                      original.setAttribute('data-tpl-hidden', '1');
-                      original.style.display = 'none';
-                  
-                      var link = document.createElement('a');
-                      link.href = 'javascript:void(0);';
-                      link.setAttribute('title', title);
-                      if (disabled) link.style.cursor = 'default';
-                      link.appendChild(document.createTextNode('Similarity Rate: '));
-                      link.appendChild(clone);
-                      link.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        if (!disabled) original.click();
-                      });
-                      return link;
-                    }
-                  
-                    // 插到按钮之上，如有reject等按钮，插到按钮之上
-                    function insertStatsBeforeButtons(content, stats) {
-                      var hasBelow = false;
-                      var reject = content.querySelector('a[href*="reject_review"]');
-                      if (reject) {
-                        var br = reject.previousElementSibling;
-                        if (br && br.tagName === 'BR') {
-                          content.insertBefore(stats, br);
-                          content.removeChild(br);
-                        } else {
-                          content.insertBefore(stats, reject);
-                        }
-                        hasBelow = true;
-                      } else {
-                        var links = content.querySelectorAll('a');
-                        for (var k = 0; k < links.length; k++) {
-                          var t = links[k].getAttribute('title');
-                          if (t && t.indexOf("Author's reply") !== -1) {
-                            content.insertBefore(stats, links[k]);
-                            hasBelow = true;
-                            break;
-                          }
-                        }
-                      }
-                      if (!hasBelow) {
-                        content.appendChild(stats);
-                        return;
-                      }
-                      stats.style.borderBottom = '1px dashed ' + CARD_BORDER;
-                      stats.style.paddingBottom = '4px';
-                      stats.style.marginBottom = '4px';
-                    }
-                  
-                    // ---- 5) mock data渲染 ----
-                    groups.forEach(function (group, gIndex) {
-                      var state = STATES[gIndex % STATES.length]; 
-                      group.forEach(function (row, i) {
-                        var content = row.querySelector(':scope > div.break-word');
-                  
-                        content.classList.add('review-round-card');
-                        content.style.background = CARD_BG;
-                        content.style.border = '1px solid ' + CARD_BORDER;
-                        content.style.paddingTop = '4px';
-                        content.style.paddingBottom = '4px';
-                  
-                        var label = document.createElement('b');
-                        label.className = 'review-round-label';
-                        label.textContent = 'Round ' + (i + 1) + ' · ';
-                        label.style.cssText = 'color:#37414b;font-weight:600;';
-                        content.insertBefore(label, content.firstChild);
-                  
-                        var stats = document.createElement('div');
-                        stats.className = 'round-stats';
-                        stats.style.cssText = 'margin-top:4px;padding-top:4px;border-top:1px dashed ' + CARD_BORDER + ';' +
-                          'display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font-size:12px;color:#555;';
-                  
-                        if (i === 0) stats.appendChild(buildTplBlock(content, state));
-                        stats.appendChild(buildAiBlock(state));
-                  
-                        insertStatsBeforeButtons(content, stats);
-                      });
-                    });
-                  })();
+  var STATES = ['issue', 'clean', 'pending', 'error'];
+  var CARD_BG = '#fafbfc';
+  var CARD_BORDER = '#e3e6ea';
+  var RED = '#F06146';
+  var YELLOW = '#c2ad00';
+  var GREEN = '#3BAB76';
+
+  var phase = [];
+  var resolveFlip = [];
+
+  function cleanup() {
+    document.querySelectorAll('div.cell.break-word.review-round-card').forEach(function (cell) {
+      cell.classList.remove('review-round-card');
+      cell.style.background = ''; cell.style.border = ''; cell.style.borderRadius = '';
+      cell.style.paddingTop = ''; cell.style.paddingBottom = '';
+    });
+    document.querySelectorAll('.review-round-label').forEach(function (el) { el.remove(); });
+    document.querySelectorAll('.show-dialog-btn[data-tpl-hidden]').forEach(function (a) {
+      a.style.display = '';
+      a.removeAttribute('data-tpl-hidden');
+    });
+    document.querySelectorAll('.round-stats').forEach(function (el) { el.remove(); });
+  }
+
+  function isRoundRow(row) {
+    if (row.closest('div.row.grid-x') !== row) return false;
+    var label = row.querySelector(':scope > div.cell:not(.break-word)');
+    var content = row.querySelector(':scope > div.break-word');
+    if (!content) return false;
+    if (label && label.querySelector('img')) return false;
+    return !!content.querySelector('a[href*="?report="]');
+  }
+
+  function getGroups() {
+    var rows = Array.prototype.slice.call(document.querySelectorAll('div.row.grid-x'));
+    var groups = [], current = [], prev = null;
+    rows.forEach(function (row) {
+      var isRound = isRoundRow(row);
+      if (isRound && prev && prev === row.previousElementSibling && isRoundRow(prev)) {
+        current.push(row);
+      } else if (isRound) {
+        if (current.length) groups.push(current);
+        current = [row];
+      } else {
+        if (current.length) groups.push(current);
+        current = [];
+      }
+      prev = row;
+    });
+    if (current.length) groups.push(current);
+    return groups;
+  }
+
+  function aiSpan(gIndex) {
+    var span = document.createElement('span');
+    span.style.cssText = 'display:inline-flex;align-items:center;gap:6px;';
+    var s = STATES[phase[gIndex]];
+
+    function grayState(text, color, tip) {
+      var a = document.createElement('a');
+      a.href = 'javascript:void(0);';
+      a.style.color = color;
+      a.style.cursor = 'default';
+      a.style.textDecoration = 'none';
+      a.textContent = text;
+      if (tip) a.setAttribute('title', tip);
+      return a;
+    }
+    function textAction(label, tip, fn) {
+      var a = document.createElement('a');
+      a.href = 'javascript:void(0);';
+      a.textContent = label;
+      if (tip) a.setAttribute('title', tip);
+      a.addEventListener('click', function (e) { e.preventDefault(); fn(); });
+      return a;
+    }
+    function iconAction(tip, fn) {
+      var a = document.createElement('a');
+      a.href = 'javascript:void(0);';
+      a.setAttribute('title', tip);
+      a.style.cssText = 'display:inline-flex;align-items:center;text-decoration:none;color:#3156A2;';
+      a.addEventListener('click', function (e) { e.preventDefault(); fn(); });
+      var i = document.createElement('i');
+      i.className = 'ms';
+      i.textContent = 'refresh'; 
+      i.style.cssText = 'font-size:16px;vertical-align:middle;';
+      a.appendChild(i);
+      return a;
+    }
+    function resultLink(html) {
+      var a = document.createElement('a');
+      a.href = 'javascript:void(0);';
+      a.setAttribute('title', 'View Ethicality Report');
+      a.innerHTML = html;
+      return a;
+    }
+
+    if (s === 'issue') {
+      span.appendChild(resultLink(
+        '<span style="color:' + RED + ';font-weight:600;">Likely AI: 62%</span> ' +
+        '<span style="color:' + YELLOW + ';font-weight:600;">Maybe AI: 15%</span>'));
+    } else if (s === 'clean') {
+      span.appendChild(resultLink(
+        '<span style="color:' + GREEN + ';font-weight:600;">No AI content detected</span>'));
+    } else if (s === 'pending') {
+      span.appendChild(grayState('AI detection pending', '#999', 'AI detection in progress, check back later'));
+      span.appendChild(iconAction('Re-check whether the detection result has arrived', function () {
+        resolveFlip[gIndex] = (resolveFlip[gIndex] || 0) + 1;
+        phase[gIndex] = (resolveFlip[gIndex] % 2 === 1) ? 1 : 0; // 1=clean 0=issue
+        render();
+      }));
+    } else { // error
+      span.appendChild(grayState('AI detection unavailable', '#666', 'AI detection failed or report content insufficient'));
+      span.appendChild(textAction('Retry', 'Re-trigger the AI detection', function () {
+        phase[gIndex] = 2;
+        render();
+      }));
+    }
+    return span;
+  }
+
+  function tplBlock(content, stateIdx) {
+    var s = STATES[stateIdx];
+    var original = content.querySelector('.show-dialog-btn');
+    if (!original) {
+      var link = document.createElement('a');
+      link.href = 'javascript:void(0);';
+      link.style.cursor = 'default';
+      link.style.textDecoration = 'none';
+      if (s === 'error') {
+        link.setAttribute('title', 'Detection failed or report content insufficient');
+        link.style.color = '#666';
+        link.textContent = 'Similarity Rate: Detection unavailable';
+      } else {
+        link.setAttribute('title', 'Detection in progress, check back later');
+        link.style.color = '#999';
+        link.textContent = 'Similarity Rate: Detection pending';
+      }
+      return link;
+    }
+    var title = original.getAttribute('title') || 'Template Report Concern';
+    var disabled = original.classList.contains('disabled');
+    var clone = original.cloneNode(true);
+    clone.removeAttribute('title');
+    original.setAttribute('data-tpl-hidden', '1');
+    original.style.display = 'none';
+
+    var link = document.createElement('a');
+    link.href = 'javascript:void(0);';
+    link.setAttribute('title', title);
+    if (disabled) link.style.cursor = 'default';
+    link.appendChild(document.createTextNode('Similarity Rate: '));
+    link.appendChild(clone);
+    link.addEventListener('click', function (e) {
+      e.preventDefault();
+      if (!disabled) original.click();
+    });
+    return link;
+  }
+
+  function insertStatsBeforeButtons(content, stats) {
+    var hasBelow = false;
+    var reject = content.querySelector('a[href*="reject_review"]');
+    if (reject) {
+      var br = reject.previousElementSibling;
+      if (br && br.tagName === 'BR') {
+        content.insertBefore(stats, br);
+        content.removeChild(br);
+      } else {
+        content.insertBefore(stats, reject);
+      }
+      hasBelow = true;
+    } else {
+      var links = content.querySelectorAll('a');
+      for (var k = 0; k < links.length; k++) {
+        var t = links[k].getAttribute('title');
+        if (t && t.indexOf("Author's reply") !== -1) {
+          content.insertBefore(stats, links[k]);
+          hasBelow = true;
+          break;
+        }
+      }
+    }
+    if (!hasBelow) {
+      content.appendChild(stats);
+      return;
+    }
+    stats.style.borderBottom = '1px dashed ' + CARD_BORDER;
+    stats.style.paddingBottom = '4px';
+    stats.style.marginBottom = '4px';
+  }
+
+  function render() {
+    cleanup();
+    var groups = getGroups();
+    groups.forEach(function (group, gIndex) {
+      if (phase[gIndex] === undefined) {
+        phase[gIndex] = gIndex % STATES.length;
+      }
+      group.forEach(function (row, i) {
+        var content = row.querySelector(':scope > div.break-word');
+
+        content.classList.add('review-round-card');
+        content.style.background = CARD_BG;
+        content.style.border = '1px solid ' + CARD_BORDER;
+        content.style.paddingTop = '4px';
+        content.style.paddingBottom = '4px';
+
+        var label = document.createElement('b');
+        label.className = 'review-round-label';
+        label.textContent = 'Round ' + (i + 1) + ' · ';
+        label.style.cssText = 'color:#37414b;font-weight:600;';
+        content.insertBefore(label, content.firstChild);
+
+        var stats = document.createElement('div');
+        stats.className = 'round-stats';
+        stats.style.cssText = 'margin-top:4px;padding-top:4px;border-top:1px dashed ' + CARD_BORDER + ';' +
+          'display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px;font-size:12px;color:#555;';
+
+        if (i === 0) stats.appendChild(tplBlock(content, phase[gIndex]));
+        stats.appendChild(aiSpan(gIndex));
+
+        insertStatsBeforeButtons(content, stats);
+      });
+    });
+  }
+
+  render();
+})();
+
                   
                   </textarea>
                 <p class="copy-feedback" role="status" aria-live="polite"></p>
