@@ -80,11 +80,10 @@
       }
       th:nth-child(1) { width: 11%; }
       th:nth-child(2) { width: 14%; }
-      th:nth-child(3) { width: 36%; }
-      th:nth-child(4) { width: 9%; }
-      th:nth-child(5) { width: 15%; }
-      th:nth-child(6) { width: 9%; }
-      th:nth-child(7) { width: 6%; }
+      th:nth-child(3) { width: 38%; }
+      th:nth-child(4) { width: 10%; }
+      th:nth-child(5) { width: 12%; }
+      th:nth-child(6) { width: 15%; }
       td {
         height: 69px;
         padding: 9px 14px;
@@ -94,12 +93,13 @@
       tr:last-child td { border-bottom: 0; }
       .category { line-height: 1.45; white-space: pre-line; }
       .title { color: #344764; }
-      .description {
+      /* clamp on an inner span so the <td> stays a real table-cell (the
+         display override on the td itself broke that column's alignment) */
+      .description .desc-text {
         display: -webkit-box;
         overflow: hidden;
         color: #33445b;
         line-height: 1.45;
-        line-clamp: 2;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
       }

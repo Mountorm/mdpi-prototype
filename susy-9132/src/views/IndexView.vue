@@ -7,9 +7,9 @@ import MdIcon from '../components/MdIcon.vue'
 const router = useRouter()
 
 const items = [
-  { path: '/config', label: 'Configuration', icon: 'settings', desc: 'Configure the AcE checklist template' },
-  { path: '/generate', label: 'Generate Report', icon: 'add', desc: 'Generate a checklist report for a manuscript' },
-  { path: '/report', label: 'Report Page', icon: 'search', desc: 'Review the generated AcE report' },
+  { path: '/config', label: 'Configuration', icon: 'settings', desc: 'Configure the technical precheck report template' },
+  { path: '/generate', label: 'Generate Report', icon: 'add', desc: 'Generate a technical precheck report for a manuscript' },
+  { path: '/report', label: 'Report Page', icon: 'search', desc: 'Review the generated technical precheck report' },
 ]
 
 const go = (path) => router.push(path)
@@ -19,8 +19,8 @@ const go = (path) => router.push(path)
   <div class="index-page">
     <div class="index-brand">
       <img :src="susyLogo" class="index-logo" alt="SuSy" />
-      <h1 class="index-title">AcE Checklist</h1>
-      <p class="index-sub">Academic Editor Checklist System</p>
+      <h1 class="index-title">Technical Precheck Report</h1>
+      <p class="index-sub">Technical Precheck Report System</p>
     </div>
     <div class="index-menu">
       <button v-for="item in items" :key="item.path" class="index-btn" type="button" @click="go(item.path)">

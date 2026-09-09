@@ -1,7 +1,7 @@
 <script setup>
 // Report shell layout: white top header + fixed sidebar + routed content.
 // Header / sidebar visually follow susy-demo. The sidebar menu is static:
-// a single "AcE checklist" group with only the two report pages.
+// a single "Technical Precheck Report" group with only the two report pages.
 // The breadcrumb area can be replaced by a page-level toolbar: the routed
 // view registers one via provide('registerToolbar') (used by /generate).
 import { ref, computed, provide } from 'vue'
@@ -20,7 +20,7 @@ provide('registerToolbar', (props) => { toolbarProps.value = props })
 // Header nav links (kept as in susy-demo, non-navigating)
 const navLinks = ['Journals', 'Topics', 'Information', 'Author Services', 'Initiatives', 'About']
 
-// Static sidebar menu: report pages under "AcE checklist"
+// Static sidebar menu: report pages under "Technical Precheck Report"
 const menuItems = [
   { to: '/generate', label: 'Generate Report' },
   { to: '/report', label: 'Report Page' },
@@ -62,7 +62,7 @@ const toggleGroup = () => { groupOpen.value = !groupOpen.value }
         <div class="menu-group">
           <div class="menu-group-title" @click="toggleGroup">
             <template v-if="!collapsed">
-              <span>AcE checklist</span>
+              <span>Technical Precheck Report</span>
               <MdIcon name="expand_more" :size="16" class="group-arrow" :class="{ open: groupOpen }" />
             </template>
             <template v-else>

@@ -13,9 +13,9 @@ const CHECKLIST_PATH = '/config'
 const ChevronRightIcon = () => h(MdIcon, { name: 'chevron_right', size: 18 })
 
 const menuItems = [
-  { label: 'Journals', href: '#' },
+  { label: 'Journals', href: '#', active: true },
   { label: 'Content Management', href: '#' },
-  { label: 'Settings', href: '#', active: true },
+  { label: 'Settings', href: '#' },
   { label: 'Permission Management', href: '#' },
 ]
 
@@ -30,7 +30,7 @@ const activeMenu = computed(() =>
 
 // Breadcrumb per route
 const crumbs = computed(() => {
-  if (route.path.startsWith('/config')) return ['Settings', 'Option Settings', 'AcE Checklist']
+  if (route.path.startsWith('/config')) return ['Journals', 'Settings', 'Technical Precheck Report']
   if (route.path.startsWith('/generate')) return ['Generate Report']
   if (route.path.startsWith('/report')) return ['Report Page']
   return []
@@ -84,15 +84,15 @@ const crumbs = computed(() => {
                   :collapse="sidebarCollapsed"
                   :collapse-transition="false"
                 >
-                  <!-- Option Settings: collapsible group without an active highlight -->
+                  <!-- Settings: collapsible group without an active highlight -->
                   <el-sub-menu index="option">
                     <template #title>
                       <MdIcon name="settings" :size="20" />
-                      <span>Option Settings</span>
+                      <span>Settings</span>
                       <MdIcon name="expand_more" :size="20" class="group-arrow" />
                     </template>
                     <el-menu-item :index="CHECKLIST_PATH">
-                      <span class="noneChild">AcE Checklist</span>
+                      <span class="noneChild">Technical Precheck Report</span>
                     </el-menu-item>
                   </el-sub-menu>
                 </el-menu>
@@ -123,7 +123,7 @@ const crumbs = computed(() => {
               <div class="layout-parent">
                 <div class="layout-pd w100">
                   <div class="layout-title">
-                    {{ route.path.startsWith('/config') ? 'AcE Checklist' : crumbs[0] || '' }}
+                    {{ route.path.startsWith('/config') ? 'Technical Precheck Report' : crumbs[0] || '' }}
                   </div>
                   <div class="layout-pd-outline">
                     <router-view />

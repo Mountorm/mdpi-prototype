@@ -8,11 +8,9 @@ import { checklistStore } from '../store/checklist.js'
 // Reads/writes the shared store so changes apply to Generate & Report too.
 const items = checklistStore.items
 const categoriesState = checklistStore.categories
-const journals = checklistStore.journals
-const JOURNAL_TOTAL = checklistStore.JOURNAL_TOTAL
 
 /* ---------------- Filters & pagination ---------------- */
-const filters = reactive({ category: '', title: '', status: '' })
+const filters = reactive({ category: '', title: '' })
 const pagination = reactive({ page: 1, pageSize: 20 })
 const openFilter = ref('')
 
@@ -20,9 +18,7 @@ const filteredItems = computed(() =>
   items.filter((item) => {
     const matchesCategory = !filters.category || item.category === filters.category
     const matchesTitle = !filters.title || item.title.toLowerCase().includes(filters.title.toLowerCase())
-    const itemStatus = item.inUse ? 'In Use' : 'Draft'
-    const matchesStatus = !filters.status || itemStatus === filters.status
-    return matchesCategory && matchesTitle && matchesStatus
+    return matchesCategory && matchesTitle
   })
 )
 
@@ -45,9 +41,7 @@ const onDocClick = () => { openFilter.value = '' }
 onMounted(() => document.addEventListener('click', onDocClick))
 onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 
-/* ---------------- Status & delete ---------------- */
-const toggleStatus = (item) => { item.inUse = !item.inUse }
-
+/* ---------------- Delete ---------------- */
 const confirmDelete = (item) => {
   ElMessageBox.confirm(
     `Deleting this item will permanently remove it from the template. Delete "${item.title}"?`,
@@ -62,8 +56,9 @@ const confirmDelete = (item) => {
     .catch(() => {})
 }
 
-/* ---------------- Add / Edit dialog ---------------- */
-const addModalOpen = ref(false)
+/* ---------------- Edit dialog ---------------- */
+// New items are added at code level (mock/ace.js), not from the UI.
+const editModalOpen = ref(false)
 const editingId = ref(null)
 // whether the item being edited has a locked Required flag — those stay
 // disabled so only unlocked items can be toggled (journal config).
@@ -79,13 +74,6 @@ const emptyForm = () => ({
   rule: { type: 'numeric', subject: '', operator: '<', value: null, result: 'warning' },
 })
 const form = reactive(emptyForm())
-
-const openAddModal = () => {
-  editingId.value = null
-  editingRequiredLocked.value = false
-  Object.assign(form, emptyForm())
-  addModalOpen.value = true
-}
 
 const openEditModal = (item) => {
   editingId.value = item.id
@@ -107,10 +95,10 @@ const openEditModal = (item) => {
         }
       : emptyForm().rule,
   })
-  addModalOpen.value = true
+  editModalOpen.value = true
 }
 
-const closeAddModal = () => { addModalOpen.value = false }
+const closeEditModal = () => { editModalOpen.value = false }
 
 // New category created inline via el-select allow-create is added to the list
 const onCategoryChange = (val) => {
@@ -136,6 +124,7 @@ const submitItem = () => {
     }
   }
 
+  const target = items.find((i) => i.id === editingId.value)
   const payload = {
     category,
     title,
@@ -144,43 +133,23 @@ const submitItem = () => {
     flagRequired: form.flagRequired,
     flagMode: form.flagMode,
     rule: form.flagRequired && form.flagMode === 'auto' ? { ...form.rule } : null,
-    inUse: editingId.value ? items.find((i) => i.id === editingId.value).inUse : false, // new items default to Draft
+    inUse: target ? target.inUse : false, // keep the existing status (In Use / Draft)
   }
 
-  if (editingId.value) {
-    const target = items.find((i) => i.id === editingId.value)
-    Object.assign(target, { ...payload, id: target.id })
-    ElMessage.success('Item updated')
-  } else {
-    items.push({ id: Date.now(), ...payload })
-    ElMessage.success('Item created')
-  }
-  closeAddModal()
+  Object.assign(target, { ...payload, id: target.id })
+  ElMessage.success('Item updated')
+  closeEditModal()
 }
-
-/* ---------------- Pilot Journals dialog ---------------- */
-const pilotModalOpen = ref(false)
-const journalKeyword = ref('')
-
-const filteredJournals = computed(() => {
-  const kw = journalKeyword.value.trim().toLowerCase()
-  return kw ? journals.filter((j) => j.name.toLowerCase().includes(kw)) : journals
-})
-const selectedJournalCount = computed(() => journals.filter((j) => j.checked).length)
-
-const openPilotModal = () => { journalKeyword.value = ''; pilotModalOpen.value = true }
-const closePilotModal = () => { pilotModalOpen.value = false }
 
 /* ---------------- ESC / backdrop close ---------------- */
 const onKeydown = (e) => {
-  if (e.key === 'Escape') { addModalOpen.value = false; pilotModalOpen.value = false }
+  if (e.key === 'Escape') editModalOpen.value = false
 }
 onMounted(() => document.addEventListener('keydown', onKeydown))
 onBeforeUnmount(() => document.removeEventListener('keydown', onKeydown))
 
 const closeByBackdrop = (modal) => {
-  if (modal === 'add') addModalOpen.value = false
-  if (modal === 'pilot') pilotModalOpen.value = false
+  if (modal === 'edit') editModalOpen.value = false
 }
 
 /* ---------------- Flag / rule display ---------------- */
@@ -202,17 +171,9 @@ const flagSummary = (item) => {
 
 <template>
   <div class="checklist-page ace-checklist-root">
-    <!-- ========== Toolbar ========== -->
-    <div class="toolbar">
-      <button class="primary" type="button" @click="openAddModal">
-        <MdIcon name="add" :size="16" class="plus" />Add New
-      </button>
-      <button type="button" @click="openPilotModal">Pilot Journals</button>
-    </div>
-
     <!-- ========== Table ========== -->
     <div class="table-wrap">
-      <table aria-label="AcE checklist">
+      <table aria-label="Technical Precheck Report">
         <thead>
           <tr>
             <th>
@@ -243,21 +204,6 @@ const flagSummary = (item) => {
             <th>Description</th>
             <th>Required</th>
             <th>Flag</th>
-            <th>
-              <span class="header-label">
-                Status
-                <button class="header-control" type="button" @click.stop="toggleFilter('status')">
-                  <MdIcon name="filter_alt" :size="14" />
-                </button>
-              </span>
-              <div class="filter-panel" :class="{ open: openFilter === 'status' }" @click.stop>
-                <select v-model="filters.status" aria-label="Filter by status" @change="onFilterChange">
-                  <option value="">All statuses</option>
-                  <option value="In Use">In Use</option>
-                  <option value="Draft">Draft</option>
-                </select>
-              </div>
-            </th>
             <th>Action</th>
           </tr>
         </thead>
@@ -265,7 +211,7 @@ const flagSummary = (item) => {
           <tr v-for="item in visibleItems" :key="item.id">
             <td class="category">{{ item.category }}</td>
             <td class="title">{{ item.title }}</td>
-            <td class="description">{{ item.description }}</td>
+            <td class="description"><span class="desc-text">{{ item.description }}</span></td>
             <td>
               <span class="req-tag" :class="item.required ? 'required' : 'optional'">
                 {{ item.required ? 'Required' : 'Optional' }}
@@ -276,19 +222,6 @@ const flagSummary = (item) => {
                 <span class="flag-mode">
                   <span class="flag-tag" :class="flagSummary(item).mode">{{ flagSummary(item).label }}</span>
                 </span>
-                <span class="rule-text">{{ flagSummary(item).ruleText }}</span>
-              </span>
-            </td>
-            <td>
-              <span class="status" :class="{ draft: !item.inUse }">
-                <button
-                  class="switch"
-                  :class="{ on: item.inUse }"
-                  type="button"
-                  :aria-label="(item.inUse ? 'Disable' : 'Enable') + ' ' + item.title"
-                  @click="toggleStatus(item)"
-                ></button>
-                {{ item.inUse ? 'In Use' : 'Draft' }}
               </span>
             </td>
             <td class="action-cell">
@@ -301,7 +234,7 @@ const flagSummary = (item) => {
             </td>
           </tr>
           <tr v-if="!visibleItems.length">
-            <td class="empty" colspan="7">No matching checklist items</td>
+            <td class="empty" colspan="6">No matching checklist items</td>
           </tr>
         </tbody>
       </table>
@@ -321,11 +254,11 @@ const flagSummary = (item) => {
     </div>
 
     <!-- ========== Add / Edit dialog ========== -->
-    <div class="modal-backdrop" :class="{ open: addModalOpen }" @click.self="closeByBackdrop('add')">
+    <div class="modal-backdrop" :class="{ open: editModalOpen }" @click.self="closeByBackdrop('edit')">
       <section class="modal add-modal" role="dialog" aria-modal="true">
         <header class="modal-header">
-          <h2 class="modal-title" id="addModalTitle">{{ editingId ? 'Edit Item' : 'Add Item' }}</h2>
-          <button class="modal-close" type="button" aria-label="Close" @click="closeAddModal">
+          <h2 class="modal-title" id="addModalTitle">Edit Item</h2>
+          <button class="modal-close" type="button" aria-label="Close" @click="closeEditModal">
             <MdIcon name="close" :size="30" />
           </button>
         </header>
@@ -402,45 +335,10 @@ const flagSummary = (item) => {
             </template>
           </div>
           <footer class="modal-footer">
-            <button class="modal-button" type="button" @click="closeAddModal">Cancel</button>
+            <button class="modal-button" type="button" @click="closeEditModal">Cancel</button>
             <button class="modal-button primary" type="submit">Submit</button>
           </footer>
         </form>
-      </section>
-    </div>
-
-    <!-- ========== Pilot Journals dialog ========== -->
-    <div class="modal-backdrop" :class="{ open: pilotModalOpen }" @click.self="closeByBackdrop('pilot')">
-      <section class="modal pilot-modal" role="dialog" aria-modal="true">
-        <header class="modal-header">
-          <h2 class="modal-title" id="pilotModalTitle">Select pilot journals</h2>
-          <button class="modal-close" type="button" aria-label="Close" @click="closePilotModal">
-            <MdIcon name="close" :size="30" />
-          </button>
-        </header>
-        <div class="modal-content">
-          <div class="journal-selector">
-            <div class="journal-summary">
-              <MdIcon name="indeterminate_check_box" :size="18" />
-              <span>{{ selectedJournalCount }}/{{ JOURNAL_TOTAL }} Journals</span>
-            </div>
-            <label class="journal-search">
-              <input v-model="journalKeyword" type="search" placeholder="Search" aria-label="Search journals" />
-              <MdIcon name="search" :size="18" />
-            </label>
-            <div class="journal-list">
-              <label v-for="j in filteredJournals" :key="j.name" class="journal-row">
-                <input type="checkbox" v-model="j.checked" :value="j.name" />
-                {{ j.name }}
-              </label>
-              <div v-if="!filteredJournals.length" class="journal-empty">No matching journals</div>
-            </div>
-          </div>
-        </div>
-        <footer class="modal-footer">
-          <button class="modal-button" type="button" @click="closePilotModal">Cancel</button>
-          <button class="modal-button primary" type="button" @click="closePilotModal">Submit</button>
-        </footer>
       </section>
     </div>
   </div>

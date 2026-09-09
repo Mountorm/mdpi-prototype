@@ -19,7 +19,7 @@
 // keyed by manuscript ID — separate from this template structure.
 // ============================================
 
-// Categories (new ones can be added inline in the Add/Edit dialog)
+// Categories (new ones can be added inline in the Edit dialog)
 export const categories = [
   'Manuscript Information',
   'Reference Analysis',
