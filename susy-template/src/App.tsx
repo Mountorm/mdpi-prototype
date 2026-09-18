@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import './App.css'
-import { checkBlankLines, type BlankLineCheckResult } from './blankLineChecker'
+import { checkBlankLines, optimizeBlankLines, type BlankLineCheckResult } from './blankLineChecker'
 
 const exampleTemplate = String.raw`Dear {$corresponding_authors_title_and_lastname},
 
@@ -271,6 +271,22 @@ function App() {
     await navigator.clipboard?.writeText(template)
   }
   const runBlankLineCheck = () => setBlankCheck(checkBlankLines(template))
+  const runBlankLineOptimize = () => {
+    const result = optimizeBlankLines(template)
+    if (!result.ok) {
+      setBlankCheck({
+        issues: [],
+        conditions: [],
+        scenarioCount: 0,
+        exhaustive: true,
+        parseWarnings: ['一键优化已拒绝：模板结构不完整', ...result.warnings],
+      })
+      return
+    }
+    setTemplate(result.text)
+    resetRemovedBranches()
+    setBlankCheck(checkBlankLines(result.text))
+  }
   const deleteContextBranch = (branchId: string, groupId: string) => {
     setRemovedBranches((current) => new Set(current).add(branchId))
     setFlattenedGroups((current) => new Set(current).add(groupId))
@@ -433,6 +449,7 @@ function App() {
           <button onClick={() => { setTemplate(exampleTemplate); resetRemovedBranches() }}>载入示例</button>
           <button onClick={copyTemplate}>复制原始模板</button>
           <button className="check-button" onClick={runBlankLineCheck}>检查连续空行</button>
+          <button className="optimize-button" onClick={runBlankLineOptimize}>一键优化空行</button>
         </div>
       </header>
       <section className="intro">
@@ -453,7 +470,7 @@ function App() {
           {parsed.warnings.length > 0 && <div className="warnings"><strong>解析提醒</strong>{parsed.warnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
         </div>
       </section>
-      <footer className="app-footer"><span>结构视图不会修改原始模板</span><span>仅在本地浏览器中处理内容</span></footer>
+      <footer className="app-footer"><span>一键优化会改写原文中的条件标签和多余空行</span><span>仅在本地浏览器中处理内容</span></footer>
     </main>
   )
 }
@@ -461,14 +478,20 @@ function App() {
 function BlankLineResults({ result }: { result: BlankLineCheckResult }) {
   const [expanded, setExpanded] = useState(true)
   const hasIssues = result.issues.length > 0
-  return <section className={`blank-results ${hasIssues ? 'has-issues' : 'all-clear'}`}>
+  const hasWarnings = result.parseWarnings.length > 0
+  const heading = hasIssues
+    ? `发现 ${result.issues.length} 个潜在连续空行风险`
+    : hasWarnings
+      ? '模板结构有问题，未完成优化'
+      : '未发现连续空行风险'
+  return <section className={`blank-results ${hasIssues || hasWarnings ? 'has-issues' : 'all-clear'}`}>
     <div className="blank-results-header">
-      <div><span className="panel-kicker">BLANK LINE CHECK</span><h2>{hasIssues ? `发现 ${result.issues.length} 个潜在连续空行风险` : '未发现连续空行风险'}</h2></div>
+      <div><span className="panel-kicker">BLANK LINE CHECK</span><h2>{heading}</h2></div>
       <div className="blank-results-meta"><span>{result.scenarioCount} 个场景</span><span>{result.exhaustive ? '完整组合检查' : '抽样检查'}</span><button onClick={() => setExpanded((current) => !current)}>{expanded ? '收起结果' : '展开结果'}</button></div>
     </div>
     {expanded && <>
-      {result.parseWarnings.length > 0 && <div className="blank-warning-list">{result.parseWarnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
-      {hasIssues ? <div className="blank-issue-list">{result.issues.map((issue, index) => <article className="blank-issue" key={`${issue.lines.join('-')}-${index}`}><div className="blank-issue-heading"><strong>风险 {index + 1}</strong><span>渲染后第 {issue.lines[0]}–{issue.lines.at(-1)} 行出现 {issue.count} 个连续空行</span></div><div className="scenario-state">{Object.entries(issue.scenario).map(([condition, value]) => <span key={condition}><b>{value ? '成立' : '不成立'}</b> {condition}</span>)}</div><pre>{issue.renderedLines.map((line, lineIndex) => { const lineNumber = lineIndex + 1; return <span className={issue.lines.includes(lineNumber) ? 'problem-line' : ''} key={lineNumber}>{`${String(lineNumber).padStart(3, ' ')} | ${line || '↵'}`}{'\n'}</span> })}</pre></article>)}</div> : <p className="blank-clear-copy">当前模板在已检查的条件组合下，没有渲染出两个或以上连续空行。</p>}
+      {hasWarnings && <div className="blank-warning-list">{result.parseWarnings.map((warning) => <span key={warning}>{warning}</span>)}</div>}
+      {hasIssues ? <div className="blank-issue-list">{result.issues.map((issue, index) => <article className="blank-issue" key={`${issue.lines.join('-')}-${index}`}><div className="blank-issue-heading"><strong>风险 {index + 1}</strong><span>渲染后第 {issue.lines[0]}–{issue.lines.at(-1)} 行出现 {issue.count} 个连续空行</span></div><div className="scenario-state">{Object.entries(issue.scenario).map(([condition, value]) => <span key={condition}><b>{value ? '成立' : '不成立'}</b> {condition}</span>)}</div><pre>{issue.renderedLines.map((line, lineIndex) => { const lineNumber = lineIndex + 1; return <span className={issue.lines.includes(lineNumber) ? 'problem-line' : ''} key={lineNumber}>{`${String(lineNumber).padStart(3, ' ')} | ${line || '↵'}`}{'\n'}</span> })}</pre></article>)}</div> : !hasWarnings && <p className="blank-clear-copy">当前模板在已检查的条件组合下，没有渲染出两个或以上连续空行。</p>}
     </>}
   </section>
 }

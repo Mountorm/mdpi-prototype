@@ -15,6 +15,10 @@ export type BlankLineCheckResult = {
   parseWarnings: string[]
 }
 
+export type OptimizeBlankLinesResult =
+  | { ok: true; text: string }
+  | { ok: false; warnings: string[] }
+
 type TextNode = { type: 'text'; text: string }
 type Branch = { kind: 'if' | 'elseif' | 'else'; condition?: string; children: Node[] }
 type IfNode = { type: 'if'; branches: Branch[] }
@@ -157,4 +161,55 @@ export function checkBlankLines(source: string): BlankLineCheckResult {
     exhaustive: 2 ** conditions.length <= MAX_SCENARIOS,
     parseWarnings: parsed.warnings,
   }
+}
+
+function collapseBlankLines(text: string, newline: string) {
+  const lines = text.split(/\r?\n/)
+  const result: string[] = []
+  let pendingBlank = false
+  lines.forEach((line) => {
+    if (line.trim() === '') {
+      pendingBlank = true
+      return
+    }
+    if (pendingBlank && result.length > 0) result.push('')
+    pendingBlank = false
+    result.push(line)
+  })
+  if (pendingBlank && result.length > 0) result.push('')
+  return result.join(newline)
+}
+
+export function optimizeBlankLines(source: string): OptimizeBlankLinesResult {
+  if (!source.trim()) return { ok: true, text: source }
+  const parsed = parseTemplate(source)
+  if (parsed.warnings.length > 0) return { ok: false, warnings: parsed.warnings }
+
+  const newline = source.includes('\r\n') ? '\r\n' : '\n'
+  const tags = [...source.matchAll(/\{(if\s+[^{}]+|elseif\s+[^{}]+|else|\/if)\}/g)]
+  let output = ''
+  let cursor = 0
+
+  tags.forEach((match) => {
+    const index = match.index ?? 0
+    output += source.slice(cursor, index)
+    const trailing = output.match(/[ \t]*(?:\r?\n[ \t]*)*$/)?.[0] ?? ''
+    const newlineCount = (trailing.match(/\r?\n/g) ?? []).length
+    const blankLines = Math.max(0, newlineCount - 1)
+    const isOpenIf = (match[1] ?? '').startsWith('if ')
+    const shouldAttach = !isOpenIf || blankLines > 0
+    cursor = index + match[0].length
+    if (!shouldAttach) {
+      output += match[0]
+      return
+    }
+    output = output.slice(0, output.length - trailing.length)
+    output += match[0]
+    const nextChar = source[cursor] ?? ''
+    const nextIsBreak = nextChar === '' || nextChar === '\n' || nextChar === '\r'
+    if (blankLines > 0) output += `${newline}${newline}`
+    else if (newlineCount === 1 && !nextIsBreak) output += newline
+  })
+  output += source.slice(cursor)
+  return { ok: true, text: collapseBlankLines(output, newline) }
 }

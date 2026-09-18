@@ -11,6 +11,8 @@ button { border: 1px solid #d8e0ea; background: white; color: #425268; border-ra
 button:hover { border-color: #8fa9c3; color: #1f4e79; background: #f8fbfe; }
 .check-button { border-color: #aacbbf; color: #2a765c; background: #f5fbf8; }
 .check-button:hover { border-color: #66a989; color: #1f6b50; background: #eaf7f0; }
+.optimize-button { border-color: #b7c7db; color: #2d5f86; background: #f4f8fc; }
+.optimize-button:hover { border-color: #7d9bb8; color: #1f4e79; background: #eaf2f8; }
 .intro { display: flex; justify-content: space-between; align-items: flex-end; padding: 48px 0 32px; }
 .eyebrow, .panel-kicker { color: #6d87a2; font-size: 10px; letter-spacing: .16em; font-weight: 800; margin: 0 0 13px; }
 h1 { color: #18324b; font-size: clamp(35px, 4vw, 57px); line-height: 1.05; letter-spacing: -.055em; margin: 0; font-weight: 750; }
