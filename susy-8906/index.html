@@ -572,6 +572,128 @@
       color: #ffffff;
     }
 
+    /* ========== Homepage logo guide ========== */
+    body.home-guide-on #topmenu,
+    body.account-guide-on #topmenu {
+      z-index: auto;
+    }
+
+    .logo.spotlight {
+      position: relative;
+      z-index: 1000004;
+    }
+
+    .logo.spotlight::before {
+      content: '';
+      position: absolute;
+      inset: -8px -12px;
+      background: #ffffff;
+      border-radius: 0;
+      box-shadow: 0 0 0 4px #ffffff;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .home-guide-popover {
+      width: 320px;
+    }
+
+    body.guide-scheme-2 .home-guide-popover {
+      width: 280px;
+    }
+
+    .home-guide-popover::before {
+      top: 18px;
+      left: -10px;
+      right: auto;
+      border-color: transparent;
+      border-right-color: #ffffff;
+      filter: drop-shadow(-1px 0 0 #dcdfe4);
+    }
+
+    .home-guide-popover.below::before {
+      top: -10px;
+      left: 28px;
+      right: auto;
+      border-color: transparent;
+      border-bottom-color: #ffffff;
+      filter: drop-shadow(0 -1px 0 #dcdfe4);
+    }
+
+    .home-guide-popover .home-guide-gif {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 6px;
+      margin: 0 0 12px;
+      background: #e8eaed;
+    }
+
+    body.guide-scheme-2 .home-guide-gif {
+      display: none;
+    }
+
+    .home-guide-cursor {
+      display: none;
+      position: fixed;
+      z-index: 1000007;
+      width: 28px;
+      height: 36px;
+      pointer-events: none;
+      filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.28));
+    }
+
+    body.guide-scheme-2.home-guide-on .home-guide-cursor.show {
+      display: block;
+      animation: guide-cursor-move 2.2s ease-in-out infinite;
+    }
+
+    .home-guide-cursor svg {
+      width: 24px;
+      height: 32px;
+      display: block;
+    }
+
+    .home-guide-cursor .click-dot {
+      position: absolute;
+      left: 2px;
+      top: 2px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #4da3ff;
+      opacity: 0;
+      animation: guide-click-dot 2.2s ease-out infinite;
+    }
+
+    @keyframes guide-cursor-move {
+      0% { transform: translate(52px, 46px); opacity: 0; }
+      10% { opacity: 1; }
+      38% { transform: translate(0, 0); opacity: 1; }
+      46% { transform: translate(0, 5px) scale(0.9); }
+      56% { transform: translate(0, 0) scale(1); }
+      86% { transform: translate(0, 0); opacity: 1; }
+      100% { transform: translate(0, 0); opacity: 0; }
+    }
+
+    @keyframes guide-click-dot {
+      0%, 42% { opacity: 0; transform: scale(0.3); }
+      48% { opacity: 0.95; transform: scale(1); }
+      62% { opacity: 0; transform: scale(2.2); }
+      100% { opacity: 0; transform: scale(2.2); }
+    }
+
+    .scheme-switch a {
+      color: #0156ce;
+      text-decoration: underline;
+    }
+
+    .scheme-switch a.current {
+      font-weight: 700;
+      text-decoration: none;
+      color: #172b4d;
+    }
+
     @media (max-width: 960px) {
       .nav-links { display: none; }
       #leftcol { width: 200px; }
@@ -582,7 +704,7 @@
 
   <header id="topmenu">
     <div class="inner">
-      <a class="logo" href="#">
+      <a class="logo" href="#" id="susyLogo" onclick="onLogoClick(event)">
         <img src="assets/img/icon/SUSY_logo.svg" alt="SuSy" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
         <span style="display:none;font-weight:700;font-size:20px;color:#222;">SuSy</span>
       </a>
@@ -669,14 +791,12 @@
       </div>
       <div class="main-body">
         <div class="guide-panel">
-          <h2>account入口迁移提示</h2>
-          <p class="guide-lead">本页为原型演示。用于说明「Account 相关设置已迁至右上角用户菜单」时，如何用红点引导用户发现入口。</p>
-          <ol>
-            <li>页面加载后，左侧 <strong>Account</strong> 标题旁显示红色脉冲圆点（beacon）。表示该用户尚未确认迁移提示。</li>
-            <li>点击红色圆点：页面出现半透明遮罩；右上角用户邮箱下拉自动展开并高亮；左侧弹出气泡文案「Account settings moved / Account settings pages are now here」，箭头指向用户下拉菜单。</li>
-            <li>点击气泡中的 <strong>Got it</strong>或者点击遮罩空白处：关闭遮罩与气泡，收起用户下拉，红色圆点消失。表示用户已确认。</li>
-            <li>若红点已消失，再次点击 Account 不会重复弹出引导。</li>
-          </ol>
+          <h2>SuSy8906更新</h2>
+          <p class="guide-lead scheme-switch">关于回到主页的引导，方案1（默认）：全屏遮罩 + 真实 logo 高亮 + 弹窗提示且播放动图。方案2：全屏遮罩 + 真实 logo 高亮 + 代码鼠标移入点击 + 弹窗内提示。<br>
+            <a id="linkScheme1" href="index.html">方案1 index.html</a>
+            &nbsp;·&nbsp;
+            <a id="linkScheme2" href="index.html?scheme=2">方案2 index.html?scheme=2</a>
+          </p>
         </div>
       </div>
     </main>
@@ -693,8 +813,23 @@
     </div>
   </footer>
 
-  <div class="migrate-overlay" id="migrateOverlay" onclick="closeMigrateUI()"></div>
+  <div class="migrate-overlay" id="migrateOverlay" onclick="onOverlayClick()"></div>
+  <div class="migrate-popover home-guide-popover" id="homeGuidePopover" onclick="event.stopPropagation()">
+    <h3>Back to homepage</h3>
+    <p>Click the SuSy icon in the top-left corner to return to the homepage.</p>
+    <img class="home-guide-gif" id="homeGuideGif" src="assets/PixPin_2026-09-21_12-25-30.gif" alt="">
+    <div class="actions">
+      <button type="button" class="primary" onclick="markHomeGuideSeen()">Got it</button>
+    </div>
+  </div>
+  <div class="home-guide-cursor" id="homeGuideCursor" aria-hidden="true">
+    <span class="click-dot"></span>
+    <svg viewBox="0 0 24 32" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 1.8 L3 24.2 L8.6 18.8 L12.8 28.6 L16.4 27.1 L12.1 17.2 L19.8 17.2 Z" fill="#ffffff" stroke="#111111" stroke-width="1.4" stroke-linejoin="round"/>
+    </svg>
+  </div>
   <div class="migrate-popover" id="migratePopover">
+    <span class="tag">Step 2</span>
     <h3>Account settings moved</h3>
     <p>Account settings pages are now here.</p>
     <div class="actions">
@@ -704,6 +839,8 @@
 
   <script>
 
+    const guideScheme = (new URLSearchParams(location.search).get('scheme') === '2') ? 2 : 1;
+    let homeGuideOpen = false;
     let migrationHinted = 0;
 
     function applyMigrationState() {
@@ -725,11 +862,22 @@
 
     function toggleDropdown(e) {
       e.stopPropagation();
+      if (homeGuideOpen) {
+        markHomeGuideSeen();
+        return;
+      }
       const dd = document.getElementById('userDropdown');
       setDropdownOpen(!dd.classList.contains('open'));
     }
 
     document.addEventListener('click', (e) => {
+      if (homeGuideOpen) {
+        const pop = document.getElementById('homeGuidePopover');
+        const logo = document.getElementById('susyLogo');
+        if (pop.contains(e.target) || logo.contains(e.target)) return;
+        markHomeGuideSeen();
+        return;
+      }
       const wrap = document.getElementById('userWrap');
       const pop = document.getElementById('migratePopover');
       if (!wrap.contains(e.target) && !pop.contains(e.target)) {
@@ -738,6 +886,77 @@
         }
       }
     });
+
+    function positionHomeGuide() {
+      const logo = document.getElementById('susyLogo');
+      const pop = document.getElementById('homeGuidePopover');
+      const rect = logo.getBoundingClientRect();
+      const gap = 32;
+      const popW = guideScheme === 2 ? 280 : 320;
+      let left = rect.right + gap;
+      let top = Math.max(12, rect.top);
+      if (left + popW > window.innerWidth - 12) {
+        left = Math.max(12, rect.left);
+        top = rect.bottom + gap;
+        pop.classList.add('below');
+      } else {
+        pop.classList.remove('below');
+      }
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      if (guideScheme === 2) {
+        const cursor = document.getElementById('homeGuideCursor');
+        cursor.style.left = (rect.left + rect.width * 0.45) + 'px';
+        cursor.style.top = (rect.top + rect.height * 0.35) + 'px';
+      }
+    }
+
+    function startHomeGuide() {
+      homeGuideOpen = true;
+      document.body.classList.add('home-guide-on');
+      document.body.classList.add(guideScheme === 2 ? 'guide-scheme-2' : 'guide-scheme-1');
+      document.getElementById('susyLogo').classList.add('spotlight');
+      document.getElementById('migrateOverlay').classList.add('show');
+      if (guideScheme === 2) {
+        document.getElementById('homeGuideCursor').classList.add('show');
+      } else {
+        const gif = document.getElementById('homeGuideGif');
+        gif.src = 'assets/PixPin_2026-09-21_12-25-30.gif?t=' + Date.now();
+      }
+      requestAnimationFrame(() => {
+        document.getElementById('homeGuidePopover').classList.add('show');
+        positionHomeGuide();
+      });
+    }
+
+    function closeHomeGuide() {
+      homeGuideOpen = false;
+      document.body.classList.remove('home-guide-on', 'guide-scheme-1', 'guide-scheme-2');
+      document.getElementById('susyLogo').classList.remove('spotlight');
+      document.getElementById('homeGuidePopover').classList.remove('show');
+      document.getElementById('homeGuideCursor').classList.remove('show');
+      document.getElementById('migrateOverlay').classList.remove('show');
+    }
+
+    function markHomeGuideSeen() {
+      closeHomeGuide();
+    }
+
+    function onLogoClick(e) {
+      e.preventDefault();
+      if (homeGuideOpen) {
+        e.stopPropagation();
+        markHomeGuideSeen();
+      }
+    }
+
+    function onOverlayClick() {
+      if (homeGuideOpen) {
+        markHomeGuideSeen();
+        return;
+      }
+      closeMigrateUI();
+    }
 
     function positionPopover() {
       const dropdown = document.getElementById('userDropdown');
@@ -766,14 +985,18 @@
       pop.style.top = top + 'px';
       pop.style.left = left + 'px';
 
-      // 箭头对准下拉菜单垂直中部
       const arrowTop = Math.max(16, Math.min(rect.top + rect.height / 2 - top - 6, 100));
       pop.style.setProperty('--arrow-top', arrowTop + 'px');
     }
 
     function onAccountClick(e) {
       e.stopPropagation();
+      if (homeGuideOpen) {
+        markHomeGuideSeen();
+        return;
+      }
       if (migrationHinted === 1) return;
+      document.body.classList.add('account-guide-on');
       document.getElementById('userWrap').classList.add('spotlight');
       setDropdownOpen(true);
       document.getElementById('migrateOverlay').classList.add('show');
@@ -784,6 +1007,7 @@
     }
 
     function closeMigrateUI() {
+      document.body.classList.remove('account-guide-on');
       document.getElementById('migrateOverlay').classList.remove('show');
       document.getElementById('migratePopover').classList.remove('show');
       document.getElementById('migratePopover').classList.remove('below');
@@ -792,13 +1016,15 @@
     }
 
     function markMigrationSeen() {
-      // Demo：仅本次会话隐藏；刷新页面红点会再出现，方便反复体验
       migrationHinted = 1;
       closeMigrateUI();
       applyMigrationState();
     }
 
     window.addEventListener('resize', () => {
+      if (document.getElementById('homeGuidePopover').classList.contains('show')) {
+        positionHomeGuide();
+      }
       if (document.getElementById('migratePopover').classList.contains('show')) {
         positionPopover();
       }
@@ -806,6 +1032,13 @@
 
     try { localStorage.removeItem('migration_hinted'); } catch (e) {}
     applyMigrationState();
+    const s1 = document.getElementById('linkScheme1');
+    const s2 = document.getElementById('linkScheme2');
+    if (s1 && s2) {
+      s1.classList.toggle('current', guideScheme === 1);
+      s2.classList.toggle('current', guideScheme === 2);
+    }
+    startHomeGuide();
   </script>
 </body>
 </html>
