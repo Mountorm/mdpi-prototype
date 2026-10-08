@@ -36,7 +36,7 @@ const noteVisible = ref(true)
       <li>两栏设计，左信息右概况</li>
       <li>目前共 3 大类 11 项</li>
       <li>每一项必包含 name、description</li>
-      <li>每一项可能包含 结果块（带展开/折叠的）、flag（passed/warning）、editor note</li>
+      <li>每一项可能包含 结果块（带展开/折叠的）、flag（passed/warning）、Assistant Editor's Note</li>
     </ol>
   </aside>
 </template>

@@ -8,7 +8,7 @@
 import { ref, computed } from 'vue'
 import MdIcon from './MdIcon.vue'
 import {
-  isNumberItem, isScopeItem, isArticleTypeItem, isIThenticate, isAIItem,
+  isNumberItem, isScopeItem, isIThenticate, isAIItem,
   isImageItem, isReferenceAnalysisItem, scopeStatusText,
   isResultUnavailable, resultSummary,
 } from '../utils/itemKinds.js'
@@ -16,7 +16,7 @@ import {
 const props = defineProps({
   item: { type: Object, required: true },
   result: { type: Object, default: null },
-  value: { type: [Number, String], default: null },
+  value: { type: [Number, String, Object], default: null },
   readonly: { type: Boolean, default: false },
   // whether the result is visible in the AcEd report (AE-controlled)
   visible: { type: Boolean, default: true },
@@ -39,17 +39,6 @@ const expanded = ref(true)
 const hasDetails = computed(() =>
   isAIItem(props.item) || isReferenceAnalysisItem(props.item)
 )
-
-const resultLabel = computed(() => {
-  if (isNumberItem(props.item)) return 'Value'
-  if (isScopeItem(props.item)) return 'Detection'
-  if (isArticleTypeItem(props.item)) return 'Article type'
-  if (isIThenticate(props.item)) return 'Similarity'
-  if (isAIItem(props.item)) return 'AI ratio'
-  if (isImageItem(props.item)) return 'Detection'
-  if (isReferenceAnalysisItem(props.item)) return 'Found'
-  return 'Value'
-})
 
 const summary = computed(() => resultSummary(props.item, props.result, props.value))
 
@@ -79,8 +68,6 @@ const aiSegments = computed(() => {
   <div v-if="!readonly || visible" class="det-result">
     <!-- summary row (always): single-value results are fully shown here -->
     <div class="det-summary">
-      <span class="det-label">{{ resultLabel }}</span>
-
       <!-- scope: status text (single value, no details) -->
       <span
         v-if="isScopeItem(item)"
@@ -90,7 +77,7 @@ const aiSegments = computed(() => {
 
       <!-- iThenticate: percent + report link -->
       <template v-else-if="isIThenticate(item)">
-        <span class="det-summary-text">Percent match: {{ result?.percent ?? '—' }}%</span>
+        <span class="det-summary-text">Similarity: {{ result?.percent ?? '—' }}%</span>
         <a
           v-if="result?.reportUrl"
           class="det-link"
@@ -116,7 +103,7 @@ const aiSegments = computed(() => {
       </template>
 
       <!-- numbers: report shows the value; generate edits it in the detail -->
-      <span v-else-if="isNumberItem(item)" class="det-summary-text">{{ value ?? '—' }}</span>
+      <span v-else-if="isNumberItem(item)" class="det-summary-text">{{ summary }}</span>
 
       <!-- article type / AI summary / reference summary: text -->
       <span v-else class="det-summary-text">{{ summary }}</span>
@@ -144,11 +131,11 @@ const aiSegments = computed(() => {
 
     <!-- detail: number input (generate) and structured results (AI / reference analysis) -->
     <div
-      v-show="(isNumberItem(item) && !readonly) || (hasDetails && expanded)"
+      v-show="(isNumberItem(item) && !item.parts && !readonly) || (hasDetails && expanded)"
       class="det-detail"
     >
       <!-- 1) numbers: editable input on generate -->
-      <template v-if="isNumberItem(item)">
+      <template v-if="isNumberItem(item) && !item.parts">
         <el-input-number
           :model-value="value"
           :min="0"
@@ -225,7 +212,6 @@ const aiSegments = computed(() => {
   flex-wrap: wrap;
   gap: 8px;
 }
-.det-label { font-size: 12px; color: #5f6b7d; min-width: 64px; }
 .det-summary-text { font-size: 13px; font-weight: 500; color: #1b3555; }
 .det-summary-text.passed { color: #256b41; }
 .det-summary-text.warning { color: #9a3d20; }

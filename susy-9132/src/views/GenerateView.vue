@@ -9,23 +9,25 @@
 //   - auto items (Scope Match / Reference Analysis): system flag, AE can override
 // The flag / comment behavior follows the config (ace.js): manual items let the
 // AE pick, auto items resolve from the detection result or rule.
-// Generate validates, then shows a read-only summary below (no navigation).
+// Preview validates the checklist and opens a dialog. Generate writes the
+// report and opens /report.
 import { ref, reactive, computed, inject, onMounted, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useRouter } from 'vue-router'
 import MdIcon from '../components/MdIcon.vue'
 import DetectionResult from '../components/DetectionResult.vue'
+import TechnicalReport from '../components/TechnicalReport.vue'
 import { checklistStore } from '../store/checklist.js'
 import { mockManuscript } from '../mock/ace.js'
 import { getDetectionResult } from '../mock/detectionResults.js'
 import { setReport } from '../store/report.js'
-import { isNumberItem, isScopeItem, isReferenceAnalysisItem, isImageItem, isResultUnavailable } from '../utils/itemKinds.js'
+import { isNumberItem, isScopeItem, isReferenceAnalysisItem, isImageItem, isResultUnavailable, isArticleTypeItem } from '../utils/itemKinds.js'
 
 const router = useRouter()
 const manuscriptId = mockManuscript.id
 
 /* ---------------- Answers ---------------- */
-// answers[itemId] = { status, comment, numberValue, selected }
+// answers[itemId] = { status, comment, numberValue, counts, selected }
 // status: 'passed' | 'warning' | null (auto items pre-fill from detection result)
 const answers = reactive({})
 
@@ -33,8 +35,12 @@ const emptyAnswer = (item) => {
   const result = getDetectionResult(manuscriptId, item.id)
   let status = null
   let numberValue = null
+  let counts = null
   if (isNumberItem(item)) {
-    numberValue = result?.value ?? null
+    counts = {}
+    for (const part of item.parts || []) {
+      counts[part.key] = result?.counts?.[part.key] ?? null
+    }
   } else if (isScopeItem(item)) {
     // auto: in_scope → passed, everything else (out_of_scope / unknown) → warning.
     // The AE can override the judgment if they consider it fine.
@@ -57,7 +63,7 @@ const emptyAnswer = (item) => {
   // Unavailable results (unknown scope) and Reference Analysis structures
   // default to hidden and their checkbox stays disabled.
   const resultVisible = !isResultUnavailable(item, result)
-  return { status, comment: '', numberValue, selected: item.required, resultVisible }
+  return { status, comment: '', numberValue, counts, selected: item.required, resultVisible }
 }
 const getAnswer = (id) => answers[id]
 
@@ -96,21 +102,29 @@ const errors = reactive({})
 const errorText = (id) => errors[id] ?? ''
 const clearError = (id) => { delete errors[id] }
 
+// Same rule as Preview: numbers filled, Fine, or Not sure with a comment.
+const itemGap = (item) => {
+  const a = getAnswer(item.id)
+  if (!a?.selected) return ''
+  if (isNumberItem(item)) {
+    const missing = (item.parts || []).some((part) => {
+      const v = a.counts?.[part.key]
+      return v === null || v === undefined
+    })
+    return missing ? 'Please fill in the numbers' : ''
+  }
+  if (!a.status) return 'Please mark Fine or Not sure'
+  if (a.status === 'warning' && !String(a.comment || '').trim()) return 'A comment is required for Warning'
+  return ''
+}
+const isItemComplete = (item) => !itemGap(item)
+
 const validate = () => {
   for (const key of Object.keys(errors)) delete errors[key]
   let firstErrorItem = null
 
   activeItems.value.forEach((item) => {
-    const a = getAnswer(item.id)
-    if (!a.selected) return // items not added to the report are not validated
-    let msg = ''
-    if (isNumberItem(item)) {
-      if (a.numberValue === null || a.numberValue === undefined) msg = 'Please fill in the number'
-    } else if (!a.status) {
-      msg = 'Please mark Fine or Not sure'
-    } else if (a.status === 'warning' && !String(a.comment || '').trim()) {
-      msg = 'A comment is required for Warning'
-    }
+    const msg = itemGap(item)
     if (msg) {
       errors[item.id] = msg
       firstErrorItem ??= item.id
@@ -126,20 +140,41 @@ const validate = () => {
   return true
 }
 
-/* ---------------- Actions ---------------- */
-// Generate: keep the button, real submission is wired to another flow later
-const onGenerate = () => {
-  if (validate()) {
-    ElMessage.success('Checklist validated')
-  }
+const previewOpen = ref(false)
+
+const previewEntries = computed(() =>
+  activeItems.value.map((item) => ({
+    item,
+    ans: getAnswer(item.id),
+    result: getDetectionResult(manuscriptId, item.id),
+  })).filter((e) => e.ans?.selected)
+)
+
+const previewCountsNote = computed(() =>
+  previewEntries.value
+    .filter((e) => isNumberItem(e.item))
+    .map((e) => String(e.ans.comment || '').trim())
+    .find(Boolean) || ''
+)
+
+const previewNote = (entry) => String(entry.ans.comment || '').trim()
+
+const previewArticleType = (entry) => {
+  if (!isArticleTypeItem(entry.item)) return ''
+  if (!entry.ans.resultVisible || !entry.result) return ''
+  return entry.result.articleType || ''
 }
 
-// Review: hand the filled checklist over to the report page
+/* ---------------- Actions ---------------- */
+// Preview: validate, then show the report body in a dialog.
 const onReview = () => {
-  if (validate()) {
-    setReport(manuscriptId, answers)
-    router.push('/report')
-  }
+  if (validate()) previewOpen.value = true
+}
+
+const onGenerate = () => {
+  setReport(manuscriptId, answers)
+  previewOpen.value = false
+  router.push('/report')
 }
 
 const onReset = () => {
@@ -158,8 +193,11 @@ const onReset = () => {
 
 // Register the toolbar into the ReportShell breadcrumb slot (always visible)
 const registerToolbar = inject('registerToolbar', null)
-onMounted(() => registerToolbar?.({ manuscriptId, onReset, onGenerate, onReview }))
+onMounted(() => registerToolbar?.({ manuscriptId, onReset, onReview }))
 onBeforeUnmount(() => registerToolbar?.(null))
+
+const numberItems = (items) => items.filter(isNumberItem)
+const otherItems = (items) => items.filter((item) => !isNumberItem(item))
 
 const toggleCategory = (cat) => {
   const s = collapsedCategories.value
@@ -170,15 +208,9 @@ const toggleItem = (id) => {
   s.has(id) ? s.delete(id) : s.add(id)
 }
 
-// category progress: done / selected (number items filled + judged items resolved)
 const categoryProgress = (items) => {
   const chosen = items.filter((item) => getAnswer(item.id).selected)
-  let done = 0
-  chosen.forEach((item) => {
-    const a = getAnswer(item.id)
-    if (isNumberItem(item) && a.numberValue !== null && a.numberValue !== undefined) done++
-    else if (resolvedFlag(item)) done++
-  })
+  const done = chosen.filter(isItemComplete).length
   return `${done}/${chosen.length}`
 }
 </script>
@@ -196,13 +228,12 @@ const categoryProgress = (items) => {
 
         <div v-if="!collapsedCategories.has(cat)" class="gen-items">
           <article
-            v-for="item in items"
-            :key="item.id"
+            v-for="item in numberItems(items)"
             :id="`item-${item.id}`"
+            :key="item.id"
             class="gen-item"
-            :class="{ error: errorText(item.id) }"
+            :class="{ pending: !isItemComplete(item), error: errorText(item.id) }"
           >
-            <!-- item header: title + required star, resolved badge, add-checkbox on the right -->
             <header class="gen-item-header" @click="toggleItem(item.id)">
               <MdIcon
                 :name="collapsedItems.has(item.id) ? 'expand_more' : 'expand_less'"
@@ -210,7 +241,53 @@ const categoryProgress = (items) => {
                 class="gen-arrow"
               />
               <div class="gen-item-title">
-                <span class="gen-item-name" :class="{ unselected: !getAnswer(item.id).selected }">{{ item.title }}</span>
+                <span class="gen-item-name">{{ item.title }}</span>
+                <span v-if="item.required" class="gen-required-star" title="Required">*</span>
+              </div>
+              <span class="gen-item-desc">{{ item.description }}</span>
+            </header>
+            <div v-if="!collapsedItems.has(item.id)" class="gen-item-body">
+              <div class="gen-counts-row">
+                <div v-for="part in item.parts" :key="part.key" class="gen-count">
+                  <div class="gen-count-label">{{ part.title }}</div>
+                  <el-input-number
+                    :model-value="getAnswer(item.id).counts[part.key]"
+                    :min="0"
+                    controls-position="right"
+                    class="gen-num"
+                    @update:model-value="(v) => { getAnswer(item.id).counts[part.key] = v; clearError(item.id) }"
+                  />
+                </div>
+              </div>
+              <p v-if="errorText(item.id)" class="gen-error">
+                <MdIcon name="error" :size="14" />{{ errorText(item.id) }}
+              </p>
+              <div class="gen-comment">
+                <textarea
+                  :value="getAnswer(item.id).comment"
+                  rows="2"
+                  placeholder="Add a comment"
+                  @input="(e) => { getAnswer(item.id).comment = e.target.value }"
+                ></textarea>
+              </div>
+            </div>
+          </article>
+
+          <article
+            v-for="item in otherItems(items)"
+            :key="item.id"
+            :id="`item-${item.id}`"
+            class="gen-item"
+            :class="{ pending: !isItemComplete(item), error: errorText(item.id) }"
+          >
+            <header class="gen-item-header" @click="toggleItem(item.id)">
+              <MdIcon
+                :name="collapsedItems.has(item.id) ? 'expand_more' : 'expand_less'"
+                :size="16"
+                class="gen-arrow"
+              />
+              <div class="gen-item-title">
+                <span class="gen-item-name">{{ item.title }}</span>
                 <span v-if="item.required" class="gen-required-star" title="Required">*</span>
               </div>
               <span class="gen-item-desc" :title="item.description">{{ item.description }}</span>
@@ -221,11 +298,6 @@ const categoryProgress = (items) => {
               >
                 {{ resolvedFlag(item) === 'passed' ? 'Passed' : 'Warning' }}
               </span>
-              <el-checkbox
-                :model-value="getAnswer(item.id).selected"
-                disabled
-                :aria-label="'Included in report: ' + item.title"
-              ></el-checkbox>
             </header>
 
             <!-- expandable even when not selected: AE reviews the detection result first -->
@@ -271,6 +343,26 @@ const categoryProgress = (items) => {
         </div>
       </section>
     </div>
+
+    <el-dialog
+      v-model="previewOpen"
+      title="Preview"
+      width="880px"
+      append-to-body
+      class="gen-preview-dialog"
+    >
+      <TechnicalReport
+        main-only
+        :entries="previewEntries"
+        :counts-note="previewCountsNote"
+        :note-of="previewNote"
+        :article-type-of="previewArticleType"
+      />
+      <template #footer>
+        <button class="gen-btn" type="button" @click="previewOpen = false">Cancel</button>
+        <button class="gen-btn primary" type="button" @click="onGenerate">Generate</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -307,23 +399,22 @@ const categoryProgress = (items) => {
 .gen-category-progress { margin-left: auto; font-size: 12px; color: #5f6b7d; }
 
 .gen-items { display: flex; flex-direction: column; }
+.gen-counts-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.gen-count-label { margin-bottom: 6px; color: #344764; font-size: 13px; font-weight: 600; }
+.gen-num { width: 100%; }
 .gen-item { border-bottom: 1px solid #eef0f3; }
 .gen-item:last-child { border-bottom: 0; }
+.gen-item.pending { box-shadow: inset 3px 0 0 #e65100; }
 .gen-item.error { background: #fffbf7; box-shadow: inset 3px 0 0 #e65100; }
 
 .gen-item-header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; cursor: pointer; user-select: none; }
-.gen-item-header .el-checkbox {
-  margin-right: 0;
-  margin-left: auto;
-  --el-checkbox-checked-bg-color: #0156ce;
-  --el-checkbox-checked-input-border-color: #0156ce;
-  --el-checkbox-disabled-checked-input-fill: rgba(1, 86, 206, 0.4);
-  --el-checkbox-disabled-checked-input-border-color: rgba(1, 86, 206, 0.4);
-  --el-checkbox-disabled-checked-icon-color: #fff;
-}
 .gen-item-title { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .gen-item-name { font-size: 15px; font-weight: 600; color: #344764; }
-.gen-item-name.unselected { color: #b1b6bf; }
 .gen-required-star { color: #c7352d; font-weight: 700; }
 .gen-item-desc {
   flex: 1;
@@ -398,4 +489,26 @@ const categoryProgress = (items) => {
   cursor: pointer;
 }
 .gen-btn:hover { border-color: #0156ce; color: #0156ce; }
+.gen-btn.primary {
+  border-color: #0156ce;
+  color: #fff;
+  background: #0156ce;
+}
+.gen-btn.primary:hover { background: #004db9; color: #fff; }
+@media (max-width: 800px) {
+  .gen-counts-row { grid-template-columns: 1fr; }
+}
+</style>
+
+<style>
+.gen-preview-dialog .el-dialog__body {
+  max-height: 70vh;
+  overflow: auto;
+  background: #f5f7fb;
+}
+.gen-preview-dialog .el-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
 </style>

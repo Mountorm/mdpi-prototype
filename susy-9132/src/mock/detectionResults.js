@@ -11,9 +11,7 @@ import { mockManuscript } from './ace.js'
 export const detectionResults = {
   [mockManuscript.id]: {
     // Manuscript Information (numbers, AE can edit)
-    1: { value: 8542 }, // Word Count
-    2: { value: 5 }, // Figures Count
-    3: { value: 3 }, // Tables Count
+    1: { counts: { word: 8542, figures: 5, tables: 3 } },
 
     // Scope & Article Type
     // status: 'in_scope' | 'out_of_scope' | 'unknown'

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, reactive, computed, onMounted, onBeforeUnmount } from 'vue'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import MdIcon from '../components/MdIcon.vue'
 import { checklistStore } from '../store/checklist.js'
 
@@ -40,21 +40,6 @@ const onFilterChange = () => { pagination.page = 1 }
 const onDocClick = () => { openFilter.value = '' }
 onMounted(() => document.addEventListener('click', onDocClick))
 onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
-
-/* ---------------- Delete ---------------- */
-const confirmDelete = (item) => {
-  ElMessageBox.confirm(
-    `Deleting this item will permanently remove it from the template. Delete "${item.title}"?`,
-    'Delete Item',
-    { confirmButtonText: 'Delete', cancelButtonText: 'Cancel', type: 'warning' }
-  )
-    .then(() => {
-      const idx = items.findIndex((i) => i.id === item.id)
-      if (idx > -1) items.splice(idx, 1)
-      ElMessage.success('Item deleted')
-    })
-    .catch(() => {})
-}
 
 /* ---------------- Edit dialog ---------------- */
 // New items are added at code level (mock/ace.js), not from the UI.
@@ -100,18 +85,9 @@ const openEditModal = (item) => {
 
 const closeEditModal = () => { editModalOpen.value = false }
 
-// New category created inline via el-select allow-create is added to the list
-const onCategoryChange = (val) => {
-  if (val && !categoriesState.includes(val)) categoriesState.push(val)
-}
-
 const submitItem = () => {
-  const category = String(form.category || '').trim()
-  const title = String(form.title || '').trim()
-  const description = String(form.description || '').trim()
-  if (!category) { ElMessage.warning('Please select or enter a category'); return }
-  if (!title) { ElMessage.warning('Please enter a title'); return }
-  if (!description) { ElMessage.warning('Please enter a description'); return }
+  const target = items.find((i) => i.id === editingId.value)
+  if (!target) return
   if (form.flagRequired && form.flagMode === 'auto') {
     if (form.rule.type === 'numeric') {
       if (!String(form.rule.subject || '').trim() || form.rule.value === null || form.rule.value === undefined) {
@@ -124,16 +100,13 @@ const submitItem = () => {
     }
   }
 
-  const target = items.find((i) => i.id === editingId.value)
+  // Category, title and description are template-defined and stay unchanged.
   const payload = {
-    category,
-    title,
-    description,
     required: form.required,
     flagRequired: form.flagRequired,
     flagMode: form.flagMode,
     rule: form.flagRequired && form.flagMode === 'auto' ? { ...form.rule } : null,
-    inUse: target ? target.inUse : false, // keep the existing status (In Use / Draft)
+    inUse: target.inUse,
   }
 
   Object.assign(target, { ...payload, id: target.id })
@@ -228,9 +201,6 @@ const flagSummary = (item) => {
               <button class="action" type="button" :aria-label="'Edit ' + item.title" @click="openEditModal(item)">
                 <MdIcon name="edit" :size="17" />
               </button>
-              <button class="action delete" type="button" :aria-label="'Delete ' + item.title" @click="confirmDelete(item)">
-                <MdIcon name="delete" :size="17" />
-              </button>
             </td>
           </tr>
           <tr v-if="!visibleItems.length">
@@ -265,29 +235,22 @@ const flagSummary = (item) => {
         <form @submit.prevent="submitItem">
           <div class="modal-content">
             <div class="form-field">
-              <label for="newCategory">Category <span class="required">*</span></label>
+              <label for="newCategory">Category</label>
               <el-select
                 v-model="form.category"
-                filterable
-                allow-create
-                default-first-option
+                disabled
                 placeholder="Select a category"
-                @change="onCategoryChange"
               >
                 <el-option v-for="c in categoriesState" :key="c" :value="c" :label="c.replace('\n', ' ')"></el-option>
               </el-select>
             </div>
             <div class="form-field">
-              <label for="newTitle">Title <span class="required">*</span></label>
-              <input id="newTitle" v-model="form.title" type="text" placeholder="Please input..." />
+              <label for="newTitle">Title</label>
+              <input id="newTitle" v-model="form.title" type="text" readonly />
             </div>
             <div class="form-field">
-              <label for="newDescription">Description <span class="required">*</span></label>
-              <textarea
-                id="newDescription"
-                v-model="form.description"
-                placeholder="Please indicate the specific description for this item"
-              ></textarea>
+              <label for="newDescription">Description</label>
+              <textarea id="newDescription" v-model="form.description" readonly></textarea>
             </div>
             <div class="form-field">
               <label>Required</label>
@@ -299,7 +262,7 @@ const flagSummary = (item) => {
             </div>
             <div class="form-field">
               <label>Flag</label>
-              <el-switch v-model="form.flagRequired" active-text="Require marking (passed / warning)" />
+              <el-switch v-model="form.flagRequired" disabled active-text="passed / warning" />
             </div>
             <template v-if="form.flagRequired">
               <div class="form-field">

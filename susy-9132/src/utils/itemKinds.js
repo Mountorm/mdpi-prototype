@@ -4,7 +4,8 @@
 // even if the mock ids change.
 // ============================================
 
-export const isNumberItem = (item) => !item.flagRequired && !item.rule
+export const isCountsItem = (item) => item?.kind === 'counts'
+export const isNumberItem = isCountsItem
 export const isScopeItem = (item) => item.title.endsWith('Scope Match')
 export const isArticleTypeItem = (item) => item.title === 'Article Type'
 export const isIThenticate = (item) => item.title.toLowerCase() === 'ithenticate'
@@ -32,7 +33,7 @@ export const isResultUnavailable = (item, result) => {
   // Reference Analysis: the detailed ref structure is never exposed in the report
   if (isReferenceAnalysisItem(item)) return true
   // number items (Word/Figures/Tables) always show their value — never hide
-  if (!item.flagRequired && !item.rule) return false
+  if (isCountsItem(item)) return false
   if (isScopeItem(item)) {
     return ['unknown'].includes(result?.status)
   }
@@ -45,10 +46,13 @@ export const scopeStatusLabel = (result) => scopeStatusText(result).text
 
 // One-line summary of a detection result (used as the collapsed row in the report)
 export const resultSummary = (item, result, value) => {
-  if (isNumberItem(item)) return value ?? '—'
+  if (isCountsItem(item)) {
+    const counts = value?.counts || (value && typeof value === 'object' ? value : null) || result?.counts
+    return (item.parts || []).map((part) => `${part.title} ${counts?.[part.key] ?? '—'}`).join(' · ')
+  }
   if (isScopeItem(item)) return scopeStatusLabel(result)
   if (isArticleTypeItem(item)) return result?.articleType ?? '—'
-  if (isIThenticate(item)) return `${result?.percent ?? '—'}%`
+  if (isIThenticate(item)) return `Similarity: ${result?.percent ?? '—'}%`
   if (isAIItem(item)) {
     return `Human ${result?.green ?? 0}% · Maybe AI ${result?.yellow ?? 0}% · Likely AI ${result?.red ?? 0}%`
   }

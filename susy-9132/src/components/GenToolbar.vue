@@ -7,7 +7,6 @@ import MdIcon from './MdIcon.vue'
 defineProps({
   manuscriptId: { type: String, required: true },
   onReset: { type: Function, required: true },
-  onGenerate: { type: Function, required: true },
   onReview: { type: Function, required: true },
 })
 </script>
@@ -15,16 +14,15 @@ defineProps({
 <template>
   <div class="gen-toolbar">
     <div class="gen-left">
-      <span class="gen-ms-id">{{ manuscriptId }}</span>
+      
       <span class="gen-title">
         <MdIcon name="description" :size="18" class="gen-title-icon" />Generate Technical Precheck Report
-      </span>
+      </span><span class="gen-ms-id">{{ manuscriptId }}</span>
     </div>
     <div class="gen-actions">
       <button class="gen-btn ghost" type="button" title="Clear all answers and comments" @click="onReset">Reset</button>
-      <button class="gen-btn" type="button" title="Validate the checklist without submitting" @click="onGenerate">Validate</button>
-      <button class="gen-btn primary" type="button" title="Hand the checklist over to the report page" @click="onReview">
-        <MdIcon name="visibility" :size="16" class="gen-btn-icon" />Review Report
+      <button class="gen-btn primary" type="button" title="Preview the report, then generate it" @click="onReview">
+        <MdIcon name="visibility" :size="16" class="gen-btn-icon" />Preview
       </button>
     </div>
   </div>

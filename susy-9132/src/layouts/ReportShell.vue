@@ -13,7 +13,7 @@ const route = useRoute()
 const collapsed = ref(false)
 const groupOpen = ref(true)
 
-// Page-level toolbar slot: { manuscript, onReset, onGenerate } or null
+// Page-level toolbar slot: { manuscriptId, onReset, onReview } or null
 const toolbarProps = ref(null)
 provide('registerToolbar', (props) => { toolbarProps.value = props })
 
@@ -26,12 +26,14 @@ const menuItems = [
   { to: '/report', label: 'Report Page' },
   { to: '/report1', label: 'Report Snap · Attention' },
   { to: '/report2', label: 'Report Snap · Category' },
+  { to: '/report3', label: 'Report 3' },
 ]
 
 const pageTitle = computed(() => {
   if (route.path.startsWith('/generate')) return 'Generate Report'
   if (route.path.startsWith('/report1')) return 'Report Snap · Attention'
   if (route.path.startsWith('/report2')) return 'Report Snap · Category'
+  if (route.path.startsWith('/report3')) return 'Report 3'
   return 'Report Page'
 })
 

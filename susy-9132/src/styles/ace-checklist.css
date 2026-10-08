@@ -80,10 +80,10 @@
       }
       th:nth-child(1) { width: 11%; }
       th:nth-child(2) { width: 14%; }
-      th:nth-child(3) { width: 38%; }
-      th:nth-child(4) { width: 10%; }
-      th:nth-child(5) { width: 12%; }
-      th:nth-child(6) { width: 15%; }
+      th:nth-child(3) { width: 45%; }
+      th:nth-child(4) { width: 9%; }
+      th:nth-child(5) { width: 13%; }
+      th:nth-child(6) { width: 8%; }
       td {
         height: 69px;
         padding: 9px 14px;
@@ -272,6 +272,14 @@
       .form-field > input:focus,
       .form-field > select:focus,
       .form-field > textarea:focus { border-color: var(--primary); }
+      .form-field > input[readonly],
+      .form-field > textarea[readonly] {
+        background: #f4f6f8;
+        color: #5f6b7d;
+        cursor: not-allowed;
+      }
+      .form-field > input[readonly]:focus,
+      .form-field > textarea[readonly]:focus { border-color: #e0e1e3; }
       .form-error { margin-top: 6px; color: #c7352d; font-size: 13px; }
       .configuration-title {
         margin: 0 0 14px;
@@ -521,6 +529,13 @@
       }
       .ace-checklist-root .el-select__wrapper.is-focused,
       .ace-checklist-root .el-select__wrapper:hover { box-shadow: none; border-color: var(--primary); }
+      .ace-checklist-root .el-select.is-disabled .el-select__wrapper,
+      .ace-checklist-root .el-select.is-disabled .el-select__wrapper:hover {
+        background: #f4f6f8;
+        border-color: #e0e1e3;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
       .ace-checklist-root .form-field .el-switch {
         --el-switch-on-color: #0156ce;
         --el-switch-off-color: #edf0f4;

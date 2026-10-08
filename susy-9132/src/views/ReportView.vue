@@ -210,7 +210,7 @@ const printReport = () => window.print()
               <DetectionResult
                 :item="e.item"
                 :result="e.result"
-                :value="e.ans.numberValue"
+                :value="e.ans.counts || e.ans.numberValue"
                 :visible="e.ans.resultVisible !== false"
                 readonly
               />
@@ -438,9 +438,11 @@ const printReport = () => window.print()
   line-height: 1.5;
   color: #5f6b7d;
   overflow-wrap: break-word;
+  /* keep the editor's line breaks typed in the comment textarea */
+  white-space: pre-wrap;
 }
 .rp-row-comment::before {
-  content: 'Editor note: ';
+  content: "Assistant Editor's Note: ";
   font-weight: 600;
   color: #344764;
 }

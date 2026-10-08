@@ -27,39 +27,19 @@ export const categories = [
 ]
 
 export const checklistItems = [
-  // ---------- Manuscript Information: reference numbers, no flag ----------
+  // ---------- Manuscript Information: three counts, one item, no flag ----------
   {
     id: 1,
+    kind: 'counts',
     category: 'Manuscript Information',
-    title: 'Word Count',
+    title: 'Word Count / Figures Count / Tables Count',
     description:
-      'Total number of words in the manuscript.',
-    required: true,
-    requiredLocked: true,
-    flagRequired: false,
-    flagMode: 'manual',
-    rule: null,
-    inUse: true,
-  },
-  {
-    id: 2,
-    category: 'Manuscript Information',
-    title: 'Figures Count',
-    description:
-      'Total number of figures in the manuscript.',
-    required: true,
-    requiredLocked: true,
-    flagRequired: false,
-    flagMode: 'manual',
-    rule: null,
-    inUse: true,
-  },
-  {
-    id: 3,
-    category: 'Manuscript Information',
-    title: 'Tables Count',
-    description:
-      'Total number of tables in the manuscript.',
+      'The number of words, figures, and tables in the manuscript.',
+    parts: [
+      { key: 'word', title: 'Word Count', description: 'Total number of words in the manuscript.' },
+      { key: 'figures', title: 'Figures Count', description: 'Total number of figures in the manuscript.' },
+      { key: 'tables', title: 'Tables Count', description: 'Total number of tables in the manuscript.' },
+    ],
     required: true,
     requiredLocked: true,
     flagRequired: false,

@@ -20,9 +20,7 @@ export const snapshotManuscript = {
 // Fixed answers keyed by checklist item id. resultVisible=false means the
 // detection result is hidden from the report (e.g. result still processing).
 export const snapshotAnswers = {
-  1: { status: null, comment: '', numberValue: 12840, resultVisible: true, selected: true }, // Word Count
-  2: { status: null, comment: '', numberValue: 8, resultVisible: true, selected: true }, // Figures Count
-  3: { status: null, comment: '', numberValue: 4, resultVisible: true, selected: true }, // Tables Count
+  1: { status: null, comment: '', counts: { word: 12840, figures: 8, tables: 4 }, numberValue: null, resultVisible: true, selected: true },
 
   4: { status: 'passed', comment: '', numberValue: null, resultVisible: true, selected: true }, // Journal Scope Match (match)
   5: { status: 'warning', comment: 'The manuscript covers point-of-care diagnostics; I could not confirm the fit with the current Special Issue assignment. Could you advise whether to proceed with this SI based on the content?', numberValue: null, resultVisible: false, selected: true }, // SI Scope (unknown)

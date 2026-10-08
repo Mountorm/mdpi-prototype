@@ -4,8 +4,9 @@ import AppShell from '../layouts/AppShell.vue'
 import ReportShell from '../layouts/ReportShell.vue'
 import AceChecklist from '../views/AceChecklist.vue'
 import GenerateView from '../views/GenerateView.vue'
-import ReportView from '../views/ReportView.vue'
 import ReportSnapView from '../views/ReportSnapView.vue'
+import Report3View from '../views/Report3View.vue'
+import ReportLiveView from '../views/ReportLiveView.vue'
 
 const routes = [
   // Home: three buttons as the entry menu
@@ -25,7 +26,7 @@ const routes = [
   {
     path: '/report',
     component: ReportShell,
-    children: [{ path: '', name: 'report', component: ReportView }],
+    children: [{ path: '', name: 'report', component: ReportLiveView }],
   },
   {
     path: '/report1',
@@ -36,6 +37,11 @@ const routes = [
     path: '/report2',
     component: ReportShell,
     children: [{ path: '', name: 'report-snap-category', component: ReportSnapView }],
+  },
+  {
+    path: '/report3',
+    component: ReportShell,
+    children: [{ path: '', name: 'report3', component: Report3View }],
   },
 ]
 
