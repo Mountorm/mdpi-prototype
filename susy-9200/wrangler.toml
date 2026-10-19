@@ -1,0 +1,25 @@
+name = "mock-api-service-9200"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+# 回调模式：
+#   bridge（默认）= 入队，由本机 bridge.mjs 从公司网络发出（Cloudflare 出口访问不到 Susy dev）
+#   direct        = Cloudflare 边缘直接回调（需 Susy 侧放行 Cloudflare 出口后再切换）
+[vars]
+CALLBACK_MODE = "bridge"
+
+# 存储用 Durable Object（强一致：面板刚保存、Susy 立刻触发就能读到）
+# 不用 KV：现有 API Token 没有 KV 权限，且 KV 最终一致会在"保存后马上触发"时挖坑
+[[durable_objects.bindings]]
+name = "MOCK_STORE"
+class_name = "MockStore"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["MockStore"]
+
+# 自定义域名（部署时 Cloudflare 会自动建 DNS）
+[[routes]]
+pattern = "susy-9200.mdpi.cloud"
+zone_name = "mdpi.cloud"
+custom_domain = true

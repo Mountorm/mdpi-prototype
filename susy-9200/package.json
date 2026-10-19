@@ -1,0 +1,16 @@
+{
+  "name": "mock-api-service-9200",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SUSY-9200 mock service: peer review report ingest + check_result callback + test panel",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "bridge": "node bridge.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  },
+  "license": "MIT"
+}
