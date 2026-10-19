@@ -80,7 +80,7 @@ export const checklistItems = [
     category: 'Manuscript Information',
     title: 'Article Type',
     description:
-      'Whether the article type matches the journal\'s accepted types.',
+      'Whether the article type of the manuscript is correct.',
     required: true,
     flagRequired: true,
     flagMode: 'manual',
@@ -111,7 +111,7 @@ export const checklistItems = [
     required: true,
     flagRequired: true,
     flagMode: 'manual',
-    rule: { type: 'numeric', subject: 'likely AI percentage', operator: '>', value: 50, result: 'warning' },
+    rule: { type: 'numeric', subject: 'likely + maybe AI percentage', operator: '>', value: 50, result: 'warning' },
     inUse: true,
   },
   {
