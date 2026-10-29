@@ -10,7 +10,7 @@ import MdIcon from './MdIcon.vue'
 import {
   isNumberItem, isScopeItem, isIThenticate, isAIItem,
   isImageItem, isReferenceAnalysisItem, scopeStatusText,
-  isResultUnavailable, resultSummary,
+  isResultUnavailable, resultSummary, AI_SEGMENTS,
 } from '../utils/itemKinds.js'
 
 const props = defineProps({
@@ -47,13 +47,8 @@ const aiActive = ref(null)
 const DONUT_C = 2 * Math.PI * 32
 const aiSegments = computed(() => {
   const r = props.result ?? { green: 0, yellow: 0, red: 0 }
-  const defs = [
-    { key: 'green', label: 'Human', color: '#256b41', active: '#1f6a40' },
-    { key: 'yellow', label: 'Maybe AI', color: '#e0a34e', active: '#c9851f' },
-    { key: 'red', label: 'Likely AI', color: '#c7352d', active: '#a52a20' },
-  ]
   let offset = 0
-  return defs.map((d) => {
+  return AI_SEGMENTS.map((d) => {
     const percent = r[d.key] ?? 0
     const dash = (DONUT_C * percent) / 100
     const seg = { ...d, percent, dash, offset: -offset }
@@ -165,20 +160,29 @@ const aiSegments = computed(() => {
                 transform="rotate(-90 40 40)"
                 class="det-donut-seg"
                 @mouseenter="aiActive = i"
-              />
+              >
+                <title>{{ s.tip }}</title>
+              </circle>
             </svg>
           </div>
           <div class="det-donut-legend">
-            <span
+            <el-tooltip
               v-for="(s, i) in aiSegments"
               :key="s.key"
-              class="det-legend-item"
-              :class="{ active: aiActive === i }"
-              @mouseenter="aiActive = i"
-              @mouseleave="aiActive = null"
+              :content="s.tip"
+              placement="top"
+              effect="dark"
+              popper-class="ai-tip-popper"
             >
-              <i class="det-legend-dot" :style="{ background: s.color }"></i>{{ s.label }} {{ s.percent }}%
-            </span>
+              <span
+                class="det-legend-item"
+                :class="{ active: aiActive === i }"
+                @mouseenter="aiActive = i"
+                @mouseleave="aiActive = null"
+              >
+                <i class="det-legend-dot" :style="{ background: s.color }"></i>{{ s.label }} {{ s.percent }}%
+              </span>
+            </el-tooltip>
           </div>
         </div>
       </template>

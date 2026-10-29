@@ -6,7 +6,7 @@ import { ref, computed } from 'vue'
 import MdIcon from './MdIcon.vue'
 import {
   isNumberItem, isScopeItem, isArticleTypeItem, isIThenticate, isAIItem, isImageItem,
-  scopeStatusText,
+  scopeStatusText, AI_SEGMENTS,
 } from '../utils/itemKinds.js'
 
 const props = defineProps({
@@ -65,13 +65,8 @@ const jumpToItem = (id) => {
 
 const DONUT_C = 2 * Math.PI * 32
 const aiSegments = (result) => {
-  const defs = [
-    { key: 'green', label: 'Human', color: '#256b41' },
-    { key: 'yellow', label: 'Maybe AI', color: '#e0a34e' },
-    { key: 'red', label: 'Likely AI', color: '#c7352d' },
-  ]
   let offset = 0
-  return defs.map((d) => {
+  return AI_SEGMENTS.map((d) => {
     const percent = result?.[d.key] ?? 0
     const dash = (DONUT_C * percent) / 100
     const seg = { ...d, percent, dash, offset: -offset }
@@ -86,6 +81,7 @@ const aiSummary = (result) =>
 <template>
   <section class="r3" :class="{ 'r3-main-only': mainOnly }">
     <h1 v-if="!mainOnly" class="r3-title">Technical Precheck Report</h1>
+    <p class="r3-subtitle">The report is prepared using AI-assisted tools and validated by the editorial office</p>
 
     <div class="r3-layout">
       <div class="r3-main">
@@ -155,12 +151,23 @@ const aiSummary = (result) =>
                     :stroke-dasharray="`${s.dash} ${DONUT_C}`"
                     :stroke-dashoffset="s.offset"
                     transform="rotate(-90 40 40)"
-                  />
+                  >
+                    <title>{{ s.tip }}</title>
+                  </circle>
                 </svg>
                 <ul class="r3-legend">
-                  <li v-for="s in aiSegments(e.result)" :key="s.key">
-                    <i :style="{ background: s.color }"></i>{{ s.label }} {{ s.percent }}%
-                  </li>
+                  <el-tooltip
+                    v-for="s in aiSegments(e.result)"
+                    :key="s.key"
+                    :content="s.tip"
+                    placement="top"
+                    effect="dark"
+                    popper-class="ai-tip-popper"
+                  >
+                    <li>
+                      <i :style="{ background: s.color }"></i>{{ s.label }} {{ s.percent }}%
+                    </li>
+                  </el-tooltip>
                 </ul>
               </div>
             </div>
@@ -224,6 +231,13 @@ const aiSummary = (result) =>
   font-size: 18px;
   font-weight: 650;
 }
+.r3-subtitle {
+  margin: -6px 0 16px;
+  color: #5f6b7d;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.r3-main-only .r3-subtitle { margin-top: 0; }
 .r3-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 260px;

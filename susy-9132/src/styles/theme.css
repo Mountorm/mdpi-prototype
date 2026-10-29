@@ -55,3 +55,9 @@
   --el-button-active-bg-color: #004db9;
   --el-button-active-border-color: #004db9;
 }
+
+/* AI donut legend tooltip: keep long explanations readable */
+.ai-tip-popper {
+  max-width: 320px;
+  line-height: 1.5;
+}

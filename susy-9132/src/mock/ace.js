@@ -32,11 +32,11 @@ export const checklistItems = [
     id: 1,
     kind: 'counts',
     category: 'Manuscript Information',
-    title: 'Word Count / Figures Count / Tables Count',
+    title: 'Word Count of main text / Figures Count / Tables Count',
     description:
       'The number of words, figures, and tables in the manuscript.',
     parts: [
-      { key: 'word', title: 'Word Count', description: 'Total number of words in the manuscript.' },
+      { key: 'word', title: 'Word Count of main text', description: 'Total number of words in the manuscript.' },
       { key: 'figures', title: 'Figures Count', description: 'Total number of figures in the manuscript.' },
       { key: 'tables', title: 'Tables Count', description: 'Total number of tables in the manuscript.' },
     ],
@@ -52,9 +52,9 @@ export const checklistItems = [
   {
     id: 4,
     category: 'Manuscript Information',
-    title: 'Journal Scope Match',
+    title: 'Match with Journal Scope',
     description:
-      'Whether the manuscript topic matches the journal scope.',
+      'Whether the manuscript topic matches the journal scope',
     required: true,
     requiredLocked: true,
     flagRequired: true,
@@ -65,9 +65,9 @@ export const checklistItems = [
   {
     id: 5,
     category: 'Manuscript Information',
-    title: 'Special Issue Scope Match',
+    title: 'Match with Special Issue/Topic/Topical Collection Scope',
     description:
-      'Whether the manuscript topic matches the Special Issue / thematic collection scope.',
+      'Whether the manuscript topic matches the Special Issue/Topic/Topical Collection',
     required: true,
     requiredLocked: true,
     flagRequired: true,
@@ -80,7 +80,7 @@ export const checklistItems = [
     category: 'Manuscript Information',
     title: 'Article Type',
     description:
-      'Whether the article type of the manuscript is correct.',
+      'Whether the article type of the manuscript is correct',
     required: true,
     flagRequired: true,
     flagMode: 'manual',
@@ -92,9 +92,9 @@ export const checklistItems = [
   {
     id: 7,
     category: 'Ethical Issues',
-    title: 'iThenticate',
+    title: 'Plagiarism Detection',
     description:
-      'Similarity check result.',
+      'Whether plagiarism issues detected using iThenticate',
     required: true,
     requiredLocked: true,
     flagRequired: true,
@@ -105,9 +105,9 @@ export const checklistItems = [
   {
     id: 8,
     category: 'Ethical Issues',
-    title: 'AI Generated Content',
+    title: 'AI-Generated Content Detection',
     description:
-      'Whether parts of the manuscript are likely AI-generated.',
+      'Whether parts of the manuscript are likely AI-generated using MDPI internal tool',
     required: true,
     flagRequired: true,
     flagMode: 'manual',
@@ -119,7 +119,7 @@ export const checklistItems = [
     category: 'Ethical Issues',
     title: 'Image Manipulation Detection',
     description:
-      'Whether image manipulation is detected.',
+      'Whether image manipulation issues detected using Proofig AI',
     required: true,
     flagRequired: true,
     flagMode: 'auto',
@@ -133,7 +133,7 @@ export const checklistItems = [
     category: 'Reference Analysis',
     title: 'Out of Scope References',
     description:
-      'References not related to the manuscript scope.',
+      'References that fall outside the topic, scope, or context of the submission.',
     required: true,
     requiredLocked: true,
     flagRequired: true,
@@ -152,7 +152,7 @@ export const checklistItems = [
     category: 'Reference Analysis',
     title: 'Unvalidated / Not Found References',
     description:
-      'References that could not be validated or were not found in public databases.',
+      'References could not be validated or were not found in public databases',
     required: true,
     requiredLocked: true,
     flagRequired: true,

@@ -6,13 +6,39 @@
 
 export const isCountsItem = (item) => item?.kind === 'counts'
 export const isNumberItem = isCountsItem
-export const isScopeItem = (item) => item.title.endsWith('Scope Match')
+export const isScopeItem = (item) => item.title.startsWith('Match with ')
 export const isArticleTypeItem = (item) => item.title === 'Article Type'
-export const isIThenticate = (item) => item.title.toLowerCase() === 'ithenticate'
-export const isAIItem = (item) => item.title === 'AI Generated Content'
+export const isIThenticate = (item) => item.title === 'Plagiarism Detection'
+export const isAIItem = (item) => item.title === 'AI-Generated Content Detection'
 export const isImageItem = (item) => item.title === 'Image Manipulation Detection'
 // Reference Analysis is split into per-dimension items, each carrying its own ref list
 export const isReferenceAnalysisItem = (item) => item.category === 'Reference Analysis'
+
+// AI donut segment definitions + hover explanations, shared by the generate
+// page and the report so the wording stays identical.
+export const AI_SEGMENTS = [
+  {
+    key: 'green',
+    label: 'Human',
+    color: '#256b41',
+    active: '#1f6a40',
+    tip: 'Percentage of the text likely not AI-generated.',
+  },
+  {
+    key: 'yellow',
+    label: 'Maybe AI',
+    color: '#e0a34e',
+    active: '#c9851f',
+    tip: 'Percentage of the text that is potentially AI-generated. This includes parts of the text that use generative AI tools for text language polishing',
+  },
+  {
+    key: 'red',
+    label: 'Likely AI',
+    color: '#c7352d',
+    active: '#a52a20',
+    tip: 'Percentage of the text that is very likely written by generative AI such as large language models.',
+  },
+]
 
 // Scope status → display label + tone (used by generate & report)
 // Real model: 'in_scope' | 'out_of_scope' | 'unknown'
