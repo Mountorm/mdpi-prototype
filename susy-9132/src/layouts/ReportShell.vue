@@ -24,8 +24,8 @@ const navLinks = ['Journals', 'Topics', 'Information', 'Author Services', 'Initi
 const menuItems = [
   { to: '/generate', label: 'Generate Report' },
   { to: '/report', label: 'Report Page' },
-  { to: '/report1', label: 'Report Snap · Attention' },
-  { to: '/report2', label: 'Report Snap · Category' },
+  { to: '/report1', label: 'Report Snap · Attention', deprecated: true },
+  { to: '/report2', label: 'Report Snap · Category', deprecated: true },
   { to: '/report3', label: 'Report 3' },
 ]
 
@@ -77,7 +77,10 @@ const toggleGroup = () => { groupOpen.value = !groupOpen.value }
               :key="item.to"
               :class="{ active: route.path === item.to }"
             >
-              <RouterLink :to="item.to" class="menu-item">{{ item.label }}</RouterLink>
+              <RouterLink :to="item.to" class="menu-item">
+                {{ item.label }}
+                <span v-if="item.deprecated" class="deprecated-tag">已废弃，请忽略</span>
+              </RouterLink>
             </li>
           </ul>
         </div>
@@ -243,6 +246,18 @@ const toggleGroup = () => { groupOpen.value = !groupOpen.value }
   color: #626f86;
 }
 .menu li.active .menu-item { color: #0156ce; }
+.deprecated-tag {
+  display: block;
+  width: fit-content;
+  margin-top: 2px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 16px;
+  color: #9aa4b2;
+  border: 1px solid #d7dce3;
+  border-radius: 2px;
+}
 .sidebar-footer {
   height: 48px;
   display: flex;

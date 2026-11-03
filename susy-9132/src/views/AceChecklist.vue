@@ -45,9 +45,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onDocClick))
 // New items are added at code level (mock/ace.js), not from the UI.
 const editModalOpen = ref(false)
 const editingId = ref(null)
-// whether the item being edited has a locked Required flag — those stay
-// disabled so only unlocked items can be toggled (journal config).
-const editingRequiredLocked = ref(false)
+// Required is always on and locked for every item (journal config cannot
+// turn any checklist item optional).
 
 const emptyForm = () => ({
   category: '',
@@ -62,7 +61,6 @@ const form = reactive(emptyForm())
 
 const openEditModal = (item) => {
   editingId.value = item.id
-  editingRequiredLocked.value = item.requiredLocked ?? false
   Object.assign(form, {
     category: item.category,
     title: item.title,
@@ -102,7 +100,7 @@ const submitItem = () => {
 
   // Category, title and description are template-defined and stay unchanged.
   const payload = {
-    required: form.required,
+    required: true,
     flagRequired: form.flagRequired,
     flagMode: form.flagMode,
     rule: form.flagRequired && form.flagMode === 'auto' ? { ...form.rule } : null,
@@ -256,7 +254,7 @@ const flagSummary = (item) => {
               <label>Required</label>
               <el-switch
                 v-model="form.required"
-                :disabled="editingRequiredLocked"
+                disabled
                 active-text="Required in report"
               />
             </div>

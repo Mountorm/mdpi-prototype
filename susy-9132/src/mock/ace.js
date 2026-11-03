@@ -82,6 +82,7 @@ export const checklistItems = [
     description:
       'Whether the article type of the manuscript is correct',
     required: true,
+    requiredLocked: true,
     flagRequired: true,
     flagMode: 'manual',
     rule: { type: 'boolean', subject: 'is special type', result: 'warning' },
@@ -109,6 +110,7 @@ export const checklistItems = [
     description:
       'Whether parts of the manuscript are likely AI-generated using MDPI internal tool',
     required: true,
+    requiredLocked: true,
     flagRequired: true,
     flagMode: 'manual',
     rule: { type: 'numeric', subject: 'likely + maybe AI percentage', operator: '>', value: 50, result: 'warning' },
@@ -121,6 +123,7 @@ export const checklistItems = [
     description:
       'Whether image manipulation issues detected using Proofig AI',
     required: true,
+    requiredLocked: true,
     flagRequired: true,
     flagMode: 'auto',
     rule: { type: 'boolean', subject: 'pass', result: 'passed' },
