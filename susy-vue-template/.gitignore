@@ -1,5 +1,5 @@
 node_modules
-dist
+# dist 需要提交：@mdpi-ui/design-system 只在内网 registry，Cloudflare 构建机无法安装依赖
 dist-ssr
 *.local
 .vite

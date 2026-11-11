@@ -14,6 +14,12 @@ npm run build    # 产物在 dist/，可直接托管到 Cloudflare Pages
 
 `npm install` 需要连通 MDPI 内网，并依赖本目录的 `.npmrc`（已加入 `.gitignore`，不要提交）。
 
+### 部署说明
+
+Cloudflare 构建机访问不到内网 registry，因此本项目的 `dist/` 需要提交到仓库，Pages 项目配置为不做依赖安装、不执行构建，直接托管已提交的 `dist/`。
+
+修改组件后本地执行 `npm run build`，把 `dist/` 一起提交推送即可触发上线。
+
 ## 页面
 
 | 路由 | 内容 |
