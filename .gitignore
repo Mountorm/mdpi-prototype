@@ -4,6 +4,9 @@ node_modules/
 # Build output
 dist/
 .next/
+# susy-vue-template 依赖内网 registry，Cloudflare 无法构建，dist 需要提交
+!susy-vue-template/dist/
+!susy-vue-template/dist/**
 
 # Cloudflare Workers
 .wrangler/
