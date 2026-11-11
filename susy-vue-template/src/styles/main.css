@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+/* MDPI DSv2 主题变量与 Tailwind @theme */
+@import "@mdpi-ui/design-system/theme";
+
+/* 让 Tailwind 扫描组件库产物，组件内部用到的类名才会生成 */
+@source "../../node_modules/@mdpi-ui/design-system/dist";
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+    color: var(--color-text-default);
+    background-color: var(--color-surface-subtle);
+  }
+}

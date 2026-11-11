@@ -1,0 +1,359 @@
+openapi: 3.0.3
+info:
+  title: SuSy Reviewer Availability API
+  description: |
+    ### Overview
+    Enables Finder2 to batch-query the availability status (Reviewer Availability) and recent review history (Review History) of candidate reviewers for a given manuscript.
+    - **Consumer**: Finder2
+    - **Provider**: SuSy
+    - **Jira**: https://mdpi.atlassian.net/browse/SUSY-8874
+    - **Authentication**: `Susy-Auth-Token` request header
+    - **Characteristics**: Idempotent, read-only; supports batches of up to 2,000 email addresses per request.
+  version: 1.0.0-draft
+
+servers:
+  - url: https://susy.mdpi.com/restapi/open_api
+    description: Production Server (TBD)
+
+
+paths:
+  /reviewers/availability:
+    post:
+      summary: Batch query reviewer availability and review history
+      description: |
+        Checks, for the given manuscript `hash_key` and reviewer email list, whether each reviewer can currently be invited.
+        - Email matching is case-insensitive; SuSy normalizes all addresses to lowercase before returning them.
+        - Every valid email in the request is returned explicitly as a key in the response.
+        - If an email is unknown to SuSy, the response contains `available: true` and `history: []`.
+        - If the `hash_key` does not exist in SuSy, has been deleted, or is outside the caller's visibility, the entire request fails with 404 `manuscript_not_found`; no partial results are returned.
+        - A missing or empty `hash_key` returns 422 `validation_error`.
+      operationId: checkReviewersAvailability
+      tags:
+        - Reviewers
+      security:
+        - SusyAuthToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AvailabilityBatchRequest'
+            example:
+              emails:
+                - "a.petrova@example.edu"
+                - "j.smith@uni.example.org"
+                - "kenji.tanaka@lab.example.jp"
+              hash_key: "87c2cfcbff95043e13bf182afc30d6c6"
+      responses:
+        '200':
+          description: Query succeeded; returns a dictionary of reviewer statuses keyed by lowercase email address
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AvailabilityBatchResponse'
+              example:
+                reviewers:
+                  "a.petrova@example.edu":
+                    available: false
+                    unavailable_until: "2026-10-15"
+                    message: "Currently reviewing ijerph-123456; blocked until the report is due."
+                    hash_key: "abcd1234efgh"
+                    journal_id: 42
+                    journal_name: "ijerph"
+                    last_invitation_date: "2026-08-01"
+                    last_report_date: "2026-03-12"
+                    history:
+                      - hash_key: "abcd1234efgh"
+                        journal_id: 42
+                        journal_name: "ijerph"
+                        invitation_date: "2026-08-01"
+                        response_date: "2026-08-03"
+                        response: "accepted"
+                        report_date: null
+                        days_to_report: null
+                        recommendation: null
+                        review_round: 1
+                      - hash_key: "zzzz9999yyyy"
+                        journal_id: 17
+                        journal_name: "sensors"
+                        invitation_date: "2026-02-20"
+                        response_date: "2026-02-21"
+                        response: "accepted"
+                        report_date: "2026-03-12"
+                        days_to_report: 21
+                        recommendation: "minor_revision"
+                        review_round: 2
+                  "j.smith@uni.example.org":
+                    available: true
+                    history: []
+                  "kenji.tanaka@lab.example.jp":
+                    available: true
+                    history: []
+        '400':
+          description: Malformed request body (invalid JSON)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "invalid_json"
+                  message: "Malformed JSON body."
+        '401':
+          description: Missing or invalid authentication
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "unauthorized"
+                  message: "Missing or invalid authentication credentials."
+        '403':
+          description: Insufficient permissions (TBD)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "forbidden"
+                  message: "You do not have permission to access this resource."
+        '404':
+          description: Manuscript not found (invalid or inaccessible hash_key)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "manuscript_not_found"
+                  message: "The provided hash_key does not match any accessible manuscript."
+        '422':
+          description: Validation failed (empty emails array, invalid email address, or more than 2,000 emails)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "validation_error"
+                  message: "The 'emails' array cannot be empty and must not exceed 2000 items."
+        '429':
+          description: Rate limit exceeded (40 requests per minute)
+          headers:
+            Retry-After:
+              description: Number of seconds the client should wait before retrying
+              schema:
+                type: integer
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "rate_limited"
+                  message: "Request rate limit exceeded. Please retry later."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+              example:
+                error:
+                  code: "internal_error"
+                  message: "Internal server error occurred on SuSy."
+
+components:
+  securitySchemes:
+    SusyAuthToken:
+      type: apiKey
+      in: header
+      name: Susy-Auth-Token
+      description: "Authorize with JWT token (Value: Bearer {JWT})"
+
+  schemas:
+    AvailabilityBatchRequest:
+      type: object
+      required:
+        - emails
+        - hash_key
+      properties:
+        emails:
+          type: array
+          description: Reviewer email addresses to check. Must not be empty; maximum 2,000 items. Matching is case-insensitive and duplicates are de-duplicated as a set.
+          minItems: 1
+          maxItems: 2000
+          items:
+            type: string
+            format: email
+            example: "a.petrova@example.edu"
+        hash_key:
+          type: string
+          description: Hash key of the manuscript that triggered this invitation check (provided by SuSy)
+          example: "87c2cfcbff95043e13bf182afc30d6c6"
+
+    AvailabilityBatchResponse:
+      type: object
+      required:
+        - reviewers
+      properties:
+        reviewers:
+          type: object
+          description: Dictionary of reviewer statuses keyed by lowercase email address. Every email in the request is explicitly present in this object.
+          additionalProperties:
+            $ref: '#/components/schemas/ReviewerStatus'
+
+    ReviewerStatus:
+      type: object
+      required:
+        - available
+        - history
+      properties:
+        available:
+          type: boolean
+          description: Whether the reviewer can currently be invited. true = available, false = unavailable.
+        unavailable_until:
+          type: string
+          format: date
+          nullable: true
+          description: Date through which the reviewer is unavailable (inclusive, YYYY-MM-DD). null if the block has no defined end date (e.g. permanent withdrawal or unsubscribe). May be omitted or null when available is true.
+          example: "2026-10-15"
+        message:
+          type: string
+          nullable: true
+          description: Human-readable reason for unavailability, displayed as-is by the Finder2 front end. May be omitted or null when available is true.
+          example: "Currently reviewing ijerph-123456; blocked until the report is due."
+        hash_key:
+          type: string
+          nullable: true
+          description: Hash key of the manuscript causing the block. null when the block is not due to a manuscript. May be omitted or null when available is true.
+          example: "abcd1234efgh"
+        journal_id:
+          type: integer
+          format: int64
+          nullable: true
+          description: ID of the journal of the blocking manuscript. null when the block is not due to a manuscript. May be omitted or null when available is true.
+          example: 42
+        journal_name:
+          type: string
+          nullable: true
+          description: System name of the journal of the blocking manuscript. null when the block is not due to a manuscript. May be omitted or null when available is true.
+          example: "ijerph"
+        last_invitation_date:
+          type: string
+          format: date
+          nullable: true
+          description: Date the reviewer was most recently invited (YYYY-MM-DD). null if never invited. Must match the maximum invitation_date in history.
+          example: "2026-08-01"
+        last_report_date:
+          type: string
+          format: date
+          nullable: true
+          description: Date the reviewer most recently submitted a report (YYYY-MM-DD). null if never submitted. Must match the maximum report_date in history.
+          example: "2026-03-12"
+        history:
+          type: array
+          description: List of the reviewer's history records. Recommended maximum of 50 entries covering the most recent 5 years, sorted by invitation_date descending. Always present; may be an empty array.
+          items:
+            $ref: '#/components/schemas/ReviewHistoryItem'
+
+    ReviewHistoryItem:
+      type: object
+      required:
+        - hash_key
+        - journal_id
+        - journal_name
+        - invitation_date
+        - response
+        - review_round
+      properties:
+        hash_key:
+          type: string
+          description: Manuscript hash key
+          example: "abcd1234efgh"
+        journal_id:
+          type: integer
+          format: int64
+          description: Journal ID
+          example: 42
+        journal_name:
+          type: string
+          description: Journal system name (e.g. ijerph, sensors)
+          example: "ijerph"
+        invitation_date:
+          type: string
+          format: date
+          description: Date the invitation was sent (ISO 8601, YYYY-MM-DD)
+          example: "2026-08-01"
+        response_date:
+          type: string
+          format: date
+          nullable: true
+          description: Date the reviewer accepted or declined. null if no response has been received.
+          example: "2026-08-03"
+        response:
+          type: string
+          enum:
+            - accepted
+            - declined
+            - no_response
+            - cancelled
+          description: Response status
+          example: "accepted"
+        report_date:
+          type: string
+          format: date
+          nullable: true
+          description: Date the review report was submitted. null if not submitted.
+          example: "2026-08-15"
+        days_to_report:
+          type: integer
+          format: int16
+          nullable: true
+          description: Number of days taken to report (report_date minus invitation_date). null when report_date is null (computed server-side).
+          example: 14
+        recommendation:
+          type: string
+          nullable: true
+          enum:
+            - accept
+            - minor_revision
+            - major_revision
+            - reject
+          description: Review recommendation. null when there is no report.
+          example: "minor_revision"
+        review_round:
+          type: integer
+          format: int8
+          description: Review round of the manuscript (1 = first round)
+          example: 1
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: object
+          required:
+            - code
+            - message
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code
+              enum:
+                - invalid_json
+                - unauthorized
+                - forbidden
+                - manuscript_not_found
+                - validation_error
+                - rate_limited
+                - internal_error
+              example: "validation_error"
+            message:
+              type: string
+              description: Human-readable error description
+              example: "Empty emails array, or exceeding maximum batch limit of 2000."
