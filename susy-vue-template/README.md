@@ -12,7 +12,7 @@ npm run dev      # http://localhost:5180
 npm run build    # 产物在 dist/，可直接托管到 Cloudflare Pages
 ```
 
-`npm install` 需要连通 MDPI 内网，并依赖本目录的 `.npmrc`（已加入 `.gitignore`，不要提交）。
+`npm install` 需要连通 MDPI 内网。本目录 `.npmrc` 只保留 `@mdpi-ui` 的 registry 地址；访问令牌统一配置在本机 `~/.npmrc`，不要写进项目文件或提交。
 
 ### 部署说明
 
