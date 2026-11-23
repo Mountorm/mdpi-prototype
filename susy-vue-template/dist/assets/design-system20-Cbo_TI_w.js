@@ -1,1 +1,0 @@
-import{f as n,o,c as t,r as s,n as r}from"./index-BuGVDanM.js";const p=n({__name:"MContainer",props:{percentages:{type:Boolean,default:!1}},setup(e){return(a,c)=>(o(),t("div",{class:r(["m-container mx-auto",{"m-container--percentages":e.percentages}])},[s(a.$slots,"default")],2))}});export{p};

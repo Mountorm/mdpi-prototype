@@ -1,44 +1,29 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 
-const views = {
-  actions: () => import('@/views/ActionsView.vue'),
-  inputs: () => import('@/views/InputsView.vue'),
-  'data-display': () => import('@/views/DataDisplayView.vue'),
-  feedback: () => import('@/views/FeedbackView.vue'),
-  navigation: () => import('@/views/NavigationView.vue'),
-  layout: () => import('@/views/LayoutView.vue'),
-}
-
-const titles = {
-  actions: 'Actions',
-  inputs: 'Inputs',
-  'data-display': 'Data display',
-  feedback: 'Feedback',
-  navigation: 'Navigation',
-  layout: 'Layout',
-}
+const categoryKeys = ['actions', 'inputs', 'data-display', 'feedback', 'navigation', 'layout']
 
 const routes = [
-  { path: '/', redirect: '/overview' },
+  { path: '/', redirect: '/design-system' },
   {
-    path: '/overview',
-    name: 'overview',
-    component: () => import('@/views/OverviewView.vue'),
-    meta: { title: 'Components' },
+    path: '/design-system',
+    name: 'design-system',
+    component: () => import('@/views/DesignSystemView.vue'),
+    meta: { title: 'Design System' },
   },
-  ...Object.entries(views).map(([key, component]) => ({
+  // 旧的分类路由统一收进单一路由，保留跳转避免历史链接失效
+  ...categoryKeys.map((key) => ({
     path: `/${key}`,
-    name: key,
-    component,
-    meta: { title: titles[key] },
+    redirect: { path: '/design-system', hash: `#${key}` },
   })),
+  { path: '/overview', redirect: '/design-system' },
+  { path: '/:pathMatch(.*)*', redirect: '/design-system' },
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes,
   scrollBehavior(to) {
-    if (to.hash) return { el: to.hash, top: 80, behavior: 'smooth' }
+    if (to.hash) return { el: to.hash, top: 80 }
     return { top: 0 }
   },
 })

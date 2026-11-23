@@ -26,7 +26,7 @@ const total = categories.reduce((sum, cat) => sum + cat.components.length, 0)
         <router-link
           v-for="comp in cat.components"
           :key="comp.id"
-          :to="`/${cat.key}#${comp.id}`"
+          :to="{ path: '/design-system', hash: `#${comp.id}` }"
           class="flex items-center justify-between rounded border border-color-default px-4 py-3 hover:border-color-bold hover:bg-surface-subtle"
         >
           <span class="text-[14px] text-color-default">{{ comp.name }}</span>

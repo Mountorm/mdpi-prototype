@@ -22,35 +22,58 @@ Cloudflare 构建机访问不到内网 registry，因此本项目的 `dist/` 需
 
 ## 页面
 
+只有一条路由，所有组件在同一页内按分类排开，侧边栏用锚点跳转：
+
 | 路由 | 内容 |
 |---|---|
-| `/overview` | 全部组件总览，按分类铺开 |
-| `/actions` | MButton、MButtonGroup、MIconButton、MButtonScrollTop |
-| `/inputs` | 14 个表单控件 |
-| `/data-display` | 13 个展示类组件 |
-| `/feedback` | 8 个提示与浮层 |
-| `/navigation` | 6 个导航组件 |
-| `/layout` | MContainer |
+| `/design-system` | 全部组件：总览 + Actions / Inputs / Data display / Feedback / Navigation / Layout |
+
+旧的 `/overview`、`/actions` 等地址会重定向到 `/design-system#分类`，不会失效。
+
+## 外框
+
+页面外壳取自真实 SuSy（`susy-mdpi/templates/base.html.twig`），包括：
+
+- **Header**：MDPI 公共导航（Journals / Topics / Author Services / Information / About）+ SUSY logo + Start Submission + 账号下拉，用户邮箱为 mock 值
+- **Sidebar**：真实左栏的菜单分组和折叠样式，内容换成组件目录
+- **Footer**：版权与政策链接
+
+样式和字体来自线上 `susy.mdpi.com/build/*.css`，已下载到 `public/build/`（约 3MB），页面按原路径 `/build/...` 引用。SuSy 线上样式更新后，重新下载这四个 CSS 和它们引用的字体即可：
+
+```bash
+for f in foundation main vendor 199; do
+  curl -sSL -o "public/build/$f.css" "https://susy.mdpi.com/build/$f.css"
+done
+```
+
+外框与组件目录的衔接样式在 `src/styles/susy-frame.css`，只补间距和宽度，不覆盖外框本身。
 
 ## 目录
 
 ```
 src/
-├── App.vue                 # 顶栏 + 左侧目录 + 内容区
+├── App.vue                 # 真实 SuSy 外框：header + 侧栏 + 内容区 + footer
+├── layout/
+│   ├── SusyHeader.vue      # 顶部导航与账号菜单
+│   ├── SusySidebar.vue     # 左侧组件目录，SuSy 菜单样式
+│   └── SusyFooter.vue      # 页脚
 ├── data/
-│   ├── catalog.js          # 分类与组件清单，决定导航和总览页
+│   ├── catalog.js          # 分类与组件清单，决定导航、总览页和侧栏
 │   └── demo.js             # 示例用中性数据
 ├── components/
 │   ├── DemoSection.vue     # 每个组件的区块标题与说明
 │   └── DemoRow.vue         # 单个示例行
-└── views/                  # 每个分类一个页面
+├── views/
+│   ├── DesignSystemView.vue # 单一路由，按顺序挂载各分类
+│   └── *View.vue            # 各分类的内容区块
+└── styles/susy-frame.css   # 外框与目录的衔接样式
 ```
 
 ## 新增组件
 
 1. 在 `data/catalog.js` 对应分类里加 `{ id, name }`
 2. 在对应分类页里加一个 `DemoSection`，`id` 与上一步一致
-3. 左侧导航和总览页会自动带上
+3. 侧边栏、总览页和锚点会自动带上
 
 ## 样式规则（已按 v5 实际包核对）
 
@@ -75,3 +98,5 @@ src/
 - **图标**：`MIcon` 底层用 Iconify 的 `material-symbols` 图标集，首次加载需要外网
 - **MSwiperPagination**：必须传 Swiper 实例，本项目未引入 Swiper，只做说明
 - **MButtonScrollTop**：fixed 悬浮按钮，为避免遮挡页面只做静态预览
+- **移动端外框**：真实 SuSy 在窄屏会切换成移动版顶栏和抽屉菜单，本项目只做了桌面版；窗口宽度小于 1024 时顶部导航和左侧栏会隐藏
+- **外框交互**：下拉菜单靠 CSS hover，Start Submission、账号菜单里的链接都是占位，不触发真实业务

@@ -1,0 +1,42 @@
+/* SuSy 真实外框与组件目录的衔接层：只补布局间距，不覆盖外框自身样式 */
+
+/* 外框内容区：真实系统里由 #maincol 提供内边距，这里换成目录需要的宽度 */
+.susy-ds-content {
+  min-width: 0;
+  padding: 24px 32px 64px;
+}
+
+.susy-ds-content > * {
+  max-width: 1040px;
+}
+
+/* MContainer 默认按 1280 栅格，比内容区宽，示例里收窄到可用宽度 */
+.susy-ds-content .m-container {
+  max-width: 100%;
+}
+
+/* flex 行内容易被子元素撑破，允许收缩 */
+.susy-ds-content .flex > * {
+  min-width: 0;
+}
+
+/* 侧栏固定在顶部下方，与真实系统一致 */
+#susy-prototype-app #left-menu-main-container {
+  top: 4rem;
+  max-height: calc(100vh - 4rem);
+}
+
+/* 组件目录的侧栏条目沿用 SuSy 菜单链接样式，折叠箭头跟随展开状态 */
+#leftcol .menu-toggle .arrow {
+  transition: transform 0.15s ease;
+}
+
+#leftcol .menu-toggle[aria-expanded='false'] .arrow {
+  transform: rotate(-90deg);
+}
+
+/* 内容区宽度不受 Foundation grid 的固定列宽影响 */
+#susy-prototype-app #main {
+  max-width: 90rem;
+  margin: 0 auto;
+}
