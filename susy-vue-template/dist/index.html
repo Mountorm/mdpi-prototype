@@ -4,13 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>SuSy Prototype</title>
-    <!-- SuSy 真实外框样式，取自线上 susy.mdpi.com/build，先于应用样式加载 -->
-    <link rel="stylesheet" href="/build/foundation.css" />
-    <link rel="stylesheet" href="/build/vendor.css" />
-    <link rel="stylesheet" href="/build/199.css" />
-    <link rel="stylesheet" href="/build/main.css" />
-    <script type="module" crossorigin src="/assets/index-d1lVUYN8.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-LXtTlk0c.css">
+    <!-- SuSy 真实外框样式，取自线上 susy.mdpi.com/build，先于应用样式加载；
+         susy.css 内部把它们放进较低的 cascade layer，避免覆盖设计系统 -->
+    <link rel="stylesheet" href="/build/susy.css" />
+    <script type="module" crossorigin src="/assets/index-vOKrqd7q.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-BuuPtFQ6.css">
   </head>
   <body>
     <div id="app"></div>

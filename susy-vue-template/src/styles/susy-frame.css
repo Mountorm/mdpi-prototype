@@ -1,13 +1,23 @@
 /* SuSy 真实外框与组件目录的衔接层：只补布局间距，不覆盖外框自身样式 */
 
-/* 外框内容区：真实系统里由 #maincol 提供内边距，这里换成目录需要的宽度 */
+/* 外框内容区：占满侧栏之外的全部宽度，内边距随视口缩放。
+   foundation.css 的 .large-auto 带 :not(.v-3) 守卫，加 v-3 后不再生效，
+   这里补等价的 flex: 1 1 0 + width: auto，否则基宽为 100% 会导致换行、内容掉到侧栏下方 */
 .susy-ds-content {
+  flex: 1 1 0;
+  width: auto;
   min-width: 0;
-  padding: 24px 32px 64px;
+  max-width: 100%;
+  padding: 24px clamp(16px, 2vw, 40px) 64px;
 }
 
-.susy-ds-content > * {
-  max-width: 1040px;
+/* 内容区与设计系统弹层：旧框架的 body 字体/字号仍会向下继承，这里恢复到设计系统的基础排版 */
+.susy-ds-content,
+body > .v-3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--line-height-base);
+  color: var(--color-text-default);
 }
 
 /* MContainer 默认按 1280 栅格，比内容区宽，示例里收窄到可用宽度 */
@@ -20,10 +30,25 @@
   min-width: 0;
 }
 
-/* 侧栏固定在顶部下方，与真实系统一致 */
+/* 侧栏固定在顶栏下方，与真实系统一致。
+   --susy-sidebar-top = 顶栏实际高度 + #container 上内边距，由 App.vue 写入；
+   保留静态状态下的这段间距，滚动吸附时不会突然贴到顶栏上 */
 #susy-prototype-app #left-menu-main-container {
-  top: 4rem;
-  max-height: calc(100vh - 4rem);
+  top: var(--susy-sidebar-top, calc(4rem + 10px));
+  max-height: calc(100vh - var(--susy-sidebar-top, calc(4rem + 10px)));
+  transition: width 0.2s ease;
+}
+
+/* 收起状态下图标居中、可点击 */
+#left-menu-main-container.left-menu-collapsed .menu-container {
+  display: flex;
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+#left-menu-main-container.left-menu-collapsed .collapse-icon {
+  cursor: pointer;
 }
 
 /* 组件目录的侧栏条目沿用 SuSy 菜单链接样式，折叠箭头跟随展开状态 */
@@ -35,8 +60,115 @@
   transform: rotate(-90deg);
 }
 
-/* 内容区宽度不受 Foundation grid 的固定列宽影响 */
+/* 页脚的 #footer{text-align:center}（ID 选择器）会压过 Foundation 的 text-left /
+   large-text-right 工具类，这里按真实 SuSy 的意图恢复：桌面端版权靠左、政策链接靠右，
+   窄屏两块堆叠后都靠左 */
+#susy-prototype-app #footer .cell.text-left {
+  text-align: left;
+}
+
+#susy-prototype-app #footer .cell.large-text-right {
+  text-align: left;
+}
+
+@media (min-width: 1024px) {
+  #susy-prototype-app #footer .cell.large-text-right {
+    text-align: right;
+  }
+}
+
+/* 顶栏全局搜索：宽度随视口收缩，1280px 以下顶栏放不下时整块隐藏（真实系统由角色权限决定是否显示） */
+#susy-prototype-app .susy-global-search-li {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 1 auto;
+  width: clamp(200px, 18vw, 260px);
+  min-width: 0;
+  height: 36px;
+  margin-right: 20px;
+}
+
+/* 空间不够时让搜索框跟着缩，而不是把顶栏撑出滚动条 */
+#susy-prototype-app #topmenu > ul > li.tw-flex-1 {
+  min-width: 0;
+}
+
+#susy-prototype-app .susy-global-search-li .gs-root {
+  min-width: 0;
+}
+
+@media (max-width: 1279px) {
+  #susy-prototype-app .susy-global-search-li {
+    display: none;
+  }
+}
+
+/* 用户邮箱过长时截断，避免把搜索框和导航挤出去；完整地址在 title 属性里 */
+#susy-prototype-app #account-user-dropdown .user-email {
+  max-width: 10rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 账号下拉沿用真实样式：宽度是父级的 120% 且左对齐，在铺满整宽、贴着视口右边缘的顶栏里
+   会超出视口零点几像素，触发横向滚动条；横向滚动条又压缩视口高度，连带出现纵向滚动条。
+   改为右对齐展开，宽度不小于 150px，始终落在视口内 */
+#susy-prototype-app #account-user-dropdown .drop-down-wrapper {
+  left: auto;
+  right: 0;
+  width: max(100%, 9.375rem);
+}
+
+/* 48rem 宽的下拉面板在 1024px 左右的小桌面窗口下会伸出视口，限制最大宽度 */
+#susy-prototype-app .about-dropdown,
+#susy-prototype-app .information-dropdown {
+  max-width: calc(100vw - 32px);
+}
+
+/* 外框至少占满一屏：off-canvas-content 变成纵向 flex，容器撑满，
+   footer 贴到视口底部，主页留白时也不会把 footer 顶到页面中间 */
+#susy-prototype-app .off-canvas-content {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - var(--susy-header-h, 54px));
+}
+
+#susy-prototype-app #container {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+}
+
 #susy-prototype-app #main {
-  max-width: 90rem;
-  margin: 0 auto;
+  flex: 1 0 auto;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+}
+
+/* 真实 SuSy 把容器和顶栏封顶在 1440px（#container max-width: 90rem）并居中，
+   这里改成铺满整个视口、随窗口宽度自适应 */
+#susy-prototype-app #container,
+#susy-prototype-app #footer,
+#susy-prototype-app > header {
+  max-width: none;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* 顶栏固定在视口顶部，页面滚动时始终可见。
+   只匹配应用的直接子 header，内容区组件里的 <header> 不受影响。
+   顶栏高度保持真实 SuSy 的 54px（#topmenu > ul 的 9px 上下内边距 + 36px 行高），
+   侧栏吸附位置由 --susy-sidebar-top 保证与静止状态一致 */
+@media (min-width: 1024px) {
+  #susy-prototype-app > header {
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    background: #fff;
+    /* 用容器底色补刷顶栏下方那圈容器内边距，滚动时内容不会从这道缝里漏出来 */
+    box-shadow: 0 var(--susy-container-pad, 10px) 0 0 var(--color-theme-container, #f5f5f5);
+  }
 }

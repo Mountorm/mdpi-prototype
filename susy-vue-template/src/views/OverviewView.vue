@@ -1,6 +1,7 @@
 <script setup>
 import { MIcon } from '@mdpi-ui/design-system'
 import { categories } from '@/data/catalog'
+import { scrollToId } from '@/utils/scroll'
 
 const total = categories.reduce((sum, cat) => sum + cat.components.length, 0)
 </script>
@@ -22,16 +23,17 @@ const total = categories.reduce((sum, cat) => sum + cat.components.length, 0)
         <span class="text-[13px] text-color-subtlest">{{ cat.components.length }}</span>
       </div>
 
-      <div class="grid grid-cols-3 gap-3">
-        <router-link
+      <div class="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-3">
+        <a
           v-for="comp in cat.components"
           :key="comp.id"
-          :to="{ path: '/design-system', hash: `#${comp.id}` }"
+          href="/components"
           class="flex items-center justify-between rounded border border-color-default px-4 py-3 hover:border-color-bold hover:bg-surface-subtle"
+          @click.prevent="scrollToId(comp.id)"
         >
           <span class="text-[14px] text-color-default">{{ comp.name }}</span>
           <MIcon name="chevron_right" size="xs" class="text-color-subtlest" />
-        </router-link>
+        </a>
       </div>
     </section>
   </div>

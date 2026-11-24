@@ -1,0 +1,19 @@
+/*
+ * SuSy 线上样式的加载入口。
+ *
+ * 这四个文件是完整的旧框架样式（Foundation + Element UI + 业务 Tailwind），
+ * 里面有大量与设计系统同名的变量和工具类。直接引入时它们属于"无层级样式"，
+ * 优先级高于设计系统的 @layer，会把组件样式整体压掉。
+ *
+ * 这里把它们统一放进 susy 层，并预先声明层级顺序：
+ *   properties < base < susy < theme < components < utilities
+ * - 高于 base：外框的边距、字号等基础样式不被设计系统的 reset 冲掉
+ * - 低于 theme：颜色、圆角、字体等 token 以设计系统为准
+ * - 低于 components/utilities：组件自身样式和 Tailwind 工具类优先
+ */
+@layer properties, base, susy, theme, components, utilities;
+
+@import url('/build/foundation.css') layer(susy);
+@import url('/build/vendor.css') layer(susy);
+@import url('/build/199.css') layer(susy);
+@import url('/build/main.css') layer(susy);

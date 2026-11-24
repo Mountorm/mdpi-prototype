@@ -1,35 +1,37 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHistory } from 'vue-router'
 
 const categoryKeys = ['actions', 'inputs', 'data-display', 'feedback', 'navigation', 'layout']
 
 const routes = [
-  { path: '/', redirect: '/design-system' },
   {
-    path: '/design-system',
-    name: 'design-system',
-    component: () => import('@/views/DesignSystemView.vue'),
-    meta: { title: 'Design System' },
+    path: '/',
+    name: 'home',
+    component: () => import('@/views/HomeView.vue'),
+    meta: { title: 'Home' },
   },
-  // 旧的分类路由统一收进单一路由，保留跳转避免历史链接失效
-  ...categoryKeys.map((key) => ({
-    path: `/${key}`,
-    redirect: { path: '/design-system', hash: `#${key}` },
-  })),
-  { path: '/overview', redirect: '/design-system' },
-  { path: '/:pathMatch(.*)*', redirect: '/design-system' },
+  {
+    path: '/components',
+    name: 'components',
+    component: () => import('@/views/DesignSystemView.vue'),
+    meta: { title: 'Components' },
+  },
+  // 旧的分类路由统一收进组件页，保留跳转避免历史链接失效
+  ...categoryKeys.map((key) => ({ path: `/${key}`, redirect: '/components' })),
+  { path: '/overview', redirect: '/components' },
+  { path: '/design-system', redirect: '/components' },
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
-  scrollBehavior(to) {
-    if (to.hash) return { el: to.hash, top: 80 }
+  scrollBehavior() {
     return { top: 0 }
   },
 })
 
 router.afterEach((to) => {
-  document.title = to.meta.title ? `${to.meta.title} | SuSy Design System` : 'SuSy Design System'
+  document.title = to.meta.title ? `${to.meta.title} | SuSy` : 'SuSy'
 })
 
 export default router

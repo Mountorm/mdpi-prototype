@@ -1,5 +1,7 @@
 <script setup>
-const mockUser = 'reviewer@mdpi.com'
+import GlobalSearch from '@/components/GlobalSearch.vue'
+
+const mockUser = 'susygoodgood@mdpi.com'
 
 const journals = [
   { name: 'Active Journals', url: 'https://www.mdpi.com/about/journals' },
@@ -50,6 +52,12 @@ const about = [
       { name: 'Impact', url: 'https://www.mdpi.com/about/impact' },
       { name: 'History', url: 'https://www.mdpi.com/about/history' },
       { name: 'Leadership', url: 'https://www.mdpi.com/about/leadership' },
+    ],
+  },
+  // 与真实顶栏一致：Company 条目分成两列，第二列没有标题
+  {
+    title: '\u00A0',
+    items: [
       { name: 'Office Locations', url: 'https://www.mdpi.com/about/office-locations' },
       { name: 'Careers', url: 'https://www.mdpi.com/about/careers' },
       { name: 'Awards', url: 'https://www.mdpi.com/awards' },
@@ -88,7 +96,7 @@ const accountMenu = [
     <div id="topmenu" class="show-for-large">
       <ul class="!tw-flex">
         <li class="susy-logo">
-          <router-link to="/design-system" title="MDPI SuSy - Home Page">
+          <router-link to="/" title="MDPI SuSy - Home Page">
             <img src="/build/img/SUSY_logo.svg" class="top-menu-susy-logo" alt="MDPI SuSy - Home Page" />
           </router-link>
         </li>
@@ -148,7 +156,7 @@ const accountMenu = [
               v-for="(group, index) in about"
               :key="group.title"
               class="cell small-3"
-              :class="{ 'border-left-1': index > 0 }"
+              :class="{ 'border-left-1': index >= 2 }"
             >
               <div class="dropdown-title">{{ group.title }}</div>
               <ul>
@@ -161,6 +169,9 @@ const accountMenu = [
         </li>
 
         <li class="tw-flex-1 !tw-flex tw-items-center tw-justify-end">
+          <div class="susy-global-search-li">
+            <GlobalSearch />
+          </div>
           <a href="javascript:void(0);" class="show-submit-dialog" role="button">
             <i class="ms ms-add"></i> Start Submission
           </a>

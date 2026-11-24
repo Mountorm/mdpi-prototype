@@ -1,0 +1,2 @@
+# SPA 回退：静态托管下直接访问 /components 也要返回 index.html
+/* /index.html 200
